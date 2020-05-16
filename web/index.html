@@ -1,0 +1,110 @@
+<html lang="fr">
+    <head>
+        <title>La fabrique de PictoParle</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <script src="js/external/jquery-3.4.1.min.js"></script>
+
+        <script src="js/board.js"></script>
+        <script src="js/interface.js"></script>
+
+        <!-- use bootstap for display -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    </head>
+    <body>
+        <div class="container-xl" id="main-container">
+            <h1>La fabrique de PictoParle</h1>
+            <p><a href="http://pictoparle.jmfavreau.info/">PictoParle</a> est un outil de communication alternative 
+                et augmentée destiné aux personnes en situation de déficience visuelle rencontrant des difficultés dans la 
+                communication orale. Il permet de disposer sur un dispositif interactif (une tablette tactile du commerce)
+                des <em>planches</em> structurés en <em>panneaux</em> de <em>pictogrammes</em>. Ces planches sont interchangeables,
+                et détectées automatiquement par la tablette. Pour plus d'information, vous pouvez consulter le site internet
+                du projet, à l'adresse <a href="http://pictoparle.jmfavreau.info/">pictoparle.jmfavreau.info</a>.
+            </p>
+            <p>La page sur laquelle vous vous trouvez permet de fabriquer ses propres planches, afin d'étendre le fonctionnement de PictoParle aux 
+                besoins spécifiques d'un contexte ou d'une personne.
+            </p>
+            <div class="container">
+                <div class="row">
+                  <div class="col-sm">
+                    <div class="btn-group btn-block">
+                        <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="tablette"   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Tablette
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="tablette">
+                          <a class="dropdown-item" href="#">Lenovo </a>
+                        </div>
+                      </div>
+                  </div>
+                  <div class="col-sm">
+                    <div class="btn-group btn-block">
+                        <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="miseenpage"   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Mise en page
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="miseenpage">
+                          <a class="dropdown-item" href="#">4 x 3</a>
+                          <a class="dropdown-item" href="#">3 x 3 et fixe gauche</a>
+                        </div>
+                      </div>
+                  </div>
+                    <div class="col-sm">
+                        <form>
+                            <div class="btn btn-primary btn-block" style="position: relative">
+                                    <label style="padding: 0; margin: 0" tkey="chooseFile">charger un fichier tablette</label>
+                                    <input type="file" id="inputFile" name="files[]" accept="application/zip,application/xml,text/xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0">
+                                </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="rendering">
+
+            </div>
+
+            <div class="container">
+                <div class="row">
+                  <div class="col-sm">
+                    <button type="button" class="btn btn-primary btn-block">fichier tablette</button>
+                  </div>
+                  <div class="col-sm">
+                    <button type="button" class="btn btn-primary btn-block">fichier à imprimer</button>
+                  </div>
+                  <div class="col-sm">
+                    <button type="button" class="btn btn-primary btn-block">fichier à découper</button>
+                  </div>
+                </div>
+              </div>
+             <div>
+                <h2>Utilisation</h2>
+                <p>Commencez par choisir le type de tablette que vous utilisez, ainsi que la mise en page de votre choix. Vous pouvez également importer
+                    une planche déjà réalisée en utilisant le fichier tablette d'un précédent projet. Ajoutez ensuite pour chaque emplacement le texte et l'image
+                    que vous souhaitez lui associer.
+                </p>
+                <p>Une fois que la planche est saisie, vous devez télécharger les trois fichiers&nbsp;:</p>
+                <ul>
+                    <li>Le <strong>fichier tablette</strong> est un fichier au format <em>zip</em>, que vous pourrez charger dans l'interface de la tablette, 
+                    pour que celle-ci soit en mesure de reconnaître la planche, et puisse produire les sons associés.</li>
+                    <li>Le <strong>fichier à imprimer</strong> est un fichier au format pdf contenant deux pages, qu'il vous suffira d'imprimer afin de préparer
+                    la tablette. La première page contient les pictogrammes, que vous pouvez imprimer sur du papier pour thermogonflage. La seconde pages
+                    correspond à la face verso de cette première page, et contient notamment le QRcode qui permet à la tablette la reconnaissance. 
+                    Préférez l'imprimer sur du papier classique. Découpez ensuite les profils des deux faces, et assemblez-les, par exemple par collage.</li>
+                    <li>Le <strong>fichier à découper</strong> est un fichier au format dxf (un format pdf sera prochainement proposé), permettant grâce à une
+                        découpeuse laser de fabriquer le cadre de la planche, matérialisant les séparations entre pictogrammes.
+                    </li>
+                </ul>
+                <p>Un tutoriel d'utilisation sera proposé dès que le site internet sera complètement fonctionnel, pour en faciliter la prise en main.</p>
+
+             </div>
+            <div class="footer-page font-small mb-3" style="font-size: 80%" tkey="footer">
+                <a href="https://github.com/jmtrivial/svg-to-stl">SVG-to-STL</a> by <a href="https://jmfavreau.info">Jean-Marie Favreau</a> for <a href="https://activmap.limos.fr">ACTIVmap project</a>, March 2020. Special thanks to Ryan Calme for the <a href="https://github.com/rcalme/svg-to-stl">first version of this tool</a>, and for developers of the libraries used in this software.
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" />
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
