@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board orientation="horizontal">
+    <cells cellWidth="50" cellHeight="40">
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <quit></quit>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
+    </cells>
+</board>

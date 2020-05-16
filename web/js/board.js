@@ -123,8 +123,10 @@ Board.fromXML = function(xml) {
     var board = boardList[0];
     var name = board.getAttribute("name");
     var orientation = board.getAttribute("orientation");
-    if ((name == null) || (name == "") || (orientation == null) || (orientation == "")) {
-        console.log("no name or orientation");
+    if ((name == null) || (name == ""))
+        name = "";
+    if ((orientation == null) || (orientation == "")) {
+        console.log("no orientation");
         return null;
     }
     
