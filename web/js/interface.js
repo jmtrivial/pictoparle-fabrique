@@ -10,9 +10,21 @@ $(document).ready(function () {
         }
 
         var xmlfile = window.board.toXML();
+
+        var zip = new JSZip();
+        zip.file("board.xml", xmlfile);
+
+        for(var f in window.images) {
+            zip.file("pictograms/" + f, removeURLPrefix(window.images[f]), {base64: true});
+        }
+
+        zip.generateAsync({type:"blob"}).then(function (blob) {
+                saveAs(blob, window.board.name + ".zip");                     
+        }, function (err) {
+            jQuery("#blob").text(err);
+            console.log("error", err);
+        });
         
-        
-        // TODO
     });
 
     $("#boardName").change(changedBoardName);
@@ -32,6 +44,10 @@ $(document).ready(function () {
     );
 
 });
+
+function removeURLPrefix(fileString) {
+    return fileString.split(", ")[1];
+}
 
 function changedBoardID(e) {
     window.board.id = $(this).val();
@@ -398,7 +414,10 @@ function drawBoard(params) {
     $("#boardName").val(window.board.name);
     
     var id;
-    if (!window.board.id.match("^[0-9][0-9]?[0-9]?[0-9]?[0-9]?[0-9]?$")) {
+    if (typeof "window.board.id" === "int") {
+        id = window.board.id;
+    }
+    else if (!String(window.board.id).match("^[0-9][0-9]?[0-9]?[0-9]?[0-9]?[0-9]?$")) {
         id = uniqID();
     }
     else {
