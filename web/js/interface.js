@@ -202,6 +202,23 @@ function drawBoard(params) {
         pictoHTML.css("width", (p.width * ratio) + "px");
         pictoHTML.css("height", (p.height * ratio) + "px");
 
+        if (p instanceof QuitButton) {
+            pictoHTML.append("<img src=\"images/cross.svg\" class=\"cross\" />");
+            var cross = pictoHTML.find("img.cross");
+            if (p.width > p.height) {
+                cross.css("width", "auto");
+                cross.css("height", "100%");
+                cross.css("margin-left", ((p.width - p.height) / 2 * ratio) + "px");
+            }
+            else {
+                cross.css("width", "100%");
+                cross.css("height", "auto");
+                cross.css("margin-top", ((p.height - p.width) / 2 * ratio) + "px");
+            }
+
+            
+        }
+
         pictoID += 1;
     }
 
