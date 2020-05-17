@@ -105,8 +105,8 @@ class BoardPanel {
         if (this.quitButtonRow != null) {
             var width = spaceX;
             var height = spaceY;
-            if (this.quitButtonWidth != 0) width = this.quitButtonWidth;
-            if (this.quitButtonHeight != 0) height = this.quitButtonHeight;
+            if (this.quitButtonWidth != null && this.quitButtonWidth != 0) width = this.quitButtonWidth;
+            if (this.quitButtonHeight != null && this.quitButtonHeight != 0) height = this.quitButtonHeight;
             result.push(new QuitButton(width, height, shiftX + this.cellWidth, shiftY + this.cellHeight));
         }
 
@@ -161,8 +161,12 @@ BoardPanel.fromXML = function(xml) {
             idRow += 1;
         }
         else {
-            var width = parseFloat(xml.children[i].getAttribute("width"));
-            var height = parseFloat(xml.children[i].getAttribute("height"));
+            var width = xml.children[i].getAttribute("width");
+            if (width != null)
+                width = parseFloat(width);
+            var height = xml.children[i].getAttribute("height");
+            if (height != null)
+                height = parseFloat(height);
             result.setQuitRow(idRow, width, height);
         }
     }
