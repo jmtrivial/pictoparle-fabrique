@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<board orientation="horizontal">
+<board orientation="horizontal" name="4x3" id="4x3">
     <cells cellWidth="50" cellHeight="40">
         <row>
             <pictogram txt="" image="" />

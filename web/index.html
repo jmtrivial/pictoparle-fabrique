@@ -7,6 +7,7 @@
         <script src="js/external/jquery-3.4.1.min.js"></script>
 
         <script src="js/board.js"></script>
+        <script src="js/device.js"></script>
         <script src="js/interface.js"></script>
 
         <!-- use bootstap for display -->
@@ -36,8 +37,7 @@
                         aria-haspopup="true" role="menu" aria-expanded="false">
                           Tablette
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="tablette">
-                          <a class="dropdown-item" href="#">Lenovo Tab E10</a>
+                        <div class="dropdown-menu" aria-labelledby="tablette" id="devices">
                         </div>
                       </div>
                       </div>
@@ -49,9 +49,7 @@
                           aria-haspopup="true" role="menu"  aria-expanded="false">
                             Mise en page
                           </button>
-                          <div class="dropdown-menu" aria-labelledby="miseenpage">
-                            <a class="dropdown-item" href="#" id="4x3">4 x 3</a>
-                            <a class="dropdown-item" href="#" id="3x3-fixedright">3 x 3 et fixe gauche</a>
+                          <div class="dropdown-menu" aria-labelledby="miseenpage" id="templates">
                           </div>
                         </div>
                       </div>
@@ -72,7 +70,7 @@
 
             </div>
 
-            <div class="container">
+            <div class="container my-3">
                 <div class="row">
                   <div class="col-sm">
                     <button type="button" class="btn btn-primary btn-block">fichier tablette</button>
