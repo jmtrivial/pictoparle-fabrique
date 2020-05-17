@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<board orientation="horizontal" name="3x3 fixe droit" id="3x3-fixedright">
+<board orientation="vertical" name="4x2 fixe bas" id="4x2-fixedbottom">
     <cells cellWidth="50" cellHeight="40">
         <row>
             <pictogram txt="" image="" />
             <pictogram txt="" image="" />
             <pictogram txt="" image="" />
-        </row>
-        <row>
-            <pictogram txt="" image="" />
-            <pictogram txt="" image="" />
             <pictogram txt="" image="" />
         </row>
         <row>
+            <pictogram txt="" image="" />
             <pictogram txt="" image="" />
             <pictogram txt="" image="" />
             <pictogram txt="" image="" />
@@ -21,10 +18,13 @@
         <quit width="10" height="10" />
     </cells>
     <cells cellWidth="31.25" cellHeight="25">
-        <row><pictogram txt="" image="" /></row>
-        <row><pictogram txt="" image="" /></row>
-        <row><pictogram txt="" image="" /></row>
-        <row><pictogram txt="" image="" /></row>
-        <row><pictogram txt="" image="" /></row>
+        <row>
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+            <pictogram txt="" image="" />
+        </row>
     </cells>
 </board>

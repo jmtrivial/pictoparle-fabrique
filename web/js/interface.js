@@ -99,7 +99,7 @@ function uniqID() {
 function setTemplateMenu() {
     window.templates = {};
 
-    var templatesIDs = ["3x3-fixedright", "4x3"];
+    var templatesIDs = ["3x3-fixedleft", "3x3-fixedright", "4x3", "4x2-fixedtop", "4x2-fixedbottom"];
     for (var t of templatesIDs) {
         $.get("templates/" + t + ".xml?uniq=" + uniqID(), function(data) {
             var xml = $(data);              
