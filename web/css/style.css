@@ -5,22 +5,47 @@
     position: absolute;
     top: 0;
     left: 0;
-
 }
 
-.pictotext {
-    width: 100%;
+.pictogram .btn {
     z-index: 10;
-    text-align: center;
-    font-weight: bold;
-    color: #300;
-    background: rgba(226, 164, 139, 0.9);
-    padding: 0.2em;
     position: absolute;
+    -webkit-transition: opacity 0.2s;
+    -moz-transition: opacity 0.2s;
+    -o-transition: opacity 0.2s;
+    -ms-transition: opacity 0.2s;       
+    transition: opacity 0.2s;
+}
+
+.pictogram.small .btn {
+    font-size: 80%;
+}
+
+
+.pictotext {
     top: 0;
     left: 0;
 }
 
-.pictogram:hover .pictotext {
-    display: none;
+#rendering .pictotext {
+    opacity: 0.0;
+}
+
+#rendering:hover .pictotext {
+    opacity: 0.8;
+}
+
+.btn-image {
+    opacity: 0.0;
+    margin: auto;
+    left: 0;
+    right: 0;
+    top: 5em;
+}
+
+#rendering .pictogram:hover .pictotext,
+#rendering .pictogram .pictotext:focus,
+.pictogram:hover .btn-image,
+.pictogram .btn-image:focus {
+    opacity: 1.0;
 }

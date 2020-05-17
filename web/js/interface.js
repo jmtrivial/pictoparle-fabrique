@@ -15,6 +15,7 @@ $(document).ready(function () {
             updateInterface();
         }
     );
+
 });
 
 function setDeviceMenu() {
@@ -237,10 +238,17 @@ function drawDevice() {
 }
 
 
-function setPictogram(pictoHTML, txt, image) {
-    if (txt != "") {
-        pictoHTML.append("<div class=\"pictotext\">" + txt + "</div>");
+function drawPictogram(pictoHTML, txt, image) {
+    if (pictoHTML.width() < 150) { 
+        pictoHTML.addClass("small");
     }
+
+    pictoHTML.append("<form><input type=\"text\" class=\"btn btn-secondary btn-block pictotext btn-secondary\" placeholder=\"Ajouter un texte\" value=\"" + txt + "\"></form>");
+    pictoHTML.find("input").change(function(e) {
+        var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
+        window.board.setPictoText(pictoID, $(this).val());
+    });
+
     if (image != "") {
         if (image in window.images) {
             var re = /(?:\.([^.]+))?$/;
@@ -255,6 +263,10 @@ function setPictogram(pictoHTML, txt, image) {
         else {
             console.log("Unable to find image " + image);
         }
+        pictoHTML.append("<button type=\"button\" class=\"btn-delimage btn-image btn btn-secondary\">Supprimer l'image</button>");
+    }
+    else {
+        pictoHTML.append("<button type=\"button\" class=\"btn-addimage btn-image btn btn-secondary\">Ajouter une image</button>");
     }
 }
 
@@ -264,8 +276,13 @@ function drawBoard(params) {
 
     var pictoID = 0;
     for(var p of window.board.getElementsInScreen(device)) {
-        screen.append("<div class=\"pictogram\" id=\"picto" + pictoID + "\"></div>");
-        var pictoHTML = $("#picto" + pictoID);
+        var quit = p instanceof QuitButton;
+        if (quit) {
+            screen.append("<div class=\"pictogram quit\"></div>");
+        }
+        else
+            screen.append("<div class=\"pictogram\" id=\"picto" + pictoID + "\"></div>");
+        var pictoHTML = screen.children().last();
         pictoHTML.css("position", "absolute");
         pictoHTML.css("background", "white");
         pictoHTML.css("display", "inline-block");
@@ -274,7 +291,7 @@ function drawBoard(params) {
         pictoHTML.css("width", (p.width * ratio) + "px");
         pictoHTML.css("height", (p.height * ratio) + "px");
 
-        if (p instanceof QuitButton) {
+        if (quit) {
             pictoHTML.append("<img src=\"images/cross.svg\" class=\"cross\" />");
             var cross = pictoHTML.find("img.cross");
             if (p.width > p.height) {
@@ -289,14 +306,10 @@ function drawBoard(params) {
             }   
         }
         else if (p instanceof PictogramInScreen) {
-            var txt = p.text;
-            var image = p.image;
-            if (image != "" || txt != "") {
-                setPictogram(pictoHTML, txt, image);
-            }
+            drawPictogram(pictoHTML, p.text, p.image);
+            pictoID += 1;
         }
 
-        pictoID += 1;
     }
 
 }

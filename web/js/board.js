@@ -103,6 +103,14 @@ class BoardPanel {
     
     }
 
+    getPictograms() {
+        var result = [];
+        for (var r of this.pictograms) {
+            result = result.concat(r);
+        }
+        return result;
+    }
+
     getElementsInScreen(spaceX, spaceY, shiftX, shiftY) {
         var result = [];
 
@@ -225,6 +233,18 @@ class Board {
     checkImages(imageList) {
         for(var p of this.panels) {
             p.checkImages(imageList);
+        }
+    }
+
+    setPictoText(pictoID, text) {
+        var i = 0;
+        for(var p of this.panels) {
+            var pictos = p.getPictograms();
+            if (i + pictos.length > pictoID) {
+                pictos[pictoID - i].text = text;
+                break;
+            }
+            i += pictos.length;
         }
     }
 
