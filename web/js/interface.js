@@ -3,6 +3,21 @@
 $(document).ready(function () {
     $("#inputFile").on("change", handleFileSelect);
 
+    $("#downloadZIP").click(function (e) {
+        if (window.board.name == "") {
+            alert("Vous devez donner un nom à la planche avant de la sauver.");
+            return;
+        }
+
+        var xmlfile = window.board.toXML();
+        
+        
+        // TODO
+    });
+
+    $("#boardName").change(changedBoardName);
+    $("#boardID").change(changedBoardID);
+
     window.board = null;
     window.device = null;
     window.images = {};
@@ -18,6 +33,15 @@ $(document).ready(function () {
 
 });
 
+function changedBoardID(e) {
+    window.board.id = $(this).val();
+}
+
+function changedBoardName(e) {
+    window.board.name = $(this).val();
+}
+
+
 function setDeviceMenu() {
     window.devices = {};
 
@@ -26,7 +50,7 @@ function setDeviceMenu() {
     for(var d of deviceIDs) {
         $.get("devices/" + d + ".xml?uniq=" + uniqID(), function(data) {
             var xml = $(data);              
-            // load the template
+            // load the device
             var device = Device.fromXML(data);
             window.devices[device.id] = device;              
 
@@ -64,7 +88,8 @@ function setTemplateMenu() {
         $.get("templates/" + t + ".xml?uniq=" + uniqID(), function(data) {
             var xml = $(data);              
             // load the template
-            var board = Board.fromXML(data);              
+            var board = Board.fromXML(data);  
+            board.name = "";            
             window.templates[board.id] = board;
 
             // create the entry 
@@ -369,5 +394,18 @@ function drawBoard(params) {
         }
 
     }
+
+    $("#boardName").val(window.board.name);
+    
+    var id;
+    if (!window.board.id.match("^[0-9][0-9]?[0-9]?[0-9]?[0-9]?[0-9]?$")) {
+        id = uniqID();
+    }
+    else {
+        id = parseInt(window.board.id);
+    }
+    // replace the ID with the new one
+    window.board.id = id;
+    $("#boardID").val(id);
 
 }

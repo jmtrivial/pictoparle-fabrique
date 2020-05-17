@@ -81,19 +81,40 @@
             </div>
 
             <div id="rendering">
-
+            </div>
+            <div class="container my-3">
+              <div class="row">
+                <form>
+                  <div class="col-sm form-group">
+                      <label class="form-check-label" for="boardName">
+                          Nom de la planche
+                      </label>
+                      <input type="text" class="form-control" id="boardName" aria-describedby="boardNameHelper">
+                      <small id="boardNameHelper" class="form-text text-muted">Ce nom sera utilisé par la synthèse vocale pour nommer la planche.</small>
+                  </div>
+                  <div class="col-sm form-group">
+                    <label class="form-check-label" for="boardID">
+                        Identifiant unique de la planche
+                    </label>
+                    <input type="number" min="0" pattern="\d+" max="999999" class="form-control" id="boardID" aria-describedby="boardIDHelper">
+                    <small id="boardIDHelper" class="form-text text-muted">Cet entier compris entre 0 et 999999 est utilisé pour fabriquer le QRcode qui servira d'identifiant unique à la planche pour la tablette.
+                      Il est important de ne pas choisir un entier déjà connu de la tablette pour une autre planche.
+                    </small>
+                </div>
+              </form>
+              </div>
             </div>
 
-            <div class="container my-3">
+            <div class="container">
                 <div class="row">
                   <div class="col-sm">
-                    <button type="button" class="btn btn-primary btn-block">fichier tablette</button>
+                    <button type="button" id="downloadZIP" class="btn btn-primary btn-block">fichier tablette</button>
                   </div>
                   <div class="col-sm">
-                    <button type="button" class="btn btn-primary btn-block">fichier à imprimer</button>
+                    <button type="button" class="btn btn-primary btn-block" disabled="disabled">fichier à imprimer</button>
                   </div>
                   <div class="col-sm">
-                    <button type="button" class="btn btn-primary btn-block">fichier à découper</button>
+                    <button type="button" class="btn btn-primary btn-block" disabled="disabled">fichier à découper</button>
                   </div>
                 </div>
               </div>

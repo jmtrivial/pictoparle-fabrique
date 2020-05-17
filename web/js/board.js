@@ -4,6 +4,10 @@ class Pictogram {
         this.text = text;
         this.image = image;
     }
+
+    toXML() {
+        return "<pictogram txt=\"" + this.text + "\" image=\"" + this.image + "\" />\n";
+    }
 }
 
 class PictogramInScreen extends Pictogram {
@@ -42,6 +46,48 @@ class BoardPanel {
                 this.pictograms[this.pictograms.length - 1].push(null);
             }
         }
+    }
+
+    toXMLQuitButton() {
+        var result = "<quit";
+        if (this.quitButtonWidth != null && this.quitButtonWidth != 0) {
+            result += " width=\"" + this.quitButtonWidth + "\"";
+        }
+        if (this.quitButtonHeight != null && this.quitButtonHeight != 0) {
+            result += " height=\"" + this.quitButtonHeight + "\"";
+        }
+        result += " />\n";
+        return result;
+    }
+
+    toXML() {
+        var result = "<cells";
+        if (this.cellWidth != 0)
+            result += " cellWidth=\"" + this.cellWidth + "\"";
+        if (this.cellHeight != 0)
+            result += " cellHeight=\"" + this.cellHeight + "\"";
+        result += ">\n";
+        if (this.nbRows != 0) {
+            for(var i = 0; i < this.nbRows; ++i) {
+                var row = this.pictograms[this.nbRows - i - 1];
+                result += "<row>\n";
+                for(var p of row) {
+                    result += p.toXML();
+                }
+                result += "</row>\n";
+                if (this.quitButtonRow != null && this.quitButtonRow == i) {
+                    result += this.toXMLQuitButton();
+                }
+            }
+        }
+        else {
+            if (this.quitButtonRow != null) {
+                result += this.toXMLQuitButton();
+            }
+        }
+
+        result += "</cells>";
+        return result;
     }
 
     checkImages(imageList) {
@@ -265,6 +311,21 @@ class Board {
         }
     }
 
+    toXML() {
+        var result ="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+        result += "<board orientation=\"";
+        if (this.orientation == "horizontal") result += "horizontal";
+        else result += "vertical";
+        result += "\" name=\"" + this.name.replace(/\"/g, "&quot;") +"\" id=\"" + this.id + "\">\n";
+
+        for(var p of this.panels) {
+            result += p.toXML();
+        }
+
+        result += "</board>\n";
+
+        return result;
+    }
 
     getElementsInScreen(device) {
         if (this.panels.length == 0) {
@@ -344,8 +405,7 @@ Board.fromXML = function(xml) {
     if ((name == null) || (name == ""))
         name = "";
     if ((orientation == null) || (orientation == "")) {
-        console.log("no orientation");
-        return null;
+        orientation = "horizontal";
     }
     
     var result = new Board(name, id, orientation);
