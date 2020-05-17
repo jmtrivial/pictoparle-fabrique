@@ -5,6 +5,7 @@ $(document).ready(function () {
 
     window.board = null;
     window.device = null;
+    window.images = {};
 
     setTemplateMenu();
     setDeviceMenu();
@@ -98,18 +99,18 @@ function handleFileSelect(evt) {
         return;
     }
 
-    var readerString = new FileReader();
 
-    // Closure to capture the file information.
-    readerString.onload = (function (uploadedFile) {
-        return function (e) {
+    // Read in the svg file (in-memory)
+    console.log("Attempting to read file '" + file.name + "'...");
 
-            if (file.type == "application/zip") {
-                console.log("not yet handled");
-                // TODO: we have to first unzip the file, then browse it
-                return;
-            }
-            else {
+    if (file.name.match("\.xml$")) {
+        console.log("on a un xml");
+        var readerString = new FileReader();
+
+        // Closure to capture the file information.
+        readerString.onload = (function (uploadedFile) {
+            return function (e) {
+
                 try {
                     var xmlDoc = $.parseXML(e.target.result);
                 }
@@ -118,17 +119,66 @@ function handleFileSelect(evt) {
                     // TODO: write error
                     return;
                 }
-                loadTemplateFromXML(xmlDoc);
+                var board = Board.fromXML(xmlDoc);              
+                if (board != null) {
+                    console.log("Loading board");
+                    window.board = board;
+                    window.board.checkImages(window.images);
+                    updateInterface();
+                }
+            };
+        })(file);
+        
+        // Reads the SVG contents into a string
+        readerString.readAsText(file);
+    }
+    else if (file.name.match(".zip$")) {
 
-            }
-        };
-    })(file);
+        var zip = new JSZip();
+        zip.loadAsync(file).then(function(zip) {
+            // read board file
+            const promises = [];
+            window.error = false;
 
-    // Read in the svg file (in-memory)
-    console.log("Attempting to read file '" + file.name + "'...");
+            promises.push(zip.file("board.xml").async("text").then(function success(txt) {
+                try {
+                    var xmlDoc = $.parseXML(txt);
+                }
+                catch (error) {
+                    console.log("error while loading xml file");
+                    window.error = true;
+                    // TODO: write error
+                    return;
+                }
+                var board = Board.fromXML(xmlDoc);              
+                if (board != null) {
+                    window.board = board;
+                    console.log(JSON.stringify(window.board));
+                    console.log("Loading board");
+                }
+            }));
+            
 
-    // Reads the SVG contents into a string
-    readerString.readAsText(file);
+            zip.forEach(function (relativePath, zipEntry) {  
+                if (relativePath.match("^pictograms/.\*\\\.(png|jpg|jpeg)$")) {
+                    promises.push(zip.file(relativePath).async("base64").then(function (content) {
+                        window.images[relativePath.replace(/^pictograms\//g, "")] = content;
+                        console.log("Loading ", relativePath.replace(/^pictograms\//g, ""));
+                    }));
+                }
+            });
+
+            Promise.all(promises).then(function (data) {
+                if (window.error == false) {
+                    window.board.checkImages(window.images);
+                    console.log("Loading completed. Update interface.");
+                    updateInterface();
+                }
+            });
+        }); 
+
+    }
+
 
 }
 
@@ -186,6 +236,28 @@ function drawDevice() {
     return {"screen": screen, "ratio": ratio};
 }
 
+
+function setPictogram(pictoHTML, txt, image) {
+    if (txt != "") {
+        pictoHTML.append("<div class=\"pictotext\">" + txt + "</div>");
+    }
+    if (image != "") {
+        if (image in window.images) {
+            var re = /(?:\.([^.]+))?$/;
+            var ext = re.exec(image);
+            var mimeType;
+            if (ext == "png")
+                mimeType = "image/png";
+            else if (ext == "jpg" || ext == "jpeg")
+                mimeType = "image/jpg";
+            pictoHTML.append("<img class=\"pictoimage\" src=\"data\: " + mimeType + ";base64, " + window.images[image] + "\" alt=\"" + txt + "\" />");
+        }
+        else {
+            console.log("Unable to find image " + image);
+        }
+    }
+}
+
 function drawBoard(params) {
     var screen = params["screen"];
     var ratio = params["ratio"];
@@ -214,9 +286,14 @@ function drawBoard(params) {
                 cross.css("width", "100%");
                 cross.css("height", "auto");
                 cross.css("margin-top", ((p.height - p.width) / 2 * ratio) + "px");
+            }   
+        }
+        else if (p instanceof PictogramInScreen) {
+            var txt = p.text;
+            var image = p.image;
+            if (image != "" || txt != "") {
+                setPictogram(pictoHTML, txt, image);
             }
-
-            
         }
 
         pictoID += 1;

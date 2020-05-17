@@ -44,6 +44,20 @@ class BoardPanel {
         }
     }
 
+    checkImages(imageList) {
+        for (var r of this.pictograms) {
+            for (var p of r) {
+                if (p != null && p.image != "") {
+                    if (!(p.image in imageList)) {
+                        console.log("Clear board (unknown image: " + p.image + ")");
+                        p.image = "";
+                    }
+                }
+            }
+        }
+
+    }
+
     setQuitRow(r, w, h) {
         this.quitButtonRow = r;
         this.quitButtonWidth = w;
@@ -61,7 +75,7 @@ class BoardPanel {
         for (var r of this.pictograms) {
             for (var p of r) {
                 if (p != null)
-                return false;
+                    return false;
             }
         }
         return true;
@@ -207,6 +221,13 @@ class Board {
                 return false;
         return true;
     }
+
+    checkImages(imageList) {
+        for(var p of this.panels) {
+            p.checkImages(imageList);
+        }
+    }
+
 
     getElementsInScreen(device) {
         if (this.panels.length == 0) {
