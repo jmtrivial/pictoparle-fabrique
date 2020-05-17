@@ -15,7 +15,9 @@ $(document).ready(function () {
         zip.file("board.xml", xmlfile);
 
         for(var f in window.images) {
-            zip.file("pictograms/" + f, removeURLPrefix(window.images[f]), {base64: true});
+            if (board.hasImage(f)) {
+                zip.file("pictograms/" + f, removeURLPrefix(window.images[f]), {base64: true});
+            }
         }
 
         zip.generateAsync({type:"blob"}).then(function (blob) {

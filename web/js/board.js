@@ -286,6 +286,17 @@ class Board {
         }
     }
 
+    hasImage(image) {
+        for(var p of this.panels) {
+            var pictos = p.getPictograms();
+            for(var pc of pictos) {
+                if (pc.image == image)
+                    return true;
+            }
+        }
+        return false;
+    }
+
     setImage(pictoID, image) {
         var i = 0;
         for(var p of this.panels) {
