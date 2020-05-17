@@ -65,7 +65,8 @@ class BoardPanel {
     }
 
     setPictogram(x, y, pictogram) {
-        this.pictograms[x][y] = pictogram;
+        // invert row ordering
+        this.pictograms[this.nbRows - x - 1][y] = pictogram;
     }
     deletePictogram(x, y) {
         this.pictograms[x][y] = null;
@@ -236,13 +237,29 @@ class Board {
         }
     }
 
+    setImage(pictoID, image) {
+        var i = 0;
+        for(var p of this.panels) {
+            var pictos = p.getPictograms();
+            if (i + pictos.length > pictoID) {
+                pictos[pictoID - i].image = image;
+                return pictos[pictoID - i];
+            }
+            i += pictos.length;
+        }
+    }
+
+    deleteImage(pictoID) {
+        return this.setImage(pictoID, "");
+    }
+
     setPictoText(pictoID, text) {
         var i = 0;
         for(var p of this.panels) {
             var pictos = p.getPictograms();
             if (i + pictos.length > pictoID) {
                 pictos[pictoID - i].text = text;
-                break;
+                return pictos[pictoID - i];
             }
             i += pictos.length;
         }

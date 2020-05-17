@@ -95,8 +95,8 @@ function handleFileSelect(evt) {
     var file = evt.target.files[0];
 
     if (file.type != "application/zip" && file.type != "application/xml" && file.type != "text/xml") {
+        alert("Le fichier d'entrée doit être un zip (ou un xml) au format PictoParle");
         console.log("bad format");
-        // TODO: add a message to the user
         return;
     }
 
@@ -105,7 +105,6 @@ function handleFileSelect(evt) {
     console.log("Attempting to read file '" + file.name + "'...");
 
     if (file.name.match("\.xml$")) {
-        console.log("on a un xml");
         var readerString = new FileReader();
 
         // Closure to capture the file information.
@@ -117,7 +116,7 @@ function handleFileSelect(evt) {
                 }
                 catch (error) {
                     console.log("error while loading xml file");
-                    // TODO: write error
+                    alert("Une erreur s'est produite pendant l'ouverture du fichier xml");
                     return;
                 }
                 var board = Board.fromXML(xmlDoc);              
@@ -148,7 +147,7 @@ function handleFileSelect(evt) {
                 catch (error) {
                     console.log("error while loading xml file");
                     window.error = true;
-                    // TODO: write error
+                    alert("Une erreur s'est produite pendant l'ouverture du fichier");
                     return;
                 }
                 var board = Board.fromXML(xmlDoc);              
@@ -163,7 +162,15 @@ function handleFileSelect(evt) {
             zip.forEach(function (relativePath, zipEntry) {  
                 if (relativePath.match("^pictograms/.\*\\\.(png|jpg|jpeg)$")) {
                     promises.push(zip.file(relativePath).async("base64").then(function (content) {
-                        window.images[relativePath.replace(/^pictograms\//g, "")] = content;
+                        var re = /(?:\.([^.]+))?$/;
+                        var ext = re.exec(relativePath);
+                        var mimeType;
+                        if (ext == "png")
+                            mimeType = "image/png";
+                        else if (ext == "jpg" || ext == "jpeg")
+                            mimeType = "image/jpg";
+            
+                        window.images[relativePath.replace(/^pictograms\//g, "")] = "data: " + mimeType + ";base64, " + content;
                         console.log("Loading ", relativePath.replace(/^pictograms\//g, ""));
                     }));
                 }
@@ -239,6 +246,9 @@ function drawDevice() {
 
 
 function drawPictogram(pictoHTML, txt, image) {
+    // delete previous content
+    pictoHTML.html("");
+
     if (pictoHTML.width() < 150) { 
         pictoHTML.addClass("small");
     }
@@ -248,25 +258,73 @@ function drawPictogram(pictoHTML, txt, image) {
         var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
         window.board.setPictoText(pictoID, $(this).val());
     });
+    pictoHTML.find("input").focusin(function(e) {
+        $(this).parent().parent().addClass("edit-text");
+    });
+    pictoHTML.find("input").focusout(function(e) {
+        $(this).parent().parent().removeClass("edit-text");
+    });
+
+    pictoHTML.append("<button type=\"button\" class=\"btn-deltext btn btn-secondary\" alt=\"Supprimer le texte\">✕</button>");
+    pictoHTML.find(".btn-deltext").click(function(e) {
+        var pictoID = $(this).parent().attr("id").replace("picto", "");
+        var picto = window.board.setPictoText(pictoID, "");
+        drawPictogram($(this).parent(), picto.text, picto.image);
+    });
+
 
     if (image != "") {
         if (image in window.images) {
-            var re = /(?:\.([^.]+))?$/;
-            var ext = re.exec(image);
-            var mimeType;
-            if (ext == "png")
-                mimeType = "image/png";
-            else if (ext == "jpg" || ext == "jpeg")
-                mimeType = "image/jpg";
-            pictoHTML.append("<img class=\"pictoimage\" src=\"data\: " + mimeType + ";base64, " + window.images[image] + "\" alt=\"" + txt + "\" />");
+            pictoHTML.append("<img class=\"pictoimage\" src=\"" + window.images[image] + "\" alt=\"" + txt + "\" />");
         }
         else {
             console.log("Unable to find image " + image);
         }
         pictoHTML.append("<button type=\"button\" class=\"btn-delimage btn-image btn btn-secondary\">Supprimer l'image</button>");
+        pictoHTML.find(".btn-delimage").click(function(e) {
+            var pictoID = $(this).parent().attr("id").replace("picto", "");
+            var picto = window.board.deleteImage(pictoID);
+            drawPictogram($(this).parent(), picto.text, picto.image);
+        });
     }
     else {
-        pictoHTML.append("<button type=\"button\" class=\"btn-addimage btn-image btn btn-secondary\">Ajouter une image</button>");
+        pictoHTML.append("<form> \
+        <div class=\"btn-addimage btn-image btn btn-secondary\"> \
+                <label style=\"padding: 0; margin: 0\">Ajouter une image</label> \
+                <input type=\"file\" name=\"files[]\" accept=\"image/png,image/jpg\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0\"> \
+            </div></form>");
+        pictoHTML.find(".btn-addimage").change(function(evt) {
+            var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
+            var file = evt.target.files[0];
+
+            if (!(file.name.match(".png$") || file.name.match(".jpg$") || file.name.match(".jpeg$"))) {
+                alert("Les images doivent être au format png ou jpg");
+                return;
+            }
+
+            
+
+            var reader = new FileReader();
+
+            // Closure to capture the file information.
+            reader.onload = (function (uploadedFile) {
+                return function (e) {
+                    var finalName = uploadedFile.name;
+                    while (finalName in window.images) {
+                        finalName = uniqID()  + "-" + uploadedFile.name;
+                    }
+                    window.images[finalName] = e.target.result;
+                    window.board.setImage(pictoID, finalName);
+                    console.log("Set a new image (" + finalName + ") for pictogram #" + pictoID);
+                    updateInterface();
+                };
+            })(file);
+
+            reader.readAsDataURL(file);
+            /*var pictoID = $(this).parent().attr("id").replace("picto", "");
+            var picto = window.board.deleteImage(pictoID);
+            drawPictogram($(this).parent(), picto.text, picto.image);*/
+        });
     }
 }
 
