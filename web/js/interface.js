@@ -8,6 +8,12 @@ $(document).ready(function () {
 
     setTemplateMenu();
     setDeviceMenu();
+
+    $(window).resize(
+        function() {
+            updateInterface();
+        }
+    );
 });
 
 function setDeviceMenu() {
