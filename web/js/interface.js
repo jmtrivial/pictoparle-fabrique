@@ -105,12 +105,13 @@ function setTemplateMenu() {
             var xml = $(data);              
             // load the template
             var board = Board.fromXML(data);  
-            board.name = "";            
             window.templates[board.id] = board;
 
             // create the entry 
             $("#templates").append("<a class=\"dropdown-item\" href=\"#\" id=\"" + board.id + "\">" + 
                     window.templates[board.id].name + "</a>");
+            
+            board.name = "";            
 
             // set the interaction
             $("#" + board.id).click(function () {
@@ -332,9 +333,13 @@ function drawPictogram(pictoHTML, txt, image) {
         pictoHTML.append("<form> \
         <div class=\"btn-addimage btn-image btn btn-secondary\"> \
                 <label style=\"padding: 0; margin: 0\">Ajouter une image</label> \
-                <input type=\"file\" name=\"files[]\" accept=\"image/png,image/jpg\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0\"> \
+                <input type=\"file\" name=\"files[]\" accept=\"image/png;image/jpeg\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0\"> \
             </div></form>");
         pictoHTML.find(".btn-addimage").change(function(evt) {
+            if (target.value.length == 0) {
+                return;
+            }
+
             var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
             var file = evt.target.files[0];
 
