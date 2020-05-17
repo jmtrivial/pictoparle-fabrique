@@ -43,6 +43,13 @@ $(document).ready(function () {
         }
     );
 
+    $("#validateNewTemplate").click(function(e) {
+        $("#setNewTemplateDialog").modal("hide");
+        window.board = window.templates[window.selectedTemplate];
+        updateInterface();
+    });
+
+
 });
 
 function removeURLPrefix(fileString) {
@@ -116,10 +123,14 @@ function setTemplateMenu() {
             // set the interaction
             $("#" + board.id).click(function () {
                 if (window.board != null && !window.board.isEmpty()) {
-                    // TODO: first ask if the user wants to reset his work
+                    window.selectedTemplate = this.id;
+                    $('#setNewTemplateDialog').modal("show");
                 }
-                window.board = window.templates[this.id];
-                updateInterface();
+                else {
+                    window.board = window.templates[this.id];
+                    updateInterface();
+                }
+
             });
 
             // set default device
@@ -336,7 +347,7 @@ function drawPictogram(pictoHTML, txt, image) {
                 <input type=\"file\" name=\"files[]\" accept=\"image/png;image/jpeg\" style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0\"> \
             </div></form>");
         pictoHTML.find(".btn-addimage").change(function(evt) {
-            if (target.value.length == 0) {
+            if (evt.target.value.length == 0) {
                 return;
             }
 

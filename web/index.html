@@ -145,6 +145,26 @@
                 <a href="https://github.com/jmtrivial/svg-to-stl">SVG-to-STL</a> by <a href="https://jmfavreau.info">Jean-Marie Favreau</a> for <a href="https://activmap.limos.fr">ACTIVmap project</a>, March 2020. Special thanks to Ryan Calme for the <a href="https://github.com/rcalme/svg-to-stl">first version of this tool</a>, and for developers of the libraries used in this software.
             </div>
         </div>
+        <div class="modal" tabindex="-1" role="dialog" id="setNewTemplateDialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Nouvelle mise en page</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>En choisissant une nouvelle mise en page, vous allez perdre toutes les images et tous les textes saisis jusqu'à présent.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="validateNewTemplate">Choisir une nouvelle mise en page</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </body>

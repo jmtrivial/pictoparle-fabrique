@@ -5,6 +5,9 @@ class Pictogram {
         this.image = image;
     }
 
+    isEmpty() {
+        return this.text == "" && this.image == "";
+    }
     toXML() {
         return "<pictogram txt=\"" + this.text + "\" image=\"" + this.image + "\" />\n";
     }
@@ -121,7 +124,7 @@ class BoardPanel {
     isEmpty() {
         for (var r of this.pictograms) {
             for (var p of r) {
-                if (p != null)
+                if (p != null && !p.isEmpty())
                     return false;
             }
         }
