@@ -206,7 +206,6 @@ function handleFileSelect(evt) {
                 var board = Board.fromXML(xmlDoc);              
                 if (board != null) {
                     window.board = board;
-                    console.log(JSON.stringify(window.board));
                     console.log("Loading board");
                 }
             }));
