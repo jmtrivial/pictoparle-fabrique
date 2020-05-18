@@ -55,7 +55,7 @@ $(document).ready(function () {
 });
 
 function removeURLPrefix(fileString) {
-    return fileString.split(", ")[1];
+    return fileString.split(",")[1].replace(/\s/g, "");
 }
 
 function changedBoardID(e) {
