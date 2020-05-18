@@ -5,6 +5,10 @@ class Pictogram {
         this.image = image;
     }
 
+    clone() {
+        return new Pictogram(this.text, this.image);
+    }
+
     isEmpty() {
         return this.text == "" && this.image == "";
     }
@@ -49,6 +53,17 @@ class BoardPanel {
                 this.pictograms[this.pictograms.length - 1].push(null);
             }
         }
+    }
+
+    clone() {
+        var result = new BoardPanel(this.nbColumns, this.nbRows, this.cellWidth, this.cellHeight);
+        console.log("on clone le bazar");
+        result.setQuitRow(this.quitButtonRow, this.quitButtonWidth, this.quitButtonHeight);
+        for(var i = 0; i < this.nbRows; ++i)
+            for(var j = 0; j < this.nbColumns; ++j)
+            if (this.pictograms[i][j] != null)
+            result.pictograms[i][j] = this.pictograms[i][j].clone();
+        return result;
     }
 
     toXMLQuitButton() {
@@ -252,6 +267,14 @@ class Board {
         this.id = id;
         this.panels = [];
 
+    }
+
+    clone() {
+        var result = new Board(this.name, this.id, this.orientation);
+        for(var p of this.panels) {
+            result.panels.push(p.clone());
+        }
+        return result;
     }
 
     setName(n) {

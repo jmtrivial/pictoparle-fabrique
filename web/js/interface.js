@@ -47,7 +47,7 @@ $(document).ready(function () {
 
     $("#validateNewTemplate").click(function(e) {
         $("#setNewTemplateDialog").modal("hide");
-        window.board = window.templates[window.selectedTemplate];
+        window.board = window.templates[window.selectedTemplate].clone();
         updateInterface();
     });
 
@@ -137,7 +137,7 @@ function setTemplateMenu() {
 
             // set default device
             if (window.board == null) {
-                window.board = window.templates[board.id];
+                window.board = window.templates[board.id].clone();
                 updateInterface();
             }
             
