@@ -379,9 +379,6 @@ function drawPictogram(pictoHTML, txt, image) {
             })(file);
 
             reader.readAsDataURL(file);
-            /*var pictoID = $(this).parent().attr("id").replace("picto", "");
-            var picto = window.board.deleteImage(pictoID);
-            drawPictogram($(this).parent(), picto.text, picto.image);*/
         });
     }
 }
