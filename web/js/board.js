@@ -348,6 +348,33 @@ class Board {
         }
     }
 
+    toPDF(device) {
+        // According to jsPDF documentation, 
+        // default export is a4 paper, portrait, using millimeters for units
+        var doc = new jsPDF();
+
+        var offsetX = (210 - device.getScreenHeight()) / 2;
+        var offsetY = (297 - device.getScreenWidth()) / 2;
+
+        doc.setDrawColor("#CC88FF");
+
+        // draw pictograms
+        for(var p of this.getElementsInScreen(device)) {
+            if (p instanceof PictogramInScreen && p.image != "") {
+                var img = window.images[p.image];
+                doc.addImage(img, offsetX + p.top + p.height, 
+                                  offsetY + device.getScreenWidth() - (p.left + p.height),
+                                  p.width, p.height, p.text, 'NONE', 90);
+                doc.rect(offsetX + p.top, offsetY + device.getScreenWidth() - p.left - p.width, p.height, p.width);
+            }
+        }
+        
+        // draw screen border
+        doc.rect(offsetX, offsetY, device.getScreenHeight(), device.getScreenWidth());
+
+        return doc;
+    }
+
     toXML() {
         var result ="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
         result += "<board orientation=\"";

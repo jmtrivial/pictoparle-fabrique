@@ -4,10 +4,8 @@ $(document).ready(function () {
     $("#inputFile").on("change", handleFileSelect);
 
     $("#downloadZIP").click(function (e) {
-        if (window.board.name == "") {
-            alert("Vous devez donner un nom à la planche avant de la sauver.");
+        if (!checkValid())
             return;
-        }
 
         var xmlfile = window.board.toXML();
 
@@ -27,6 +25,15 @@ $(document).ready(function () {
             console.log("error", err);
         });
         
+    });
+
+    $("#downloadPictosPDF").click(function (e) {
+        if (!checkValid())
+            return;
+
+        var doc = window.board.toPDF(window.device);
+        doc.save(window.board.name + ".pdf");
+
     });
 
     $("#boardName").change(changedBoardName);
@@ -98,6 +105,15 @@ function setDeviceMenu() {
 
     }
 
+}
+
+function checkValid() {
+    if (window.board.name == "") {
+        alert("Vous devez donner un nom à la planche avant de la sauver.");
+        return false;
+    }
+
+    return true;
 }
 
 function uniqID() {
@@ -219,10 +235,13 @@ function handleFileSelect(evt) {
                         var re = /(?:\.([^.]+))?$/;
                         var ext = re.exec(relativePath);
                         var mimeType;
-                        if (ext == "png")
+                        if (ext[1] == "png")
                             mimeType = "image/png";
-                        else if (ext == "jpg" || ext == "jpeg")
+                        else if (ext[1] == "jpg" || ext[1] == "jpeg")
                             mimeType = "image/jpg";
+                        else {
+                            console.log("Unknown extension:", ext[1]);
+                        }
             
                         window.images[relativePath.replace(/^pictograms\//g, "")] = "data: " + mimeType + ";base64, " + content;
                         console.log("Loading ", relativePath.replace(/^pictograms\//g, ""));

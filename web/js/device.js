@@ -23,6 +23,7 @@ class Device {
     getScreenHeight() {
         return this.screen["height"];
     }
+
 }
 
 Device.fromXML = function(xml) {
