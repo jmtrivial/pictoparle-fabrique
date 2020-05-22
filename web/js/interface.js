@@ -32,7 +32,7 @@ $(document).ready(function () {
             return;
 
         var doc = window.board.toPDF(window.device);
-        if (doc != nul)
+        if (doc != null)
             doc.save(window.board.name + ".pdf");
         else
             alert("La taille de l'écran de tablette n'est pas supportée par ce rendu pdf.");
