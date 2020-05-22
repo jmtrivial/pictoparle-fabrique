@@ -349,12 +349,20 @@ class Board {
     }
 
     toPDF(device) {
+        var A4width = 210;
+        var A4height = 297;
+        var margins = 10;
+
+        if (A4width - 2 * margins < device.getScreenHeight() ||
+            A4height - 2 * margins < device.getScreenWidth())
+            return null;
+
         // According to jsPDF documentation, 
         // default export is a4 paper, portrait, using millimeters for units
         var doc = new jsPDF();
 
-        var offsetX = (210 - device.getScreenHeight()) / 2;
-        var offsetY = (297 - device.getScreenWidth()) / 2;
+        var offsetX = (A4width - device.getScreenHeight()) / 2;
+        var offsetY = (A4height - device.getScreenWidth()) / 2;
 
         doc.setDrawColor("#CC88FF");
 
@@ -372,6 +380,10 @@ class Board {
         // draw screen border
         doc.rect(offsetX, offsetY, device.getScreenHeight(), device.getScreenWidth());
 
+        doc.setFontSize(12);
+        doc.setTextColor("#CC88FF");
+
+        doc.text('côté pictogrammes, pour thermogonflage', 10, 10);
         return doc;
     }
 

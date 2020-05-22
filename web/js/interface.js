@@ -32,8 +32,10 @@ $(document).ready(function () {
             return;
 
         var doc = window.board.toPDF(window.device);
-        doc.save(window.board.name + ".pdf");
-
+        if (doc != nul)
+            doc.save(window.board.name + ".pdf");
+        else
+            alert("La taille de l'écran de tablette n'est pas supportée par ce rendu pdf.");
     });
 
     $("#boardName").change(changedBoardName);
