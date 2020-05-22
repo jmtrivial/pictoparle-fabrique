@@ -41,6 +41,7 @@ $(document).ready(function () {
     $("#boardName").change(changedBoardName);
     $("#boardID").change(changedBoardID);
 
+    window.canvas = document.createElement('canvas');
     window.board = null;
     window.device = null;
     window.images = {};
@@ -63,12 +64,30 @@ $(document).ready(function () {
 
 });
 
+function setQRCode() {
+
+    try {
+        bwipjs.toCanvas(window.canvas, {
+            bcid:        'datamatrix',       // Barcode type
+            text:        String(window.board.id),    // Text to encode
+            scale:       32,
+            textxalign:  'center',        // Always good to set this
+        });
+        $("#qrcode").attr("src", canvas.toDataURL('image/png'));
+    } catch (e) {
+        console.log("Error while creating QRCode: " + e);
+    }    
+}
+
+
+
 function removeURLPrefix(fileString) {
     return fileString.split(",")[1].replace(/\s/g, "");
 }
 
 function changedBoardID(e) {
     window.board.id = $(this).val();
+    setQRCode();
 }
 
 function changedBoardName(e) {
@@ -269,6 +288,7 @@ function updateInterface() {
     if (window.board != null && window.device != null) {
         var params = drawDevice();
         drawBoard(params);
+        setQRCode();
     }
 }
 

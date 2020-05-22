@@ -19,6 +19,7 @@
         <script src="js/external/FileSaver.js"></script>
 
         <script src="js/external/jspdf.min.js"></script>
+        <script src="js/external/bwip-js-min.js"></script>
 
         <script src="js/board.js"></script>
         <script src="js/device.js"></script>
@@ -86,16 +87,16 @@
             <div id="rendering">
             </div>
             <div class="container my-3">
-              <div class="row">
-                <form>
-                  <div class="col-sm form-group">
+              <form>
+                <div class="row form-group">
+                  <div class="col-6">
                       <label class="form-check-label" for="boardName">
                           Nom de la planche
                       </label>
                       <input type="text" class="form-control" id="boardName" aria-describedby="boardNameHelper">
                       <small id="boardNameHelper" class="form-text text-muted">Ce nom sera utilisé par la synthèse vocale pour nommer la planche.</small>
                   </div>
-                  <div class="col-sm form-group">
+                  <div class="col-4">
                     <label class="form-check-label" for="boardID">
                         Identifiant unique de la planche
                     </label>
@@ -103,9 +104,17 @@
                     <small id="boardIDHelper" class="form-text text-muted">Cet entier compris entre 0 et 999999 est utilisé pour fabriquer le QRcode qui servira d'identifiant unique à la planche pour la tablette.
                       Il est important de choisir un entier qui n'est pas déjà utilisé pour une autre planche.
                     </small>
-                </div>
-              </form>
-              </div>
+                  </div>           
+                  <div class="col-2">
+                    <label>QRcode</label>
+                    <div>
+                      <img id="qrcode" width="50%" height="auto" />
+                    </div>
+                    <small class="form-text text-muted">Codage graphique de l'identifiant de la planche
+                    </small>
+                  </div>
+            </form>
+
             </div>
 
             <div class="container">

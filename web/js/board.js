@@ -384,6 +384,47 @@ class Board {
         doc.setTextColor("#CC88FF");
 
         doc.text('côté pictogrammes, pour thermogonflage', 10, 10);
+
+        // create a new page for the verso side
+        doc.addPage();
+        var radiusBlackRectangle = 2 * device.camera["radius"];
+
+        // first compute the size of the final drawing
+        var dataMatrixCell = 3;
+        var dataMatrixNbCells = 10;
+        var dataMatrixHeightWithMargins = (2 + dataMatrixNbCells) * dataMatrixCell;
+        var topShift = device.camera["y"] + radiusBlackRectangle + dataMatrixHeightWithMargins;
+
+        offsetX = (A4width - (device.getScreenHeight() + topShift)) / 2 + topShift;
+        offsetY = (A4height - device.getScreenWidth()) / 2;
+
+        // if the screen is too big, we only care about the upper part,
+        // thus we translate everything
+        if (offsetX - topShift < margins) {
+            offsetX = margins + topShift;
+        }
+
+        // draw screen border
+        doc.rect(offsetX, offsetY, device.getScreenHeight(), device.getScreenWidth());
+
+        // draw black rectangle for the screen
+        doc.setFillColor("#000000");
+        doc.rect(offsetX - device.camera["y"] - radiusBlackRectangle, 
+                 offsetY + device.getScreenWidth() / 2 + device.camera["x"] - radiusBlackRectangle,
+                 2 * radiusBlackRectangle, 2 * radiusBlackRectangle, 'F');
+
+        // draw line arround camera and datamatrix
+        doc.rect(offsetX - topShift, 
+                 offsetY + device.getScreenWidth() / 2 + device.camera["x"] - dataMatrixHeightWithMargins / 2,
+                 dataMatrixHeightWithMargins + 2 * radiusBlackRectangle + dataMatrixCell, 
+                 dataMatrixHeightWithMargins);
+
+        doc.addImage($("#qrcode").attr("src"), offsetX - topShift + dataMatrixCell, 
+                    offsetY + device.getScreenWidth() / 2 + device.camera["x"] - dataMatrixHeightWithMargins / 2 + dataMatrixCell,
+                    dataMatrixNbCells * dataMatrixCell, dataMatrixNbCells * dataMatrixCell, 'NONE', 0);
+
+        doc.text('côté QRcode, pour impression simple', 10, 10);
+
         return doc;
     }
 
