@@ -57,7 +57,6 @@ class BoardPanel {
 
     clone() {
         var result = new BoardPanel(this.nbColumns, this.nbRows, this.cellWidth, this.cellHeight);
-        console.log("on clone le bazar");
         result.setQuitRow(this.quitButtonRow, this.quitButtonWidth, this.quitButtonHeight);
         for(var i = 0; i < this.nbRows; ++i)
             for(var j = 0; j < this.nbColumns; ++j)
@@ -365,6 +364,8 @@ class Board {
         var offsetY = (A4height - device.getScreenWidth()) / 2;
 
         doc.setDrawColor("#CC88FF");
+        doc.setFontSize(7);
+        doc.setTextColor("#CC88FF");
 
         // draw pictograms
         for(var p of this.getElementsInScreen(device)) {
@@ -374,6 +375,7 @@ class Board {
                                   offsetY + device.getScreenWidth() - (p.left + p.height),
                                   p.width, p.height, p.text, 'NONE', 90);
                 doc.rect(offsetX + p.top, offsetY + device.getScreenWidth() - p.left - p.width, p.height, p.width);
+                doc.text(p.text, offsetX + p.top + p.height + 2, offsetY + device.getScreenWidth() - p.left, { "angle": 90});
             }
         }
         
@@ -381,8 +383,6 @@ class Board {
         doc.rect(offsetX, offsetY, device.getScreenHeight(), device.getScreenWidth());
 
         doc.setFontSize(12);
-        doc.setTextColor("#CC88FF");
-
         doc.text('côté pictogrammes, pour thermogonflage', 10, 10);
 
         // create a new page for the verso side
