@@ -319,12 +319,17 @@ class Board {
         return false;
     }
 
-    setImage(pictoID, image) {
+    setImage(pictoID, image, name) {
         var i = 0;
         for(var p of this.panels) {
             var pictos = p.getPictograms();
             if (i + pictos.length > pictoID) {
                 pictos[pictoID - i].image = image;
+                if (pictos[pictoID - i].text == "") {
+                    pictos[pictoID - i].text = name;
+                }
+                else
+                    console.log("déja :", pictos[pictoID - i].text);
                 return pictos[pictoID - i];
             }
             i += pictos.length;

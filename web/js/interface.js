@@ -515,7 +515,13 @@ function loadImage(pictogram, file) {
                 finalName = uniqID()  + "-" + uploadedFile.name;
             }
             window.images[finalName] = e.target.result;
-            window.board.setImage(pictoID, finalName);
+            var name = uploadedFile.name;
+            // remove extension and change small details
+            name = name.split('.').slice(0, -1).join('.');
+            name = name.replace("-", " ");
+            // set image (and possibly name)
+            window.board.setImage(pictoID, finalName, name);
+
             console.log("Set a new image (" + finalName + ") for pictogram #" + pictoID);
             updateInterface();
         };
