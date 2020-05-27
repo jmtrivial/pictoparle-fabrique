@@ -348,7 +348,7 @@ function drawPictogram(pictoHTML, txt, image) {
         pictoHTML.addClass("small");
     }
 
-    pictoHTML.append("<form><input type=\"text\" class=\"btn btn-secondary btn-block pictotext btn-secondary\" placeholder=\"Ajouter un texte\" value=\"" + txt + "\"></form>");
+    pictoHTML.append("<form onsubmit=\"return false\"><input type=\"text\" class=\"btn btn-secondary btn-block pictotext btn-secondary\" placeholder=\"Ajouter un texte\" value=\"" + txt + "\"></form>");
     pictoHTML.find("input").change(function(e) {
         var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
         window.board.setPictoText(pictoID, $(this).val());
