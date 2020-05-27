@@ -342,7 +342,7 @@ function drawDevice() {
 
 function drawPictogram(pictoHTML, txt, image) {
     // delete previous content
-    pictoHTML.html("");
+    pictoHTML.html("<div class=\"dragover\"></div>");
 
     if (pictoHTML.width() < 150) { 
         pictoHTML.addClass("small");
@@ -393,33 +393,8 @@ function drawPictogram(pictoHTML, txt, image) {
                 return;
             }
 
-            var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
-            var file = evt.target.files[0];
 
-            if (!(file.name.match(".png$") || file.name.match(".jpg$") || file.name.match(".jpeg$"))) {
-                alert("Les images doivent être au format png ou jpg");
-                return;
-            }
-
-            
-
-            var reader = new FileReader();
-
-            // Closure to capture the file information.
-            reader.onload = (function (uploadedFile) {
-                return function (e) {
-                    var finalName = uploadedFile.name;
-                    while (finalName in window.images) {
-                        finalName = uniqID()  + "-" + uploadedFile.name;
-                    }
-                    window.images[finalName] = e.target.result;
-                    window.board.setImage(pictoID, finalName);
-                    console.log("Set a new image (" + finalName + ") for pictogram #" + pictoID);
-                    updateInterface();
-                };
-            })(file);
-
-            reader.readAsDataURL(file);
+            loadImage($(this).parent().parent(), evt.target.files[0]);
         });
     }
 }
@@ -432,7 +407,7 @@ function drawBoard(params) {
     for(var p of window.board.getElementsInScreen(device)) {
         var quit = p instanceof QuitButton;
         if (quit) {
-            screen.append("<div class=\"pictogram quit\"></div>");
+            screen.append("<div class=\"pictogram-quit\"></div>");
         }
         else
             screen.append("<div class=\"pictogram\" id=\"picto" + pictoID + "\"></div>");
@@ -467,6 +442,19 @@ function drawBoard(params) {
     }
 
     $("#boardName").val(window.board.name);
+
+    $(".pictogram").on("dragover", dragOverPictogram);
+    $(".pictogram .dragover").on("dragleave", dragLeavePictogram);
+    $(".pictogram .dragover").on("drop", dropPictogram);
+
+    window.addEventListener("dragover",function(e){
+        e = e || event;
+        e.preventDefault();
+      },false);
+      window.addEventListener("drop",function(e){
+        e = e || event;
+        e.preventDefault();
+      }, false);
     
     var id;
     if (typeof "window.board.id" === "int") {
@@ -481,5 +469,58 @@ function drawBoard(params) {
     // replace the ID with the new one
     window.board.id = id;
     $("#boardID").val(id);
+
+}
+
+function dragOverPictogram(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).addClass("active");
+    return false;
+}
+
+function dragLeavePictogram(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    $(this).parent().removeClass("active");
+    return false;
+}
+
+function dropPictogram(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    loadImage($(this).parent(), e.originalEvent.dataTransfer.files[0]);
+    $(this).parent().removeClass("active");
+    return false;
+}
+
+function loadImage(pictogram, file) {
+
+    var pictoID = pictogram.attr("id").replace("picto", "");
+
+    if (!(file.name.match(".png$") || file.name.match(".jpg$") || file.name.match(".jpeg$"))) {
+        alert("Les images doivent être au format png ou jpg");
+        return;
+    }
+
+    
+
+    var reader = new FileReader();
+
+    // Closure to capture the file information.
+    reader.onload = (function (uploadedFile) {
+        return function (e) {
+            var finalName = uploadedFile.name;
+            while (finalName in window.images) {
+                finalName = uniqID()  + "-" + uploadedFile.name;
+            }
+            window.images[finalName] = e.target.result;
+            window.board.setImage(pictoID, finalName);
+            console.log("Set a new image (" + finalName + ") for pictogram #" + pictoID);
+            updateInterface();
+        };
+    })(file);
+
+    reader.readAsDataURL(file);
 
 }

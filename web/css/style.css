@@ -76,3 +76,24 @@ form {
     opacity: 1.0;
 }
 
+.dragover {
+    background: #82bfff;
+    display: none;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+.active .dragover {
+    display: block;
+}
+
+
+.active form, .active img,
+.active button {
+    display: none !important;
+}
