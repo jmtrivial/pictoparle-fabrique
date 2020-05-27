@@ -426,6 +426,9 @@ class Board {
                     offsetY + device.getScreenWidth() / 2 + device.camera["x"] - dataMatrixHeightWithMargins / 2 + dataMatrixCell,
                     dataMatrixNbCells * dataMatrixCell, dataMatrixNbCells * dataMatrixCell, 'NONE', 0);
 
+        doc.text("ID: " + this.id, offsetX - topShift, 
+                offsetY + device.getScreenWidth() / 2 + device.camera["x"] - dataMatrixHeightWithMargins / 2 - 4);
+        
         doc.text('côté QRcode, pour impression simple', 10, 10);
 
         return doc;
