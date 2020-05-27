@@ -70,7 +70,7 @@ form {
 #rendering .pictogram:hover .pictotext,
 #rendering .pictogram .pictotext:focus,
 .pictogram:hover .btn-image,
-.pictogram .btn-image:focus,
+.pictogram .btn-image:focus-within,
 .pictogram .pictogram:hover .btn-deltext, 
 .pictogram .btn-deltext:focus {
     opacity: 1.0;
