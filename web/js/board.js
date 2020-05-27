@@ -328,8 +328,6 @@ class Board {
                 if (pictos[pictoID - i].text == "") {
                     pictos[pictoID - i].text = name;
                 }
-                else
-                    console.log("déja :", pictos[pictoID - i].text);
                 return pictos[pictoID - i];
             }
             i += pictos.length;

@@ -348,6 +348,11 @@ function drawPictogram(pictoHTML, txt, image) {
         pictoHTML.addClass("small");
     }
 
+    pictoHTML.on("dragover", dragOverPictogram);
+    pictoHTML.find(".dragover").on("dragleave", dragLeavePictogram);
+    pictoHTML.find(".dragover").on("drop", dropPictogram);
+
+
     pictoHTML.append("<form onsubmit=\"return false\"><input type=\"text\" class=\"btn btn-secondary btn-block pictotext btn-secondary\" placeholder=\"Ajouter un texte\" value=\"" + txt + "\"></form>");
     pictoHTML.find("input").change(function(e) {
         var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
@@ -443,10 +448,6 @@ function drawBoard(params) {
 
     $("#boardName").val(window.board.name);
 
-    $(".pictogram").on("dragover", dragOverPictogram);
-    $(".pictogram .dragover").on("dragleave", dragLeavePictogram);
-    $(".pictogram .dragover").on("drop", dropPictogram);
-
     window.addEventListener("dragover",function(e){
         e = e || event;
         e.preventDefault();
@@ -489,8 +490,8 @@ function dragLeavePictogram(e) {
 function dropPictogram(e) {
     e.preventDefault();
     e.stopPropagation();
-    loadImage($(this).parent(), e.originalEvent.dataTransfer.files[0]);
     $(this).parent().removeClass("active");
+    loadImage($(this).parent(), e.originalEvent.dataTransfer.files[0]);
     return false;
 }
 
