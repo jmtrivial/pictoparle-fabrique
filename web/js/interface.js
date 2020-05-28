@@ -517,9 +517,8 @@ function loadImage(pictogram, file) {
             }
             window.images[finalName] = e.target.result;
             var name = uploadedFile.name;
-            // remove extension and change small details
+            // remove extension
             name = name.split('.').slice(0, -1).join('.');
-            name = name.split("-").join(" ");
             // set image (and possibly name)
             window.board.setImage(pictoID, finalName, name);
 
