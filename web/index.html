@@ -16,15 +16,19 @@
         <!--[if IE]>
         <script type="text/javascript" src="js/external/jszip-utils-ie.min.js"></script>
         <![endif]-->
+
         <script src="js/external/FileSaver.js"></script>
 
         <script src="js/external/jspdf.min.js"></script>
         <script src="js/external/bwip-js-min.js"></script>
+        <script src="js/external/dxf_bundle.js"></script>
 
         <script src="js/board.js"></script>
         <script src="js/device.js"></script>
         <script src="js/interface.js"></script>
-
+        <script src="js/qrcode-position.js"></script>
+        <script src="js/fastener.js"></script>
+        <script src="js/box.js"></script>
 
         <link rel="stylesheet" href="css/style.css">
 
@@ -53,7 +57,7 @@
                       <div class="btn-group btn-block">
                         <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="tablette"   data-toggle="dropdown" 
                         aria-haspopup="true" role="menu" aria-expanded="false">
-                          Tablette
+                          tablette
                         </button>
                         <div class="dropdown-menu" aria-labelledby="tablette" id="devices">
                         </div>
@@ -65,7 +69,7 @@
                       <div class="btn-group btn-block">
                           <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="miseenpage"   data-toggle="dropdown" 
                           aria-haspopup="true" role="menu"  aria-expanded="false">
-                            Mise en page
+                            mise en page
                           </button>
                           <div class="dropdown-menu" aria-labelledby="miseenpage" id="templates">
                           </div>
@@ -126,7 +130,18 @@
                     <button type="button" id="downloadPictosPDF" class="btn btn-primary btn-block">fichier à imprimer</button>
                   </div>
                   <div class="col-sm">
-                    <button type="button" class="btn btn-primary btn-block" disabled="disabled">fichier à découper</button>
+                    <div class="dropdown">
+                      <div class="btn-group btn-block">
+                          <button type="button" class="btn btn-primary btn-block dropdown-toggle"  id="decoupage"  data-toggle="dropdown" 
+                          aria-haspopup="true" role="menu"  aria-expanded="false">
+                            fichier à découper
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="decoupage" id="templates">
+                            <a class="dropdown-item" href="#" id="cuttingPDF">découpage manuel (pdf)</a>
+                            <a class="dropdown-item" href="#" id="cuttingDXF">découpage laser (dxf)</a>
+                          </div>
+                        </div>
+                      </div>
                   </div>
                 </div>
               </div>

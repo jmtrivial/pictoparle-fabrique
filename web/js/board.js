@@ -1,4 +1,5 @@
 
+
 class Pictogram {
     constructor(text, image) {
         this.text = text;
@@ -350,6 +351,115 @@ class Board {
         }
     }
 
+
+    boardCutting(device) {
+
+        var marginQRCode = 5;
+        var result = [];
+
+        var f = new Fastener();
+        var qrp = new QRCodePosition();
+
+        var screenShiftV = device.margins["bottom"];
+        var screenShiftH = f.width + device.margins["left"];
+        var holesLayer = [];
+        // draw each pictogram window
+        for(var p of this.getElementsInScreen(device)) {
+            if (p instanceof PictogramInScreen) {
+                var cornerx = screenShiftV + device.getScreenHeight() - p.top - p.height;
+                var cornery = screenShiftH + device.getScreenWidth() - p.left - p.width;
+                var box = new Box(cornerx, cornerx + p.height, cornery, cornery + p.width);
+                holesLayer.push(box.toPolyline());
+            }
+        }
+        result.push(holesLayer);
+
+        var height = device.getHeight();
+        var width = device.getWidth() + 2 * f.width;
+        var topShift = qrp.getTopShiftFromScreen(device) + device.margins["bottom"] + marginQRCode + device.getScreenHeight();
+        if (topShift < height)
+            topShift = height;
+        var leftShift = qrp.getLeftShiftFromScreen(device) + device.margins["left"] + 
+                            f.width - marginQRCode;
+
+        var widthQRCodeFrame = marginQRCode * 2 + qrp.dataMatrixHeightWithMargins;
+
+        
+        result.push([[[0, 0], [height, 0], // first side of the tablet (+ fastener)
+                    [height, leftShift], [topShift, leftShift], // first side of the QRCode frame
+                    [topShift, leftShift + widthQRCodeFrame], [height, leftShift + widthQRCodeFrame], // second side of the QRCode frame
+                    [height, width], [0, width], // second side of the tablet (+ fastener)
+                    [0, 0] // close shape
+                ]]);
+
+        return result;
+    }
+
+    computeRelativeLocations(pl) {
+        var x = pl[0][0];
+        var y = pl[0][1];
+        var result = [];
+
+        for(var i = 1; i < pl.length; ++i) {
+            result.push([pl[i][0] - x, pl[i][1] - y]);
+            x = pl[i][0];
+            y = pl[i][1];
+        }
+
+        return result;
+
+    }
+
+    cuttingPDF(device) {
+        var A4width = 210;
+        var A4height = 297;
+
+        var doc = new jsPDF();
+        doc.setDrawColor("#000000");
+        doc.setLineWidth(0.05);
+
+        var cut = this.boardCutting(device);
+        var box = Box.getBoundingBox(cut);
+        var shiftx = (A4width - box.width()) / 2;
+        var shifty = (A4height - box.height()) / 2;
+
+        for(var layer of cut) {
+            for(var path of layer) {
+                // compute relative coordinates
+                var shiftPL = this.computeRelativeLocations(path);
+                doc.lines(shiftPL, path[0][0] + shiftx, path[0][1] + shifty);
+            }
+        }
+
+        return doc;
+    }
+
+    cuttingDXF(device) {
+        var Drawing = require('Drawing');
+        var d = new Drawing();
+        d.setUnits('Millimeters');
+
+
+        var cut = this.boardCutting(device);
+        var id = 0;
+        for(var layer of cut) {
+            if (id != 0) {
+                // 8 different colors are defined by js-dxf
+                // see Drawing.ACI (Autocad Color Index)
+                d.addLayer("l_" + id, id % 8, 'CONTINUOUS');
+                d.setActiveLayer("l_" + id);
+            }
+            id += 1;
+            for(var path of layer) {
+                d.drawPolyline(path);
+            }
+        }
+
+        return d;
+    }
+
+
+
     toPDF(device) {
         var A4width = 210;
         var A4height = 297;
@@ -393,10 +503,9 @@ class Board {
         var radiusBlackRectangle = 2 * device.camera["radius"];
 
         // first compute the size of the final drawing
-        var dataMatrixCell = 3;
-        var dataMatrixNbCells = 10;
-        var dataMatrixHeightWithMargins = (2 + dataMatrixNbCells) * dataMatrixCell;
-        var topShift = device.camera["y"] + radiusBlackRectangle + dataMatrixHeightWithMargins;
+        var qrp = new QRCodePosition();
+        var topShift = qrp.getTopShiftFromScreen(device);
+        var leftShift = qrp.getLeftShiftFromScreen(device);
 
         offsetX = (A4width - (device.getScreenHeight() + topShift)) / 2 + topShift;
         offsetY = (A4height - device.getScreenWidth()) / 2;
@@ -418,7 +527,7 @@ class Board {
 
         // draw line arround camera and datamatrix
         doc.rect(offsetX - topShift, 
-                 offsetY + device.getScreenWidth() / 2 + device.camera["x"] - dataMatrixHeightWithMargins / 2,
+                 offsetY + leftShift,
                  dataMatrixHeightWithMargins + 2 * radiusBlackRectangle + dataMatrixCell, 
                  dataMatrixHeightWithMargins);
 

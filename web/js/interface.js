@@ -3,6 +3,27 @@
 $(document).ready(function () {
     $("#inputFile").on("change", handleFileSelect);
 
+    $("#cuttingPDF").click(function(e) {
+        var doc = window.board.cuttingPDF(window.device);
+        if (doc != null) {
+            var name = window.board.name;
+            if (name == "") name = "planche";
+            doc.save(name + " découpe.pdf");     
+        } else
+            alert("La taille de l'écran de tablette n'est pas supportée par ce rendu pdf.");
+    });
+
+    $("#cuttingDXF").click(function(e) {
+        var doc = window.board.cuttingDXF(window.device);
+        if (doc != null) {
+            var blob = new Blob([doc.toDxfString()], {type: 'application/dxf'});
+            var name = window.board.name;
+            if (name == "") name = "planche";
+            saveAs(blob, name + " découpe.dxf");     
+        } else
+            alert("Une erreur s'est produite pendant le rendu dxf.");
+    });
+
     $("#downloadZIP").click(function (e) {
         if (!checkValid())
             return;
