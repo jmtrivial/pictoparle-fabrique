@@ -97,3 +97,7 @@ form {
 .active button {
     display: none !important;
 }
+
+#qrcode {
+    image-rendering: pixelated;
+}

@@ -528,15 +528,15 @@ class Board {
         // draw line arround camera and datamatrix
         doc.rect(offsetX - topShift, 
                  offsetY + leftShift,
-                 dataMatrixHeightWithMargins + 2 * radiusBlackRectangle + dataMatrixCell, 
-                 dataMatrixHeightWithMargins);
+                 qrp.dataMatrixHeightWithMargins + 2 * radiusBlackRectangle + qrp.dataMatrixCell, 
+                 qrp.dataMatrixHeightWithMargins);
 
-        doc.addImage($("#qrcode").attr("src"), offsetX - topShift + dataMatrixCell, 
-                    offsetY + device.getScreenWidth() / 2 + device.camera["x"] - dataMatrixHeightWithMargins / 2 + dataMatrixCell,
-                    dataMatrixNbCells * dataMatrixCell, dataMatrixNbCells * dataMatrixCell, 'NONE', 0);
+        doc.addImage($("#qrcode").attr("src"), offsetX - topShift + qrp.dataMatrixCell, 
+                    offsetY + device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 + qrp.dataMatrixCell,
+                    qrp.dataMatrixWidth, qrp.dataMatrixWidth, 'NONE', 0);
 
         doc.text("ID: " + this.id, offsetX - topShift, 
-                offsetY + device.getScreenWidth() / 2 + device.camera["x"] - dataMatrixHeightWithMargins / 2 - 4);
+                offsetY + device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 - 4);
         
         doc.text('côté QRcode, pour impression simple', 10, 10);
 

@@ -91,7 +91,7 @@ function setQRCode() {
         bwipjs.toCanvas(window.canvas, {
             bcid:        'datamatrix',       // Barcode type
             text:        String(window.board.id),    // Text to encode
-            scale:       32,
+            scale:       1,
             textxalign:  'center',        // Always good to set this
         });
         $("#qrcode").attr("src", canvas.toDataURL('image/png'));
