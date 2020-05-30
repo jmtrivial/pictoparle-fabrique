@@ -384,31 +384,23 @@ class Board {
 
         var widthQRCodeFrame = marginQRCode * 2 + qrp.dataMatrixHeightWithMargins;
 
-        
-        result.push([[[0, 0], [height, 0], // first side of the tablet (+ fastener)
+        var board = [];
+
+        board = board.concat(DrawCuttingTools.invertXY(f.shape(false)));
+        board = board.concat([[height, 0], // first side of the tablet (+ fastener)
                     [height, leftShift], [topShift, leftShift], // first side of the QRCode frame
                     [topShift, leftShift + widthQRCodeFrame], [height, leftShift + widthQRCodeFrame], // second side of the QRCode frame
-                    [height, width], [0, width], // second side of the tablet (+ fastener)
-                    [0, 0] // close shape
-                ]]);
+                    [height, width]]);
+        var fastener = DrawCuttingTools.pathShift(DrawCuttingTools.pathInvertY(DrawCuttingTools.invertXY(f.shape(false))), 0, width);
+        fastener.reverse();
+        board = board.concat(fastener);
+        board.push(board[0]); // close shape
+
+        result.push([board]);
 
         return result;
     }
 
-    computeRelativeLocations(pl) {
-        var x = pl[0][0];
-        var y = pl[0][1];
-        var result = [];
-
-        for(var i = 1; i < pl.length; ++i) {
-            result.push([pl[i][0] - x, pl[i][1] - y]);
-            x = pl[i][0];
-            y = pl[i][1];
-        }
-
-        return result;
-
-    }
 
     cuttingPDF(device) {
         var A4width = 210;
@@ -426,7 +418,8 @@ class Board {
         for(var layer of cut) {
             for(var path of layer) {
                 // compute relative coordinates
-                var shiftPL = this.computeRelativeLocations(path);
+                var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(path);
+                
                 doc.lines(shiftPL, path[0][0] + shiftx, path[0][1] + shifty);
             }
         }
