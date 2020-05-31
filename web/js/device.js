@@ -194,7 +194,38 @@ Device.prototype.getBackCutting = function(params) {
 
 Device.prototype.getSidesCutting = function(params) {
     var cuttings = [];
-    // TODO
+    var f = new Fastener();
+
+    innerSize = this.getInnerSize(params);
+    var slotDepth = parseFloat(params["boxThickness"]);
+
+    var kerf = parseFloat(params["kerf"]);
+    var kerf2 = kerf * 2;
+    var largeSlot = 10;
+    var smallSlot = 4;
+    var largeSlotK = largeSlot + kerf2;
+    var smallSlotK = smallSlot + kerf2;
+
+    var deviceThickness = this.thickness;
+    var boxThickness = parseFloat(params["boxThickness"]);
+    var boardThickness = parseFloat(params["boardThickness"]);
+
+    var side1 = [[0, 0]];
+    side1 = side1.concat(this.slotLine(side1[side1.length - 1], true, deviceThickness + boxThickness + boardThickness + kerf2, 
+        [(deviceThickness + boxThickness + boardThickness) / 2 + kerf], smallSlotK, slotDepth, true));
+    side1 = side1.concat(this.slotLine(side1[side1.length - 1], false, innerSize[0] + 2 * f.width + kerf2, 
+        [(innerSize[0] + 2 * f.width) / 4, 3 * (innerSize[0] + 2 * f.width) / 4], largeSlot, slotDepth, false));
+        side1 = side1.concat(this.slotLine(side1[side1.length - 1], true, -(deviceThickness + boxThickness + boardThickness + kerf2), 
+            [(deviceThickness + boxThickness + boardThickness) / 2 + kerf], smallSlotK, slotDepth, true));
+    side1.push(side1[0]);
+    
+    // TODO add the other sides
+    
+    var sides = [side1];
+
+
+    cuttings.push(sides);
+
 
     return cuttings;
 }
@@ -203,10 +234,12 @@ Device.prototype.boxPDF = function(params) {
     var A4width = 210;
     var A4height = 297;
 
+    // create a new pdf
     var doc = new jsPDF();
     doc.setDrawColor("#000000");
     doc.setLineWidth(0.05);
 
+    // draw the back cutting
     var cut = this.getBackCutting(params);
     var box = Box.getBoundingBox(cut);
 
@@ -224,8 +257,28 @@ Device.prototype.boxPDF = function(params) {
             doc.lines(shiftPL, path[0][0] + shiftx, path[0][1] + shifty);
         }
     }
+    
+    // add a second page
+    doc.addPage();
 
-    // TODO: add a second page and draw side cuttings
+    // draw side cuttings
+    cut = this.getSidesCutting(params);
+    box = Box.getBoundingBox(cut);
+
+    if (box == null || box.width > A4width || box.height > A4height)
+        return null;
+
+    shiftx = (A4width - box.width()) / 2;
+    shifty = (A4height - box.height()) / 2;
+
+    for(var layer of cut) {
+        for(var path of layer) {
+            // compute relative coordinates
+            var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(path);
+            
+            doc.lines(shiftPL, path[0][0] + shiftx, path[0][1] + shifty);
+        }
+    }
 
     return doc;
 }
@@ -251,7 +304,23 @@ Device.prototype.boxDXF = function(params) {
         }
     }
 
-    // TODO: get side cuttings and draw them
+    // get side cuttings
+    cut = this.getSidesCutting(params);
+
+    // draw side cuttings
+    id = 0;
+    for(var layer of cut) {
+        if (id != 0) {
+            // 8 different colors are defined by js-dxf
+            // see Drawing.ACI (Autocad Color Index)
+            d.setActiveLayer("l_" + id);
+        }
+        id += 1;
+        for(var path of layer) {
+            path = DrawCuttingTools.pathShift(path, 210, 0);
+            d.drawPolyline(path);
+        }
+    }
 
     return d;
 }
