@@ -354,11 +354,11 @@ class Board {
 
     boardCutting(device) {
 
-        var marginQRCode = 5;
         var result = [];
 
         var f = new Fastener();
         var qrp = new QRCodePosition();
+        var marginQRCode = qrp.marginQRCode;
 
         var screenShiftV = device.margins["bottom"];
         var screenShiftH = f.width + device.margins["left"];

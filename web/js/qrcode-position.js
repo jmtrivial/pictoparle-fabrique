@@ -3,8 +3,10 @@ class QRCodePosition {
     constructor() {
         this.dataMatrixCell = 3;
         this.dataMatrixNbCells = 10;
-        this.dataMatrixWidth = this.dataMatrixNbCells * this.dataMatrixCell
+        this.dataMatrixWidth = this.dataMatrixNbCells * this.dataMatrixCell;
         this.dataMatrixHeightWithMargins = (2 + this.dataMatrixNbCells) * this.dataMatrixCell;
+        this.marginQRCode = 5;
+
     }
 
     getTopShiftFromScreen (device) {
