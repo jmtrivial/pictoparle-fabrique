@@ -3,33 +3,26 @@
         <title>La fabrique de Pictoparle — fabriquer la boîte</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="shortcut icon" href="images/pictoparle-icon-white.svg">
 
 
 
 
         <script src="js/external/jquery-3.4.1.min.js"></script>
-        <script src="js/external/jszip.min.js"></script>
-        <script type="text/javascript" src="js/external/jszip-utils.min.js"></script>
-        <!--
-        Mandatory in IE 6, 7, 8 and 9.
-        -->
-        <!--[if IE]>
-        <script type="text/javascript" src="js/external/jszip-utils-ie.min.js"></script>
-        <![endif]-->
 
         <script src="js/external/FileSaver.js"></script>
 
         <script src="js/external/jspdf.min.js"></script>
-        <script src="js/external/bwip-js-min.js"></script>
         <script src="js/external/dxf_bundle.js"></script>
 
         <script src="js/board.js"></script>
         <script src="js/device.js"></script>
-        <script src="js/interface.js"></script>
         <script src="js/qrcode-position.js"></script>
         <script src="js/fastener.js"></script>
         <script src="js/box.js"></script>
         <script src="js/draw-cutting-tools.js"></script>
+        <script src="js/interface-utils.js"></script>
+        <script src="js/box-page-interface.js"></script>
 
         <link rel="stylesheet" href="css/style.css">
 
@@ -72,6 +65,119 @@
             </p>
             <p>La page sur laquelle vous vous trouvez permet de fabriquer la boîte qui accueillera la tablette, et recevra les planches de pictogrammes.
             </p>
+
+            <h2><span class="badge badge-pill badge-primary">1</span> Choix du matériel</h2>
+            <p>Pour l'instant, un unique <strong>modèle de tablette</strong> est pris en charge. Si vous disposez d'une autre tablette, et que vous souhaitez que Pictoparle puisse s'y installer,
+                n'hésitez pas à <a href="mailto:jeanmarie.favreau@free.fr">contacter l'auteur</a>. Privilégiez une résolution de 10 pouces, pour faciliter
+                l'usage de la tablette, et les fonctionnalités associées. Cependant, cette contrainte n'est pas une restriction imposée par Pictoparle, il suffira de configurer 
+                des mises en pages dédiées à des tablettes plus petites.</p>
+
+            <figure class="figure float-right col-lg-3 col-md-6">
+                <a href="images/medium.jpg"><img src="images/mdf.jpg" class="figure-img img-fluid rounded" alt="Photo d'un assemblage réalisé en medium"></a>
+                <figcaption class="figure-caption text-right">Un assemblage réalisé en medium d'épaisseur 3&nbsp;mm, avec un système par crénelage.</figcaption>
+            </figure>
+            <figure class="figure float-right col-lg-3 col-md-6">
+                <a href="images/mdf.jpg"><img src="images/carton-bois.jpg" class="figure-img img-fluid rounded" alt="Photo d'un assemblage réalisé en MDF"></a>
+                <figcaption class="figure-caption text-right">Un assemblage réalisé en carton-bois d'épaisseur 2,2&nbsp;mm, par collage simple sur tranche.</figcaption>
+            </figure>
+
+                
+            <p>L'<strong>épaisseur du matériau</strong> utilisé pour fabriquer la boîte et les planches doit être choisie soigneusement, d'une part en fonction des ressources qui vous sont accessibles, mais également
+                en terme de praticité. Plus vous choisirez un matériau épais, moins il sera confortable à l'usage, mais plus il sera rigide, évitant des déformations non souhaitées. Une épaisseur de 2 millimètres
+                semble être un bon compromis&nbsp;: cela évite d'avoir un objet trop épais en main, et les fenêtres ouvertes dans la planche ne sont pas trop profondes.
+            </p>
+            <p>Le <strong>type de matériau</strong> utilisé doit être à la fois facile à découper avec les outils à votre disposition, et à la fois rigide et durable, tout en étant agréable au toucher. 
+            Deux pistes ont déjà été explorées&nbsp;: le <a href="https://fr.wikipedia.org/wiki/Carton_(mat%C3%A9riau)#Carton_bois">carton bois</a>, facile à couper au cutter, et le 
+            <a href="https://fr.wikipedia.org/wiki/Panneau_de_fibres_%C3%A0_densit%C3%A9_moyenne">HDF ou medium</a>, très adapté aux découpes laser. La découpe laser est généralement proposée par les 
+            <a href="https://fr.wikipedia.org/wiki/Fab_lab">fablab</a>, mais également par certains services en ligne (que nous n'avons pas encore expérimenté). À noter cependant que
+            les planches de medium 2 millimètres sont difficiles à trouver à l'achat pour les particuliers.</p>
+
+                <div class="container mb-3">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="dropdown">
+                                <label for="device">Modèle de tablette</label>
+                                <div class="btn-group btn-block">
+                                <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="device"   data-toggle="dropdown" 
+                                aria-haspopup="true" role="menu" aria-expanded="false">
+                                choix de la tablette
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="device" id="devices">
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col-sm form-group">
+                            <label class="form-check-label mb-2" for="boxThickness">
+                                Épaisseur du matériau de la boîte
+                            </label>
+                            <input type="number" min="0" step="0.1" max="999999" class="form-control" id="boxThickness" aria-describedby="boxThicknessHelper" value="2.0">
+                            <small id="boxThicknessHelper" class="form-text text-muted">
+                                Épaisseur (en millimètres) du matériau qui sera utilisée pour fabriquer la base de la boîte. Valeur par défaut&nbsp;: 2 millimètres.
+                            </small>
+                        </div>
+                        <div class="col-sm form-group">
+                            <label class="form-check-label mb-2" for="boardThickness">
+                                Épaisseur du matériau des planches
+                            </label>
+                            <input type="number" min="0" step="0.1" max="999999" class="form-control" id="boardThickness" aria-describedby="boardThicknessHelper" value="2.0">
+                            <small id="boardThicknessHelper" class="form-text text-muted">
+                                Épaisseur (en millimètres) du matériau qui sera utilisée pour fabriquer les planches. Valeur par défaut&nbsp;: 2 millimètres.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+            <h2><span class="badge badge-pill badge-primary">2</span> Réglages fins</h2>
+            <p>Vous pouvez également ajuster quelques paramètres, à la fois sur la forme finale, mais également lié aux techniques de découpe.</p>
+            <p>Un espace de sécurité est réglable <strong>autour de la tablette</strong>, afin de faciliter son insertion et retrait. Dans nos expérimentations, il a été réglé à 1 millimètre.</p>
+            <p>Lorsqu'on utilise certaines techniques de découpe, un peu de matière est enlevé par le processus, c'est le <strong>trait de coupe</strong> (ou kerf). Par exemple, une découpe laser brûle une partie du matériau, 
+                réduisant ainsi sensiblement la taille des pièces. Il peut donc être nécessaire d'imposer dans le dessin une légère surcote afin de s'assurer que la pièce finale soit de la taille souhaitée. 
+            Le réglage de la taille de coupe est spécifique à chaque machine, mais on rencontre souvent une largeur de l'ordre de 0,1 millimètre quand on découpe une planche de medium de 2 ou 3 millimètres d'épaisseur. 
+            On peut aussi considérer qu'une découpe au cutter a un trait de coupe trop fin pour devoir être considéré.</p>
+        
+            <div class="container mb-3">
+                <div class="row">
+                    <div class="col-sm form-group">
+                        <label class="form-check-label mb-2" for="buffer">
+                            Marge d'encadrement de la tablette
+                        </label>
+                        <input type="number" min="0" step="0.1" max="999999" class="form-control" id="buffer" aria-describedby="bufferHelper" value="1.0">
+                        <small id="bufferHelper" class="form-text text-muted">
+                            Espace (en millimètre) de sécurité autour de la tablette. Valeur par défaut&nbsp;: 1 millimètre.
+                        </small>
+                    </div>
+                    <div class="col-sm form-group">
+                        <label class="form-check-label mb-2" for="kerf">
+                            Trait de coupe (kerf)
+                        </label>
+                        <input type="number" min="0" step="0.01" max="999999" class="form-control" id="kerf" aria-describedby="kerfHelper" value="0.1">
+                        <small id="kerfHelper" class="form-text text-muted">
+                            Épaisseur (en millimètres) du trait de coupe de l'outil utilisé. Valeur par défaut&nbsp;: 0 millimètre pour une découpe au cutter, 0.1 millimètre pour une 
+                            découpe au laser.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <h2><span class="badge badge-pill badge-primary">3</span> Téléchargement</h2>
+            <p>Une fois que vous avez réalisé les réglages proposés ci-dessus, vous pouvez maintenant télécharger le fichier correspondant à ces réglages, soit au format <code>pdf</code> pour un découpage manuel,
+            soit au format <code>dxf</code> pour une découpe à la machine-outil (découpeuse laser par exemple).</p>
+
+            <div class="container mb-3">
+                <div class="row">
+                  <div class="col-sm">
+                    <button type="button" id="downloadPDF" class="btn btn-primary btn-block">télécharger au format pdf</button>
+                  </div>
+                  <div class="col-sm">
+                    <button type="button" id="downloadDXF" class="btn btn-primary btn-block">télécharger au format dxf</button>
+                  </div>
+                </div>
+            </div>
+            <p>Le format <code>dxf</code> est un format d'échange standard pour piloter une machine-outil comme les découpeuses laser. Le fichier pdf peut être imprimé sur du papier classique, puis collé temporairement
+            sur un support (type carton-bois) pour un découpage manuel (au cutter par exemple).</p>
+
+
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>

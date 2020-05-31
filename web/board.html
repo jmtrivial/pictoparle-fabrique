@@ -3,6 +3,7 @@
         <title>La fabrique de Pictoparle — fabriquer une planche</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="shortcut icon" href="images/pictoparle-icon-white.svg">
 
 
 
@@ -25,10 +26,11 @@
 
         <script src="js/board.js"></script>
         <script src="js/device.js"></script>
-        <script src="js/interface.js"></script>
+        <script src="js/board-page-interface.js"></script>
         <script src="js/qrcode-position.js"></script>
         <script src="js/fastener.js"></script>
         <script src="js/box.js"></script>
+        <script src="js/interface-utils.js"></script>
         <script src="js/draw-cutting-tools.js"></script>
 
         <link rel="stylesheet" href="css/style.css">
@@ -78,11 +80,11 @@
                   <div class="col-sm">
                     <div class="dropdown">
                       <div class="btn-group btn-block">
-                        <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="tablette"   data-toggle="dropdown" 
+                        <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="device"   data-toggle="dropdown" 
                         aria-haspopup="true" role="menu" aria-expanded="false">
                           choix de la tablette
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="tablette" id="devices">
+                        <div class="dropdown-menu" aria-labelledby="device" id="devices">
                         </div>
                       </div>
                       </div>
@@ -90,11 +92,11 @@
                   <div class="col-sm">
                     <div class="dropdown">
                       <div class="btn-group btn-block">
-                          <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="miseenpage"   data-toggle="dropdown" 
+                          <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="layout"   data-toggle="dropdown" 
                           aria-haspopup="true" role="menu"  aria-expanded="false">
                             choix de la mise en page
                           </button>
-                          <div class="dropdown-menu" aria-labelledby="miseenpage" id="templates">
+                          <div class="dropdown-menu" aria-labelledby="layout" id="templates">
                           </div>
                         </div>
                       </div>

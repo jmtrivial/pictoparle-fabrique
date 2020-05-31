@@ -63,12 +63,10 @@ $(document).ready(function () {
     $("#boardID").change(changedBoardID);
 
     window.canvas = document.createElement('canvas');
-    window.board = null;
-    window.device = null;
     window.images = {};
 
-    setTemplateMenu();
     setDeviceMenu();
+    setTemplateMenu();
 
     $(window).resize(
         function() {
@@ -116,38 +114,6 @@ function changedBoardName(e) {
 }
 
 
-function setDeviceMenu() {
-    window.devices = {};
-
-    var deviceIDs = ['lenovo-tab-e10'];
-
-    for(var d of deviceIDs) {
-        $.get("devices/" + d + ".xml?uniq=" + uniqID(), function(data) {
-            var xml = $(data);              
-            // load the device
-            var device = Device.fromXML(data);
-            window.devices[device.id] = device;              
-
-            // create the entry 
-            $("#devices").append("<a class=\"dropdown-item\" href=\"#\" id=\"" + device.id + "\">" + 
-                    window.devices[device.id].name + "</a>");
-
-            // set the interaction
-            $("#" + d).click(function () {
-                window.device = window.devices[this.id];
-                updateInterface();
-            });
-
-            // set default device
-            if (window.device == null) {
-                window.device = window.devices[device.id];
-                updateInterface();
-            }
-          });
-
-    }
-
-}
 
 function checkValid() {
     if (window.board.name == "") {
@@ -158,13 +124,12 @@ function checkValid() {
     return true;
 }
 
-function uniqID() {
-    return Math.floor(Math.random() * 1000000);
-}
+
 
 
 function setTemplateMenu() {
     window.templates = {};
+    window.board = null;
 
     var templatesIDs = ["3x3-fixedleft", "3x3-fixedright", "4x3", "4x2-fixedtop", "4x2-fixedbottom"];
     for (var t of templatesIDs) {
@@ -178,8 +143,6 @@ function setTemplateMenu() {
             $("#templates").append("<a class=\"dropdown-item\" href=\"#\" id=\"" + board.id + "\">" + 
                     window.templates[board.id].name + "</a>");
             
-            board.name = "";            
-
             // set the interaction
             $("#" + board.id).click(function () {
                 if (window.board != null && !window.board.isEmpty()) {
@@ -187,7 +150,9 @@ function setTemplateMenu() {
                     $('#setNewTemplateDialog').modal("show");
                 }
                 else {
-                    window.board = window.templates[this.id];
+                    window.board = window.templates[this.id].clone();
+                    window.board.name = "";            
+                    $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
                     updateInterface();
                 }
 
@@ -196,6 +161,9 @@ function setTemplateMenu() {
             // set default device
             if (window.board == null) {
                 window.board = window.templates[board.id].clone();
+                window.board.name = "";            
+                console.log(JSON.stringify(window.board));
+                $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
                 updateInterface();
             }
             
