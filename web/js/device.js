@@ -2,11 +2,12 @@
 
 class Device {
     
-    constructor(name, id, screen, margins, camera) {
+    constructor(name, id, screen, margins, thickness, camera) {
         this.name = name;
         this.id = id;
         this.screen = screen;
         this.margins = margins;
+        this.thickness = thickness;
         this.camera = camera;
 
         this.debug = false;
@@ -33,6 +34,7 @@ Device.fromXML = function(xml) {
     var xmlscreen = xml.getElementsByTagName("screen")[0];
     var xmlmargins = xml.getElementsByTagName("margins")[0];
     var xmlcamera = xml.getElementsByTagName("camera")[0];
+    var xmlthickness = xml.getElementsByTagName("thickness")[0];
 
     var name = xmldevice.getAttribute("name");
     var id = xmldevice.getAttribute("id");
@@ -53,7 +55,9 @@ Device.fromXML = function(xml) {
         camera[e] = parseFloat(xmlcamera.getAttribute(e));
     }
 
-    return new Device(name, id, screen, margins, camera);
+    var thickness = parseFloat(xmlthickness.getAttribute("value"));
+
+    return new Device(name, id, screen, margins, thickness, camera);
 
 }
 
