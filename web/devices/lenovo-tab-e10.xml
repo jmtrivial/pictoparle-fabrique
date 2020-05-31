@@ -1,5 +1,6 @@
 <device name="Lenovo Tab E10" id="lenovo-tab-e10">
     <screen width="217" height="136" />
     <margins left="14" right="14" top="21" bottom="14" cornerRadius="2" />
+    <thickness value="8.9" />
     <camera x="0" y="8.5" radius="1.5" />
 </device>

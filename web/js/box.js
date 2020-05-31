@@ -21,6 +21,11 @@ class Box {
     }
 };
 
+Box.prototype.center = function() {
+    return [(this.left + this.right) / 2, (this.bottom + this.top) / 2];
+}
+
+
 Box.prototype.toPolyline = function() {
     return [ [this.left, this.top],
              [this.right, this.top],

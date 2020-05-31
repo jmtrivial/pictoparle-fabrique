@@ -412,6 +412,10 @@ class Board {
 
         var cut = this.boardCutting(device);
         var box = Box.getBoundingBox(cut);
+
+        if (box == null || box.width > A4width || box.height > A4height)
+            return null;
+
         var shiftx = (A4width - box.width()) / 2;
         var shifty = (A4height - box.height()) / 2;
 
