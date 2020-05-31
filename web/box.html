@@ -1,0 +1,80 @@
+<html lang="fr">
+    <head>
+        <title>La fabrique de Pictoparle — fabriquer la boîte</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+
+
+        <script src="js/external/jquery-3.4.1.min.js"></script>
+        <script src="js/external/jszip.min.js"></script>
+        <script type="text/javascript" src="js/external/jszip-utils.min.js"></script>
+        <!--
+        Mandatory in IE 6, 7, 8 and 9.
+        -->
+        <!--[if IE]>
+        <script type="text/javascript" src="js/external/jszip-utils-ie.min.js"></script>
+        <![endif]-->
+
+        <script src="js/external/FileSaver.js"></script>
+
+        <script src="js/external/jspdf.min.js"></script>
+        <script src="js/external/bwip-js-min.js"></script>
+        <script src="js/external/dxf_bundle.js"></script>
+
+        <script src="js/board.js"></script>
+        <script src="js/device.js"></script>
+        <script src="js/interface.js"></script>
+        <script src="js/qrcode-position.js"></script>
+        <script src="js/fastener.js"></script>
+        <script src="js/box.js"></script>
+        <script src="js/draw-cutting-tools.js"></script>
+
+        <link rel="stylesheet" href="css/style.css">
+
+        <!-- use bootstap for display -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    </head>
+    <body>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#"><img src="images/pictoparle-icon-white.svg" width="30" height="30" alt="La fabrique de Pictoparle"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Accueil</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="box.html">La boîte <span class="sr-only">(courant)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="board.html">Les planches</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="app.html" tabindex="-1" aria-disabled="true">L'application</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+        <div class="container-xl" id="main-container">
+            <h1 class="display-4">Fabriquer la boîte</h1>
+           <p class="lead"><a href="http://pictoparle.jmfavreau.info/">Pictoparle</a> est un outil de communication alternative 
+                et augmentée destiné aux personnes en situation de déficience visuelle rencontrant des difficultés dans la 
+                communication orale. Il permet de disposer sur un dispositif interactif (une tablette tactile du commerce)
+                des <em>planches</em> structurés en <em>panneaux</em> de <em>pictogrammes</em>. Ces planches sont interchangeables,
+                et détectées automatiquement par la tablette. Pour plus d'information, vous pouvez consulter le site internet
+                du projet, à l'adresse <a href="http://pictoparle.jmfavreau.info/">pictoparle.jmfavreau.info</a>.
+            </p>
+            <p>La page sur laquelle vous vous trouvez permet de fabriquer la boîte qui accueillera la tablette, et recevra les planches de pictogrammes.
+            </p>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>

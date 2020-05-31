@@ -1,0 +1,216 @@
+<html lang="fr">
+    <head>
+        <title>La fabrique de Pictoparle — fabriquer une planche</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+
+
+        <script src="js/external/jquery-3.4.1.min.js"></script>
+        <script src="js/external/jszip.min.js"></script>
+        <script type="text/javascript" src="js/external/jszip-utils.min.js"></script>
+        <!--
+        Mandatory in IE 6, 7, 8 and 9.
+        -->
+        <!--[if IE]>
+        <script type="text/javascript" src="js/external/jszip-utils-ie.min.js"></script>
+        <![endif]-->
+
+        <script src="js/external/FileSaver.js"></script>
+
+        <script src="js/external/jspdf.min.js"></script>
+        <script src="js/external/bwip-js-min.js"></script>
+        <script src="js/external/dxf_bundle.js"></script>
+
+        <script src="js/board.js"></script>
+        <script src="js/device.js"></script>
+        <script src="js/interface.js"></script>
+        <script src="js/qrcode-position.js"></script>
+        <script src="js/fastener.js"></script>
+        <script src="js/box.js"></script>
+        <script src="js/draw-cutting-tools.js"></script>
+
+        <link rel="stylesheet" href="css/style.css">
+
+        <!-- use bootstap for display -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    </head>
+    <body>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#"><img src="images/pictoparle-icon-white.svg" width="30" height="30" alt="La fabrique de Pictoparle"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Accueil</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="box.html">La boîte</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="board.html">Les planches <span class="sr-only">(courant)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled" href="app.html" tabindex="-1" aria-disabled="true">L'application</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+        <div class="container-xl" id="main-container">
+            <h1 class="display-4">Fabriquer une planche</h1>
+            <p class="lead"><a href="http://pictoparle.jmfavreau.info/">Pictoparle</a> est un outil de communication alternative 
+                et augmentée destiné aux personnes en situation de déficience visuelle rencontrant des difficultés dans la 
+                communication orale. Il permet de disposer sur un dispositif interactif (une tablette tactile du commerce)
+                des <em>planches</em> structurés en <em>panneaux</em> de <em>pictogrammes</em>. Ces planches sont interchangeables,
+                et détectées automatiquement par la tablette. Pour plus d'information, vous pouvez consulter le site internet
+                du projet, à l'adresse <a href="http://pictoparle.jmfavreau.info/">pictoparle.jmfavreau.info</a>.
+            </p>
+            <p>La page sur laquelle vous vous trouvez permet de fabriquer ses propres planches, afin d'étendre le fonctionnement de Pictoparle aux 
+                besoins spécifiques d'un contexte ou d'une personne.
+            </p>
+            <div class="container">
+                <div class="row">
+                  <div class="col-sm">
+                    <div class="dropdown">
+                      <div class="btn-group btn-block">
+                        <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="tablette"   data-toggle="dropdown" 
+                        aria-haspopup="true" role="menu" aria-expanded="false">
+                          choix de la tablette
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="tablette" id="devices">
+                        </div>
+                      </div>
+                      </div>
+                  </div>
+                  <div class="col-sm">
+                    <div class="dropdown">
+                      <div class="btn-group btn-block">
+                          <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="miseenpage"   data-toggle="dropdown" 
+                          aria-haspopup="true" role="menu"  aria-expanded="false">
+                            choix de la mise en page
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="miseenpage" id="templates">
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                    <div class="col-sm">
+                        <form>
+                            <div class="btn btn-primary btn-block" style="position: relative">
+                                    <label style="padding: 0; margin: 0" tkey="chooseFile">charger un fichier tablette</label>
+                                    <input type="file" id="inputFile" name="files[]" accept="application/zip,application/xml,text/xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0">
+                                </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="rendering">
+            </div>
+            <div class="container my-3">
+              <form>
+                <div class="row form-group">
+                  <div class="col-6">
+                      <label class="form-check-label" for="boardName">
+                          Nom de la planche
+                      </label>
+                      <input type="text" class="form-control" id="boardName" aria-describedby="boardNameHelper">
+                      <small id="boardNameHelper" class="form-text text-muted">Ce nom sera utilisé par la synthèse vocale pour nommer la planche.</small>
+                  </div>
+                  <div class="col-4">
+                    <label class="form-check-label" for="boardID">
+                        Identifiant unique de la planche
+                    </label>
+                    <input type="number" min="0" pattern="\d+" max="999999" class="form-control" id="boardID" aria-describedby="boardIDHelper">
+                    <small id="boardIDHelper" class="form-text text-muted">Cet entier compris entre 0 et 999999 est utilisé pour fabriquer le QRcode qui servira d'identifiant unique à la planche pour la tablette.
+                      Il est important de choisir un entier qui n'est pas déjà utilisé pour une autre planche.
+                    </small>
+                  </div>           
+                  <div class="col-2">
+                    <label>QRcode</label>
+                    <div>
+                      <img id="qrcode" width="50%" height="auto" />
+                    </div>
+                    <small class="form-text text-muted">Codage graphique de l'identifiant de la planche
+                    </small>
+                  </div>
+            </form>
+
+            </div>
+
+            <div class="container">
+                <div class="row">
+                  <div class="col-sm">
+                    <button type="button" id="downloadZIP" class="btn btn-primary btn-block">fichier pour l'application</button>
+                  </div>
+                  <div class="col-sm">
+                    <button type="button" id="downloadPictosPDF" class="btn btn-primary btn-block">fichier à imprimer</button>
+                  </div>
+                  <div class="col-sm">
+                    <div class="dropdown">
+                      <div class="btn-group btn-block">
+                          <button type="button" class="btn btn-primary btn-block dropdown-toggle"  id="decoupage"  data-toggle="dropdown" 
+                          aria-haspopup="true" role="menu"  aria-expanded="false">
+                            fichier à découper
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="decoupage" id="templates">
+                            <a class="dropdown-item" href="#" id="cuttingPDF">découpage manuel (pdf)</a>
+                            <a class="dropdown-item" href="#" id="cuttingDXF">découpage laser (dxf)</a>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+              </div>
+             <div>
+                <h2>Utilisation</h2>
+                <p>Commencez par choisir le type de tablette que vous utilisez, ainsi que la mise en page de votre choix. Vous pouvez également importer
+                    une planche déjà réalisée en utilisant le fichier tablette d'un précédent projet. Ajoutez ensuite pour chaque emplacement le texte et l'image
+                    que vous souhaitez lui associer. On peut procéder par <a href="https://www.youtube.com/watch?v=4mJWmcKHyJM">glisser-déposer des images</a>.
+                </p>
+                <p>Une fois que la planche est saisie, vous devez télécharger les trois fichiers&nbsp;:</p>
+                <ul>
+                    <li>Le <strong>fichier tablette</strong> est un fichier au format <em>zip</em>, que vous pourrez charger dans l'interface de la tablette, 
+                    pour que celle-ci soit en mesure de reconnaître la planche, et puisse produire les sons associés.</li>
+                    <li>Le <strong><a href="https://youtu.be/i-Jg_FCP96g?t=36">fichier à imprimer</a></strong> est un fichier au format pdf contenant deux pages, qu'il vous suffira d'imprimer afin de préparer
+                    la tablette. La première page contient les pictogrammes, que vous pouvez imprimer sur du papier pour thermogonflage. La seconde pages
+                    correspond à la face verso de cette première page, et contient notamment le QRcode qui permet à la tablette la reconnaissance. 
+                    Préférez l'imprimer sur du papier classique. Découpez ensuite les profils des deux faces, et assemblez-les, par exemple par collage.</li>
+                    <li>Le <strong>fichier à découper</strong> pour la fabrication du cadre de la planche matérialisant les séparations entre pictogrammes,
+                       au format dxf pour un découpage laser, ou au format pdf pour un découpage manuel.
+                    </li>
+                </ul>
+                <p>PLusieurs vidéos de démonstration de cet outil sont <a href="https://www.youtube.com/playlist?list=PLrhqb8aQtdhUjE7bi_mjGwLjukMTZT--l">disponibles sur youtube</a>, et un tutoriel d'utilisation sera proposé dès que le site internet sera complètement fonctionnel, pour en faciliter la prise en main.</p>
+
+             </div>
+        </div>
+        <div class="modal" tabindex="-1" role="dialog" id="setNewTemplateDialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Nouvelle mise en page</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>En choisissant une nouvelle mise en page, vous allez perdre toutes les images et tous les textes saisis jusqu'à présent.</p>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="validateNewTemplate">Choisir une nouvelle mise en page</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
