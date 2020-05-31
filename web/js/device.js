@@ -127,7 +127,7 @@ Device.prototype.getBackCutting = function(params) {
     // create the contour
     var contour = [[0, 0]];
     // first fastener
-    contour = contour.concat(this.slotLine(contour[contour.length - 1], true, f.height + kerf2, [f.height / 2 + kerf], largeSlotK, slotDepth, true));
+    contour = contour.concat(this.slotLine(contour[contour.length - 1], true, f.height + kerf2, [f.height / 4 + kerf, 3 * f.height / 4 + kerf], largeSlotK, slotDepth, true));
     contour = contour.concat(this.slotLine(contour[contour.length - 1], false, f.width, [f.width / 2 + kerf], smallSlotK, slotDepth, true));
 
     // upper part
@@ -137,8 +137,8 @@ Device.prototype.getBackCutting = function(params) {
 
 
     // second fastener
-    contour = contour.concat(this.slotLine(contour[contour.length - 1], false, f.width, [f.width / 2], smallSlotK, slotDepth, true));
-    contour = contour.concat(this.slotLine(contour[contour.length - 1], true, -f.height - kerf2, [f.height / 2], largeSlotK, slotDepth, true));
+    contour = contour.concat(this.slotLine(contour[contour.length - 1], false, f.width, [f.width / 2 - kerf], smallSlotK, slotDepth, true));
+    contour = contour.concat(this.slotLine(contour[contour.length - 1], true, -f.height - kerf2, [f.height / 4 + kerf, 3 * f.height / 4 + kerf], largeSlotK, slotDepth, true));
 
     // close shape
     contour = contour.concat(this.slotLine(contour[contour.length - 1], false, -(2 * f.width + innerSize[0] + kerf2), [(2 * f.width + innerSize[0]) / 4 + kerf, 3 * (2 * f.width + innerSize[0]) / 4 + kerf], largeSlotK, slotDepth, true));
@@ -151,7 +151,7 @@ Device.prototype.getBackCutting = function(params) {
 
         contour = [[kerf, kerf]];
         // first fastener
-        contour = contour.concat(this.slotLine(contour[contour.length - 1], true, f.height, [f.height / 2], largeSlot, slotDepth, true));
+        contour = contour.concat(this.slotLine(contour[contour.length - 1], true, f.height, [f.height / 4, 3 * f.height / 4], largeSlot, slotDepth, true));
         contour = contour.concat(this.slotLine(contour[contour.length - 1], false, f.width, [f.width / 2], smallSlot, slotDepth, true));
 
         // upper part
@@ -161,8 +161,8 @@ Device.prototype.getBackCutting = function(params) {
 
 
         // second fastener
-        contour = contour.concat(this.slotLine(contour[contour.length - 1], false, f.width, [f.width / 2 + kerf], smallSlot, slotDepth, true));
-        contour = contour.concat(this.slotLine(contour[contour.length - 1], true, -f.height, [f.height / 2 - kerf], largeSlot, slotDepth, true));
+        contour = contour.concat(this.slotLine(contour[contour.length - 1], false, f.width, [f.width / 2], smallSlot, slotDepth, true));
+        contour = contour.concat(this.slotLine(contour[contour.length - 1], true, -f.height, [f.height / 4, 3 * f.height / 4], largeSlot, slotDepth, true));
 
         // close shape
         contour = contour.concat(this.slotLine(contour[contour.length - 1], false, -(2 * f.width + innerSize[0]), [(2 * f.width + innerSize[0]) / 4, 3 * (2 * f.width + innerSize[0]) / 4], largeSlot, slotDepth, true));
