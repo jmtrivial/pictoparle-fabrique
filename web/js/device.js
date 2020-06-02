@@ -192,11 +192,9 @@ Device.prototype.getBackCutting = function(params) {
     return cuttings;
 }
 
-Device.prototype.getSidesCutting = function(params) {
+Device.prototype.getSidesCutting = function(params, space) {
     var cuttings = [];
     var f = new Fastener();
-
-    var space = 2;
 
     innerSize = this.getInnerSize(params);
 
@@ -286,7 +284,7 @@ Device.prototype.getSidesCutting = function(params) {
         side3 = side3.concat(this.slotLine(side3[side3.length - 1], false, -(f.width + kerf2), 
                     [(f.width) / 2 + kerf], smallSlotNK, 2 * boxThickness, true));
     
-        sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * slotDepth)));
+        sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * space)));
 
         if (this.debug) {
             side3 = [[kerf, kerf]];
@@ -300,7 +298,7 @@ Device.prototype.getSidesCutting = function(params) {
             side3 = side3.concat(this.slotLine(side3[side3.length - 1], false, -(f.width), 
                     [(f.width) / 2], smallSlot, 2 * boxThickness, true));
     
-            sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * slotDepth)));
+            sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * space)));
 
         }
 
@@ -437,7 +435,7 @@ Device.prototype.boxPDF = function(params) {
 
 
     // draw side cuttings
-    cut = this.getSidesCutting(params);
+    cut = this.getSidesCutting(params, 10);
     box = Box.getBoundingBox(cut);
 
     if (box == null || box.width > A4width || box.height > A4height)
@@ -463,8 +461,11 @@ Device.prototype.boxDXF = function(params) {
     var d = new Drawing();
     d.setUnits('Millimeters');
 
+    var space = 1;
 
     var cut = this.getBackCutting(params);
+    var box = Box.getBoundingBox(cut);
+
     var id = 0;
     for(var layer of cut) {
         if (id != 0) {
@@ -480,7 +481,7 @@ Device.prototype.boxDXF = function(params) {
     }
 
     // get side cuttings
-    cut = this.getSidesCutting(params);
+    cut = this.getSidesCutting(params, space);
 
     // draw side cuttings
     id = 0;
@@ -492,7 +493,7 @@ Device.prototype.boxDXF = function(params) {
         }
         id += 1;
         for(var path of layer) {
-            path = DrawCuttingTools.pathShift(path, 210, 0);
+            path = DrawCuttingTools.pathShift(path, box.right + space, 0);
             d.drawPolyline(path);
         }
     }
