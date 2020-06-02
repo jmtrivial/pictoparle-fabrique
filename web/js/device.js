@@ -198,7 +198,7 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     innerSize = this.getInnerSize(params);
 
-    var kerf = parseFloat(params["kerf"]);
+    var kerf = parseFloat(params["kerf"]) / 2;
     var kerf2 = kerf * 2;
     var largeSlot = 10;
     var smallSlot = 4;
@@ -282,7 +282,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                 [(deviceThickness) / 2 + kerf], smallSlotNK, slotDepth, false));
         
         side3 = side3.concat(this.slotLine(side3[side3.length - 1], false, -(f.width + kerf2), 
-                    [(f.width) / 2 + kerf], smallSlotNK, 2 * boxThickness, true));
+                    [(f.width) / 2 + kerf], smallSlotNK, boxThickness, true));
     
         sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * space)));
 
@@ -296,7 +296,7 @@ Device.prototype.getSidesCutting = function(params, space) {
             side3 = side3.concat(this.slotLine(side3[side3.length - 1], true, -(deviceThickness), 
                     [(deviceThickness) / 2], smallSlot, slotDepth, false));
             side3 = side3.concat(this.slotLine(side3[side3.length - 1], false, -(f.width), 
-                    [(f.width) / 2], smallSlot, 2 * boxThickness, true));
+                    [(f.width) / 2], smallSlot, boxThickness, true));
     
             sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * space)));
 
@@ -392,7 +392,18 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     }
 
-    // TODO the last part of the fastener
+    // the last part of the fastener
+    for(var i = 0; i != 2; ++i) {
+        var side7 = DrawCuttingTools.pathShift(f.shape(true), boxThickness, 0);
+        side7.push([0, f.height]);
+        side7 = side7.concat(this.slotLine(side7[side7.length - 1], false, -f.height, 
+            [(f.height) / 4, 3 * (f.height) / 4], largeSlot, slotDepth, false));
+        side7.push(side7[0]);
+
+        sides.push(DrawCuttingTools.pathShift(side7, shift, (f.height + boxThickness + space) * (2 + i)));   
+
+    }
+
 
     cuttings.push(sides);
 

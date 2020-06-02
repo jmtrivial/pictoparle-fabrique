@@ -15,7 +15,8 @@ class Fastener {
         path.push([this.width - this.slot, this.height - this.blocHeight]);
         path.push([this.width, this.height - this.blocHeight]);
         path.push([this.width, this.height]);
-        path.push([0, this.height]);
+        if (!gap)
+            path.push([0, this.height]);
         return path;
     }
 };
