@@ -217,11 +217,11 @@ Device.prototype.getSidesCutting = function(params) {
     // bottom side
     var side1 = [[0, 0]];
     side1 = side1.concat(this.slotLine(side1[side1.length - 1], true, deviceThickness + boxThickness + boardThickness + kerf2, 
-        [(deviceThickness) / 2 + boxThickness + boardThickness + kerf], smallSlotK, slotDepth, true));
-    side1 = side1.concat(this.slotLine(side1[side1.length - 1], false, innerSize[0] + 2 * f.width + kerf2, 
-        [(innerSize[0] + 2 * f.width) / 4 + kerf, 3 * (innerSize[0] + 2 * f.width) / 4 + kerf], largeSlotNK, slotDepth, false));
+        [(deviceThickness) / 2 + boxThickness + boardThickness + kerf], smallSlotNK, slotDepth, false));
+    side1 = side1.concat(this.slotLine(side1[side1.length - 1], false, innerSize[0] + 2 * (f.width + boxThickness) + kerf2, 
+        [(innerSize[0] + 2 * f.width) / 4 + boxThickness + kerf, 3 * (innerSize[0] + 2 * f.width) / 4 + boxThickness + kerf], largeSlotNK, slotDepth, false));
         side1 = side1.concat(this.slotLine(side1[side1.length - 1], true, -(deviceThickness + boxThickness + boardThickness + kerf2), 
-            [(deviceThickness) / 2 + kerf], smallSlotK, slotDepth, true));
+            [(deviceThickness) / 2 + kerf], smallSlotNK, slotDepth, false));
     side1.push(side1[0]);
 
     var sides = [side1];
@@ -229,11 +229,11 @@ Device.prototype.getSidesCutting = function(params) {
     if (this.debug) {
         side1 = [[kerf, kerf]];
         side1 = side1.concat(this.slotLine(side1[side1.length - 1], true, deviceThickness + boxThickness + boardThickness, 
-            [(deviceThickness) / 2 + boxThickness + boardThickness], smallSlot, slotDepth, true));
-        side1 = side1.concat(this.slotLine(side1[side1.length - 1], false, innerSize[0] + 2 * f.width, 
-            [(innerSize[0] + 2 * f.width) / 4, 3 * (innerSize[0] + 2 * f.width) / 4], largeSlot, slotDepth, false));
+            [(deviceThickness) / 2 + boxThickness + boardThickness], smallSlot, slotDepth, false));
+        side1 = side1.concat(this.slotLine(side1[side1.length - 1], false, innerSize[0] + 2 * (f.width + boxThickness), 
+            [(innerSize[0] + 2 * f.width) / 4 + boxThickness, 3 * (innerSize[0] + 2 * f.width) / 4 + boxThickness], largeSlot, slotDepth, false));
             side1 = side1.concat(this.slotLine(side1[side1.length - 1], true, -(deviceThickness + boxThickness + boardThickness), 
-                [(deviceThickness) / 2], smallSlot, slotDepth, true));
+                [(deviceThickness) / 2], smallSlot, slotDepth, false));
         side1.push(side1[0]);
         
         sides.push(side1);
@@ -245,7 +245,7 @@ Device.prototype.getSidesCutting = function(params) {
     for(var i = 0; i != 2; ++i) {
         var side2 = [[0, 0]];
         side2 = side2.concat(this.slotLine(side2[side2.length - 1], true, deviceThickness + kerf2, 
-            [(deviceThickness) / 2 + kerf], smallSlotNK, slotDepth, false));
+            [(deviceThickness) / 2 + kerf], smallSlotK, slotDepth, true));
         side2 = side2.concat(this.slotLine(side2[side2.length - 1], false, f.height + boxThickness + kerf2, 
                 [(f.height) / 4 + kerf, 3 * (f.height) / 4 + kerf], largeSlotNK, slotDepth, false));
         
@@ -253,14 +253,14 @@ Device.prototype.getSidesCutting = function(params) {
                 [(deviceThickness) / 2 + kerf], smallSlotNK, slotDepth, false));
         
         side2 = side2.concat(this.slotLine(side2[side2.length - 1], false, -(f.height + boxThickness + kerf2), 
-                    [(f.height) / 4 + kerf + boxThickness, 3 * (f.height) / 4 + kerf + boxThickness], largeSlotNK, 2 * boxThickness, true));
+                    [(f.height) / 4 + boxThickness + kerf, 3 * (f.height) / 4 + boxThickness + kerf], largeSlotNK, 2 * boxThickness, true));
 
-        sides.push(DrawCuttingTools.pathShift(side2, shift + 2 * boxThickness, i * (f.height + boxThickness + space)));
+        sides.push(DrawCuttingTools.pathShift(side2, shift + 2 * boxThickness, i * (f.height + 2 * boxThickness + space)));
 
         if (this.debug) {
             side2 = [[kerf, kerf]];
             side2 = side2.concat(this.slotLine(side2[side2.length - 1], true, deviceThickness, 
-                [(deviceThickness) / 2], smallSlot, slotDepth, false));
+                [(deviceThickness) / 2], smallSlot, slotDepth, true));
             side2 = side2.concat(this.slotLine(side2[side2.length - 1], false, f.height + boxThickness, 
                     [(f.height) / 4, 3 * (f.height) / 4], largeSlot, slotDepth, false));
             
@@ -271,7 +271,7 @@ Device.prototype.getSidesCutting = function(params) {
                         [(f.height) / 4 + boxThickness, 3 * (f.height) / 4 + boxThickness], largeSlot, 2 * boxThickness, true));
                     
     
-            sides.push(DrawCuttingTools.pathShift(side2, shift + 2 * boxThickness, i * (f.height + boxThickness + space)));         
+            sides.push(DrawCuttingTools.pathShift(side2, shift + 2 * boxThickness, i * (f.height + 2 * boxThickness + space)));         
         }
 
         var side3 = [[0, 0]];
@@ -286,7 +286,7 @@ Device.prototype.getSidesCutting = function(params) {
         side3 = side3.concat(this.slotLine(side3[side3.length - 1], false, -(f.width + kerf2), 
                     [(f.width) / 2 + kerf], smallSlotNK, 2 * boxThickness, true));
     
-        sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * slotDepth)));
+        sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * slotDepth)));
 
         if (this.debug) {
             side3 = [[kerf, kerf]];
@@ -300,7 +300,7 @@ Device.prototype.getSidesCutting = function(params) {
             side3 = side3.concat(this.slotLine(side3[side3.length - 1], false, -(f.width), 
                     [(f.width) / 2], smallSlot, 2 * boxThickness, true));
     
-            sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * slotDepth)));
+            sides.push(DrawCuttingTools.pathShift(side3, shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + kerf2 + 2 * slotDepth)));
 
         }
 
@@ -313,27 +313,27 @@ Device.prototype.getSidesCutting = function(params) {
         var side4 = [[0, 0]];
         side4 = side4.concat(this.slotLine(side4[side4.length - 1], true, deviceThickness + boxThickness + kerf2, 
             [(deviceThickness) / 2 + kerf + boxThickness], smallSlotK, slotDepth, true));
-        side4 = side4.concat(this.slotLine(side4[side4.length - 1], false, (innerSize[1] - f.height + boxThickness) + kerf2, 
-                [(innerSize[1] - f.height) / 4 + kerf, 3 * (innerSize[1] - f.height) / 4 + kerf], largeSlotNK, slotDepth, false));
+        side4 = side4.concat(this.slotLine(side4[side4.length - 1], false, (innerSize[1] - f.height) + kerf2, 
+                [(innerSize[1] - f.height) / 4 - boxThickness + kerf, 3 * (innerSize[1] - f.height) / 4 - boxThickness + kerf], largeSlotNK, slotDepth, false));
         
         side4 = side4.concat(this.slotLine(side4[side4.length - 1], true, -(deviceThickness + boxThickness + kerf2), 
                 [(deviceThickness + boxThickness) / 2 + kerf], smallSlotNK, slotDepth, false));
         side4.push(side4[0]);
 
-        sides.push(DrawCuttingTools.pathShift(side4, shift, i * ((innerSize[1] - f.height + boxThickness) + space + boxThickness)));
+        sides.push(DrawCuttingTools.pathShift(side4, shift, i * ((innerSize[1] - f.height) + space + boxThickness)));
 
         if (this.debug) {
             side4 = [[kerf, kerf]];
             side4 = side4.concat(this.slotLine(side4[side4.length - 1], true, deviceThickness + boxThickness, 
                 [(deviceThickness) / 2 + boxThickness], smallSlot, slotDepth, true));
-            side4 = side4.concat(this.slotLine(side4[side4.length - 1], false, (innerSize[1] - f.height + boxThickness), 
-                    [(innerSize[1] - f.height) / 4, 3 * (innerSize[1] - f.height) / 4], largeSlot, slotDepth, false));
+            side4 = side4.concat(this.slotLine(side4[side4.length - 1], false, (innerSize[1] - f.height), 
+                    [(innerSize[1] - f.height) / 4 - boxThickness, 3 * (innerSize[1] - f.height) / 4 - boxThickness], largeSlot, slotDepth, false));
             
             side4 = side4.concat(this.slotLine(side4[side4.length - 1], true, -(deviceThickness + boxThickness), 
                     [(deviceThickness + boxThickness) / 2], smallSlot, slotDepth, false));
             side4.push(side4[0]);
 
-            sides.push(DrawCuttingTools.pathShift(side4, shift, i * ((innerSize[1] - f.height + boxThickness) + space + boxThickness)));
+            sides.push(DrawCuttingTools.pathShift(side4, shift, i * ((innerSize[1] - f.height) + space + boxThickness)));
         }
     }
 
@@ -347,7 +347,7 @@ Device.prototype.getSidesCutting = function(params) {
     side5 = side5.concat(this.slotLine(side5[side5.length - 1], true, deviceThickness + boxThickness + boardThickness + kerf2, 
         [(deviceThickness + boxThickness) / 2 + boardThickness + kerf], smallSlotK, slotDepth, true));
     side5 = side5.concat(this.slotLine(side5[side5.length - 1], false, innerSize[0] + kerf2, 
-        [(innerSize[0] + 2 * f.width) / 4 + kerf, 3 * (innerSize[0] + 2 * f.width) / 4 + kerf], largeSlotNK, slotDepth, false));
+        [(innerSize[0]) / 4 + kerf, 3 * (innerSize[0]) / 4 + kerf], largeSlotNK, slotDepth, false));
     side5 = side5.concat(this.slotLine(side5[side5.length - 1], true, -(deviceThickness + boxThickness + boardThickness + kerf2), 
             [(deviceThickness + boxThickness) / 2 + kerf], smallSlotK, slotDepth, true));
     side5 = side5.concat(this.slotLine(side5[side5.length - 1], false, -innerSize[0] - kerf2, 
@@ -359,7 +359,7 @@ Device.prototype.getSidesCutting = function(params) {
         side5 = side5.concat(this.slotLine(side5[side5.length - 1], true, deviceThickness + boxThickness + boardThickness, 
             [(deviceThickness + boxThickness) / 2 + boardThickness], smallSlot, slotDepth, true));
         side5 = side5.concat(this.slotLine(side5[side5.length - 1], false, innerSize[0], 
-            [(innerSize[0] + 2 * f.width) / 4, 3 * (innerSize[0] + 2 * f.width) / 4], largeSlot, slotDepth, false));
+            [(innerSize[0]) / 4, 3 * (innerSize[0]) / 4], largeSlot, slotDepth, false));
         side5 = side5.concat(this.slotLine(side5[side5.length - 1], true, -(deviceThickness + boxThickness + boardThickness), 
                 [(deviceThickness + boxThickness) / 2], smallSlot, slotDepth, true));
         side5 = side5.concat(this.slotLine(side5[side5.length - 1], false, -innerSize[0], 
@@ -372,24 +372,24 @@ Device.prototype.getSidesCutting = function(params) {
     // add the upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
         var side6 = [[0, 0]];
-        side6 = side6.concat(this.slotLine(side6[side6.length - 1], true, f.width + kerf2, 
+        side6 = side6.concat(this.slotLine(side6[side6.length - 1], true, f.width + boxThickness + kerf2, 
             [(f.width) / 2 + kerf], smallSlotNK, slotDepth, false));
-        side6 = side6.concat(this.slotLine(side6[side6.length - 1], false, f.height + kerf2, 
-                [(f.height) / 4 + kerf, 3 * (f.height) / 4 + kerf], largeSlotNK, slotDepth, false));
-        side6.push([0, f.height + kerf2]);
+        side6 = side6.concat(this.slotLine(side6[side6.length - 1], false, f.height + boxThickness + kerf2, 
+                [(f.height) / 4 + boxThickness + kerf, 3 * (f.height) / 4 + boxThickness + kerf], largeSlotNK, slotDepth, false));
+        side6.push([0, f.height + boxThickness + kerf2]);
         side6.push([0, 0]);
 
-        sides.push(DrawCuttingTools.pathShift(side6, shift, i * (f.height + space)));
+        sides.push(DrawCuttingTools.pathShift(side6, shift, i * (f.height + boxThickness + space)));
 
         if (this.debug) {
             side6 = [[kerf, kerf]];
-            side6 = side6.concat(this.slotLine(side6[side6.length - 1], true, f.width, 
+            side6 = side6.concat(this.slotLine(side6[side6.length - 1], true, f.width + boxThickness, 
                 [(f.width) / 2], smallSlot, slotDepth, false));
-            side6 = side6.concat(this.slotLine(side6[side6.length - 1], false, f.height, 
-                    [(f.height) / 4, 3 * (f.height) / 4], largeSlot, slotDepth, false));
-            side6.push([kerf, f.height + kerf]);
+            side6 = side6.concat(this.slotLine(side6[side6.length - 1], false, f.height + boxThickness, 
+                    [(f.height) / 4 + boxThickness, 3 * (f.height) / 4 + boxThickness], largeSlot, slotDepth, false));
+            side6.push([kerf, f.height + boxThickness + kerf]);
             side6.push([kerf, kerf]);
-            sides.push(DrawCuttingTools.pathShift(side6, shift, i * (f.height + space)));
+            sides.push(DrawCuttingTools.pathShift(side6, shift, i * (f.height + boxThickness + space)));
         }
 
     }
