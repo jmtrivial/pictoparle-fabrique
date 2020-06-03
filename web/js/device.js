@@ -394,10 +394,11 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     // the last part of the fastener
     for(var i = 0; i != 2; ++i) {
-        var side7 = DrawCuttingTools.pathShift(f.shape(true), boxThickness, 0);
-        side7.push([0, f.height]);
-        side7 = side7.concat(this.slotLine(side7[side7.length - 1], false, -f.height, 
-            [(f.height) / 4, 3 * (f.height) / 4], largeSlot, slotDepth, false));
+        var gap = 0.5;
+        var side7 = DrawCuttingTools.pathShift(f.shape(gap), boxThickness, 0);
+        side7.push([0, f.height - gap]);
+        side7 = side7.concat(this.slotLine(side7[side7.length - 1], false, -f.height + gap, 
+            [(f.height) / 4 - gap, 3 * (f.height) / 4 - gap], largeSlot, slotDepth, false));
         side7.push(side7[0]);
 
         sides.push(DrawCuttingTools.pathShift(side7, shift, (f.height + boxThickness + space) * (2 + i)));   

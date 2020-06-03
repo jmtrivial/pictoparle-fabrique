@@ -386,12 +386,12 @@ class Board {
 
         var board = [];
 
-        board = board.concat(DrawCuttingTools.invertXY(f.shape(false)));
+        board = board.concat(DrawCuttingTools.invertXY(f.shape(0)));
         board = board.concat([[height, 0], // first side of the tablet (+ fastener)
                     [height, leftShift], [topShift, leftShift], // first side of the QRCode frame
                     [topShift, leftShift + widthQRCodeFrame], [height, leftShift + widthQRCodeFrame], // second side of the QRCode frame
                     [height, width]]);
-        var fastener = DrawCuttingTools.pathShift(DrawCuttingTools.pathInvertY(DrawCuttingTools.invertXY(f.shape(false))), 0, width);
+        var fastener = DrawCuttingTools.pathShift(DrawCuttingTools.pathInvertY(DrawCuttingTools.invertXY(f.shape(0))), 0, width);
         fastener.reverse();
         board = board.concat(fastener);
         board.push(board[0]); // close shape
