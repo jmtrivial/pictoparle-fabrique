@@ -124,6 +124,14 @@
                       </label>
                       <input type="text" class="form-control" id="boardName" aria-describedby="boardNameHelper">
                       <small id="boardNameHelper" class="form-text text-muted">Ce nom sera utilisé par la synthèse vocale pour nommer la planche.</small>
+
+                      <label class="form-check-label mb-2" for="deviceBuffer">
+                        Marge d'encadrement de la tablette
+                    </label>
+                    <input type="number" min="0" step="0.1" max="999999" class="form-control" id="deviceBuffer" aria-describedby="deviceBufferHelper" value="1.0">
+                    <small id="deviceBufferHelper" class="form-text text-muted">
+                        Espace (en millimètre) de sécurité prévu autour de la tablette lors de la conception de la boîte. Valeur par défaut&nbsp;: 1 millimètre.
+                    </small>
                   </div>
                   <div class="col-4">
                     <label class="form-check-label" for="boardID">

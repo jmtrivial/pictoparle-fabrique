@@ -101,3 +101,10 @@ form {
 #qrcode {
     image-rendering: pixelated;
 }
+
+.devBuf p {
+    display: none;
+}
+.devBuf.warning p {
+    display: block;
+}

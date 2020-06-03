@@ -4,7 +4,7 @@ $(document).ready(function () {
     $("#inputFile").on("change", handleFileSelect);
 
     $("#cuttingPDF").click(function(e) {
-        var doc = window.board.cuttingPDF(window.device);
+        var doc = window.board.cuttingPDF(window.device, parseFloat($("#deviceBuffer").val()));
         if (doc != null) {
             var name = window.board.name;
             if (name == "") name = "planche";
@@ -14,7 +14,7 @@ $(document).ready(function () {
     });
 
     $("#cuttingDXF").click(function(e) {
-        var doc = window.board.cuttingDXF(window.device);
+        var doc = window.board.cuttingDXF(window.device, parseFloat($("#deviceBuffer").val()));
         if (doc != null) {
             var blob = new Blob([doc.toDxfString()], {type: 'application/dxf'});
             var name = window.board.name;

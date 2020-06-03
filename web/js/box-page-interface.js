@@ -21,6 +21,14 @@ $(document).ready(function () {
             alert("Une erreur s'est produite pendant le rendu dxf.");
     });
 
+    window.dbDefault = parseFloat($("#deviceBuffer").val());
+    $("#deviceBuffer").on("change", function(e) {
+        if (parseFloat($(this).val()) != window.dbDefault) {
+            $("#deviceBuffer").parent().addClass("warning");
+        }
+        else
+            $("#deviceBuffer").parent().removeClass("warning");
+    });
 });
 
 function getParameters() {

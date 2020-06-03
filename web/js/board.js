@@ -352,7 +352,7 @@ class Board {
     }
 
 
-    boardCutting(device) {
+    boardCutting(device, buffer) {
 
         var result = [];
 
@@ -360,8 +360,8 @@ class Board {
         var qrp = new QRCodePosition();
         var marginQRCode = qrp.marginQRCode;
 
-        var screenShiftV = device.margins["bottom"];
-        var screenShiftH = f.width + device.margins["left"];
+        var screenShiftV = device.margins["bottom"] + buffer;
+        var screenShiftH = f.width + device.margins["left"] + buffer;
         var holesLayer = [];
         // draw each pictogram window
         for(var p of this.getElementsInScreen(device)) {
@@ -374,12 +374,12 @@ class Board {
         }
         result.push(holesLayer);
 
-        var height = device.getHeight();
-        var width = device.getWidth() + 2 * f.width;
-        var topShift = qrp.getTopShiftFromScreen(device) + device.margins["bottom"] + marginQRCode + device.getScreenHeight();
+        var height = device.getHeight() + 2 * buffer;
+        var width = device.getWidth() + 2 * f.width + 2 * buffer;
+        var topShift = qrp.getTopShiftFromScreen(device) - buffer + device.margins["bottom"] + marginQRCode + device.getScreenHeight();
         if (topShift < height)
             topShift = height;
-        var leftShift = qrp.getLeftShiftFromScreen(device) + device.margins["left"] + 
+        var leftShift = qrp.getLeftShiftFromScreen(device) + buffer + device.margins["left"] + 
                             f.width - marginQRCode;
 
         var widthQRCodeFrame = marginQRCode * 2 + qrp.dataMatrixHeightWithMargins;
@@ -402,7 +402,7 @@ class Board {
     }
 
 
-    cuttingPDF(device) {
+    cuttingPDF(device, buffer) {
         var A4width = 210;
         var A4height = 297;
 
@@ -410,7 +410,7 @@ class Board {
         doc.setDrawColor("#000000");
         doc.setLineWidth(0.05);
 
-        var cut = this.boardCutting(device);
+        var cut = this.boardCutting(device, buffer);
         var box = Box.getBoundingBox(cut);
 
         if (box == null || box.width > A4width || box.height > A4height)
@@ -431,13 +431,13 @@ class Board {
         return doc;
     }
 
-    cuttingDXF(device) {
+    cuttingDXF(device, buffer) {
         var Drawing = require('Drawing');
         var d = new Drawing();
         d.setUnits('Millimeters');
 
 
-        var cut = this.boardCutting(device);
+        var cut = this.boardCutting(device, buffer);
         var id = 0;
         for(var layer of cut) {
             if (id != 0) {
