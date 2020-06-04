@@ -9,7 +9,7 @@ $(document).ready(function () {
         if (doc != null) {
             var name = window.board.name;
             if (name == "") name = "planche";
-            doc.save(name + " découpe.pdf");     
+            doc.save(name + " " + window.board.id + " découpe.pdf");     
         } else
             alert("La taille de l'écran de tablette n'est pas supportée par ce rendu pdf.");
     });
@@ -20,7 +20,7 @@ $(document).ready(function () {
             var blob = new Blob([doc.toDxfString()], {type: 'application/dxf'});
             var name = window.board.name;
             if (name == "") name = "planche";
-            saveAs(blob, name + " découpe.dxf");     
+            saveAs(blob, name + " " + window.board.id + " découpe.dxf");     
         } else
             alert("Une erreur s'est produite pendant le rendu dxf.");
     });
@@ -41,7 +41,7 @@ $(document).ready(function () {
         }
 
         zip.generateAsync({type:"blob"}).then(function (blob) {
-                saveAs(blob, window.board.name + ".zip");                     
+                saveAs(blob, window.board.name + " " + window.board.id + ".zip");                     
         }, function (err) {
             jQuery("#blob").text(err);
             console.log("error", err);
@@ -55,7 +55,7 @@ $(document).ready(function () {
 
         var doc = window.board.toPDF(window.device, parseFloat($("#scale").val()));
         if (doc != null)
-            doc.save(window.board.name + ".pdf");
+            doc.save(window.board.name + " " + window.board.id + ".pdf");
         else
             alert("La taille de l'écran de tablette n'est pas supportée par ce rendu pdf.");
     });
