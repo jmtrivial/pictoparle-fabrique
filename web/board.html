@@ -118,7 +118,7 @@
             <div class="container my-3">
               <form>
                 <div class="row form-group">
-                  <div class="col-6">
+                  <div class="col-lg-6">
                       <label class="form-check-label" for="boardName">
                           Nom de la planche
                       </label>
@@ -150,6 +150,29 @@
                     <small class="form-text text-muted">Codage graphique de l'identifiant de la planche
                     </small>
                   </div>
+                </form>
+
+              </div>
+
+                  <p>En imprimant le ou les fichiers <code>pdf</code>, vous serez confronté·e au redimensionnement probable du document
+                    par votre imprimante. Afin d'obtenir la précision la plus fine, nous vous
+                    invitons à imprimer <a href="#calibration" id="calibration">ce pdf de calibration</a>, puis à reporter ci-dessous le ratio mesuré avant d'imprimer votre
+                    patron de fabrication.</p>
+                
+                <div>
+                    <div class="row">
+                        <div class="col-sm form-group">
+                            <label class="form-check-label mb-2" for="scale">
+                                Ratio d'impression
+                            </label>
+                            <input type="number" min="0" max="999999" class="form-control" id="scale" aria-describedby="scaleHelper" value="1.0">
+                            <small id="scaleHelper" class="form-text text-muted">
+                                Facteur multiplicateur appliqué au document pdf pour compenser la mise à l'échelle imposée par l'imprimante. Valeur par défaut&nbps;: 1.0 pour une impression en dxf,
+                                et valeur légèrement plus grande que 1 pour une impression pdf sur imprimante standard.
+                            </small>
+                        </div>
+                    </div>
+                </div>
             </form>
 
             </div>

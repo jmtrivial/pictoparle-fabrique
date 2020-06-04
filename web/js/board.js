@@ -402,7 +402,7 @@ class Board {
     }
 
 
-    cuttingPDF(device, buffer) {
+    cuttingPDF(device, buffer, scale) {
         var A4width = 210;
         var A4height = 297;
 
@@ -413,18 +413,18 @@ class Board {
         var cut = this.boardCutting(device, buffer);
         var box = Box.getBoundingBox(cut);
 
-        if (box == null || box.width > A4width || box.height > A4height)
+        if (box == null || box.width * scale > A4width || box.height * scale > A4height)
             return null;
 
-        var shiftx = (A4width - box.width()) / 2;
-        var shifty = (A4height - box.height()) / 2;
+        var shiftx = (A4width - box.width() * scale) / 2;
+        var shifty = (A4height - box.height() * scale) / 2;
 
         for(var layer of cut) {
             for(var path of layer) {
                 // compute relative coordinates
-                var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(path);
+                var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(DrawCuttingTools.scale(path, scale));
                 
-                doc.lines(shiftPL, path[0][0] + shiftx, path[0][1] + shifty);
+                doc.lines(shiftPL, path[0][0] * scale + shiftx, path[0][1] * scale + shifty);
             }
         }
 
@@ -457,7 +457,7 @@ class Board {
 
 
 
-    toPDF(device) {
+    toPDF(device, scale) {
         var A4width = 210;
         var A4height = 297;
         var margins = 10;
@@ -470,29 +470,29 @@ class Board {
         // default export is a4 paper, portrait, using millimeters for units
         var doc = new jsPDF();
 
-        var offsetX = (A4width - device.getScreenHeight()) / 2;
-        var offsetY = (A4height - device.getScreenWidth()) / 2;
+        var offsetX = (A4width - device.getScreenHeight() * scale) / 2;
+        var offsetY = (A4height - device.getScreenWidth() * scale) / 2;
 
         doc.setDrawColor("#CC88FF");
-        doc.setFontSize(7);
+        doc.setFontSize(7 * scale);
         doc.setTextColor("#CC88FF");
 
         // draw pictograms
         for(var p of this.getElementsInScreen(device)) {
             if (p instanceof PictogramInScreen && p.image != "") {
                 var img = window.images[p.image];
-                doc.addImage(img, offsetX + p.top + p.height, 
-                                  offsetY + device.getScreenWidth() - (p.left + p.height),
-                                  p.width, p.height, p.text, 'NONE', 90);
-                doc.rect(offsetX + p.top, offsetY + device.getScreenWidth() - p.left - p.width, p.height, p.width);
-                doc.text(p.text, offsetX + p.top + p.height + 2, offsetY + device.getScreenWidth() - p.left, { "angle": 90});
+                doc.addImage(img, offsetX + (p.top + p.height) * scale, 
+                                  offsetY + (device.getScreenWidth() - (p.left + p.height)) * scale,
+                                  p.width * scale, p.height * scale, p.text, 'NONE', 90);
+                doc.rect(offsetX + p.top * scale, offsetY + (device.getScreenWidth() - p.left - p.width) * scale, p.height * scale, p.width * scale);
+                doc.text(p.text, offsetX + (p.top + p.height + 2) * scale, offsetY + (device.getScreenWidth() - p.left) * scale, { "angle": 90});
             }
         }
         
         // draw screen border
-        doc.rect(offsetX, offsetY, device.getScreenHeight(), device.getScreenWidth());
+        doc.rect(offsetX, offsetY, device.getScreenHeight() * scale, device.getScreenWidth() * scale);
 
-        doc.setFontSize(12);
+        doc.setFontSize(12 * scale);
         doc.text('côté pictogrammes, pour thermogonflage', 10, 10);
 
         // create a new page for the verso side
@@ -504,8 +504,8 @@ class Board {
         var topShift = qrp.getTopShiftFromScreen(device);
         var leftShift = qrp.getLeftShiftFromScreen(device);
 
-        offsetX = (A4width - (device.getScreenHeight() + topShift)) / 2 + topShift;
-        offsetY = (A4height - device.getScreenWidth()) / 2;
+        offsetX = (A4width - (device.getScreenHeight() + topShift) * scale) / 2 + topShift * scale;
+        offsetY = (A4height - device.getScreenWidth() * scale) / 2;
 
         // if the screen is too big, we only care about the upper part,
         // thus we translate everything
@@ -514,26 +514,26 @@ class Board {
         }
 
         // draw screen border
-        doc.rect(offsetX, offsetY, device.getScreenHeight(), device.getScreenWidth());
+        doc.rect(offsetX, offsetY, device.getScreenHeight()* scale, device.getScreenWidth()* scale);
 
         // draw black rectangle for the screen
         doc.setFillColor("#000000");
-        doc.rect(offsetX - device.camera["y"] - radiusBlackRectangle, 
-                 offsetY + device.getScreenWidth() / 2 + device.camera["x"] - radiusBlackRectangle,
-                 2 * radiusBlackRectangle, 2 * radiusBlackRectangle, 'F');
+        doc.rect(offsetX - (device.camera["y"] + radiusBlackRectangle) * scale, 
+                 offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - radiusBlackRectangle) * scale,
+                 2 * radiusBlackRectangle * scale, 2 * radiusBlackRectangle * scale, 'F');
 
         // draw line arround camera and datamatrix
-        doc.rect(offsetX - topShift, 
-                 offsetY + leftShift,
-                 qrp.dataMatrixHeightWithMargins + 2 * radiusBlackRectangle + qrp.dataMatrixCell, 
-                 qrp.dataMatrixHeightWithMargins);
+        doc.rect(offsetX - topShift * scale, 
+                 offsetY + leftShift * scale,
+                 (qrp.dataMatrixHeightWithMargins + 2 * radiusBlackRectangle + qrp.dataMatrixCell) * scale, 
+                 qrp.dataMatrixHeightWithMargins * scale);
 
-        doc.addImage($("#qrcode").attr("src"), offsetX - topShift + qrp.dataMatrixCell, 
-                    offsetY + device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 + qrp.dataMatrixCell,
-                    qrp.dataMatrixWidth, qrp.dataMatrixWidth, 'NONE', 0);
+        doc.addImage($("#qrcode").attr("src"), offsetX - (topShift - qrp.dataMatrixCell) * scale, 
+                    offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 + qrp.dataMatrixCell) * scale,
+                    qrp.dataMatrixWidth * scale, qrp.dataMatrixWidth * scale, 'NONE', 0);
 
-        doc.text("ID: " + this.id, offsetX - topShift, 
-                offsetY + device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 - 4);
+        doc.text("ID: " + this.id, offsetX - topShift * scale, 
+                offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 - 4) * scale);
         
         doc.text('côté QRcode, pour impression simple', 10, 10);
 

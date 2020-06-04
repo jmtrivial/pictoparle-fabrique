@@ -4,7 +4,8 @@ $(document).ready(function () {
     $("#inputFile").on("change", handleFileSelect);
 
     $("#cuttingPDF").click(function(e) {
-        var doc = window.board.cuttingPDF(window.device, parseFloat($("#deviceBuffer").val()));
+        var doc = window.board.cuttingPDF(window.device, parseFloat($("#deviceBuffer").val()),
+                                                        parseFloat($("#scale").val()));
         if (doc != null) {
             var name = window.board.name;
             if (name == "") name = "planche";
@@ -52,7 +53,7 @@ $(document).ready(function () {
         if (!checkValid())
             return;
 
-        var doc = window.board.toPDF(window.device);
+        var doc = window.board.toPDF(window.device, parseFloat($("#scale").val()));
         if (doc != null)
             doc.save(window.board.name + ".pdf");
         else
