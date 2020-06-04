@@ -81,7 +81,7 @@
                     </div>
                 </div>
             </div>
-            <div id="large3D" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="large3DButton" aria-hidden="true">
+            <div id="large3D" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
                   <div class="modal-content">
                       <div class="modal-body">
@@ -101,15 +101,41 @@
                 des mises en pages dédiées à des tablettes plus petites.</p>
 
             <figure class="figure float-right col-lg-3 col-md-6">
-                <a href="images/medium.jpg"><img src="images/mdf.jpg" class="figure-img img-fluid rounded" alt="Photo d'un assemblage réalisé en medium"></a>
+                <a type="button"  data-toggle="modal" data-target="#largeMedium"><img src="images/mdf.jpg" class="figure-img img-fluid rounded" alt="Photo d'un assemblage réalisé en medium"></a>
                 <figcaption class="figure-caption text-right">Un assemblage réalisé en medium d'épaisseur 3&nbsp;mm, avec un système par crénelage.</figcaption>
             </figure>
+
+            <div id="largeMedium" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                  <div class="modal-content">
+                      <div class="modal-body">
+                        <figure class="figure" style="width: 100%">
+                          <img src="images/mdf.jpg" class="img-responsive" style="width: 100%"  alt="Photo d'un assemblage réalisé en medium">
+                          <figcaption class="figure-caption">Un assemblage réalisé en medium d'épaisseur 3&nbsp;mm, avec un système par crénelage.</figcaption>
+                            </figure>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
             <figure class="figure float-right col-lg-3 col-md-6">
-                <a href="images/mdf.jpg"><img src="images/carton-bois.jpg" class="figure-img img-fluid rounded" alt="Photo d'un assemblage réalisé en MDF"></a>
+                <a type="button"  data-toggle="modal" data-target="#largeCartonBois"><img src="images/carton-bois.jpg" class="figure-img img-fluid rounded" alt="Photo d'un assemblage réalisé en carton-bois"></a>
                 <figcaption class="figure-caption text-right">Un assemblage réalisé en carton-bois d'épaisseur 2,2&nbsp;mm, par collage simple sur tranche.</figcaption>
             </figure>
 
-                
+            <div id="largeCartonBois" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                  <div class="modal-content">
+                      <div class="modal-body">
+                        <figure class="figure" style="width: 100%">
+                          <img src="images/carton-bois.jpg" class="img-responsive" style="width: 100%"  alt="Photo d'un assemblage réalisé en carton-bois">
+                          <figcaption class="figure-caption">Un assemblage réalisé en carton-bois d'épaisseur 2,2&nbsp;mm, par collage simple sur tranche.</figcaption>
+                            </figure>
+                      </div>
+                  </div>
+                </div>
+              </div>
+
             <p>L'<strong>épaisseur du matériau</strong> utilisé pour fabriquer la boîte et les planches doit être choisie soigneusement, d'une part en fonction des ressources qui vous sont accessibles, mais également
                 en terme de praticité. Plus vous choisirez un matériau épais, moins il sera confortable à l'usage, mais plus il sera rigide, évitant des déformations non souhaitées. Une épaisseur de 2 millimètres
                 semble être un bon compromis&nbsp;: cela évite d'avoir un objet trop épais en main, et les fenêtres ouvertes dans la planche ne sont pas trop profondes.
@@ -246,10 +272,10 @@
             <div class="container mb-3">
                 <div class="row">
                     <div class="col-sm">
-                        <button type="button" id="cuttingPDF" class="btn btn-primary btn-block">télécharger au format pdf</button>
+                        <button type="button" id="cuttingPDF" class="btn btn-primary btn-block my-1">télécharger au format pdf</button>
                     </div>
                     <div class="col-sm">
-                        <button type="button" id="cuttingDXF" class="btn btn-primary btn-block">télécharger au format dxf</button>
+                        <button type="button" id="cuttingDXF" class="btn btn-primary btn-block my-1">télécharger au format dxf</button>
                     </div>
               </div>
             </div>
