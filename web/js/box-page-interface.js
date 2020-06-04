@@ -29,11 +29,16 @@ $(document).ready(function () {
         else
             $("#deviceBuffer").parent().removeClass("warning");
     });
+
+    $("#calibration").click(function(e) {
+        console.log("ça clique")
+        getCalibrationPDF();
+    });
 });
 
 function getParameters() {
     var result = {};
-    for(var id of ["boxThickness", "boardThickness", "deviceBuffer", "kerf"]) {
+    for(var id of ["boxThickness", "boardThickness", "deviceBuffer", "kerf", "scale"]) {
         result[id] = $("#" + id).val();
     }
     return result;

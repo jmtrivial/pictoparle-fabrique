@@ -188,6 +188,29 @@
                     </div>
                 </div>
             </div>
+            <p>Si vous choisissez d'imprimer en <code>pdf</code> avant de réaliser les découpages manuellement, vous serez confronté·e à une problématique récurrente des imprimantes
+                et photocopieuses, qui redimensionnent très souvent légèrement les documents A4 avant de les imprimer. Il existe sur certains modèles une option permettant
+                d'annuler cette mise à l'échelle, mais c'est rarement la configuration par défaut. Si vous utilisez <em>PDF Acrobat Reader</em>, au moment d’effectuer vos réglages d’impression, 
+                assurez-vous que la case « Échelle : 100% » soit cochée.</p>
+            <p>De manière générale, si vous utilisez l'impression <code>pdf</code>, et afin d'obtenir la précision la plus fine, nous vous
+                invitons à imprimer <a href="#calibration" id="calibration">ce pdf de calibration</a>, puis à reporter le ratio mesuré ci-dessous avant d'imprimer votre
+                patron de fabrication.</p>
+            <p>Laissez ce paramètre à 1.0 dans le cas où vous utilisez le format <code>dxf</code> pour une découpe laser.</p>
+            
+            <div class="container mb-3">
+                <div class="row">
+                    <div class="col-sm form-group">
+                        <label class="form-check-label mb-2" for="scale">
+                            Ratio d'impression
+                        </label>
+                        <input type="number" min="0" max="999999" class="form-control" id="scale" aria-describedby="scaleHelper" value="1.0">
+                        <small id="scaleHelper" class="form-text text-muted">
+                            Facteur multiplicateur appliqué au document pdf pour compenser la mise à l'échelle imposée par l'imprimante. Valeur par défaut&nbps;: 1.0 pour une impression en dxf,
+                            et valeur légèrement plus grande que 1 pour une impression pdf sur imprimante standard.
+                        </small>
+                    </div>
+                </div>
+            </div>
 
             <h3>Personnalisation</h3>
             <p>Un espace de sécurité est réglable <strong>autour de la tablette</strong>, afin de faciliter son insertion et retrait. Cet espace sera 

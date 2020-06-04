@@ -428,15 +428,18 @@ Device.prototype.boxPDF = function(params) {
     if (box == null || box.width > A4width || box.height > A4height)
         return null;
 
-    var shiftx = (A4width - box.width()) / 2;
-    var shifty = (A4height - box.height()) / 2;
+    var scale = params["scale"];
+    
+    var shiftx = (A4width - box.width() * scale) / 2;
+    var shifty = (A4height - box.height() * scale) / 2;
+
 
     for(var layer of cut) {
         for(var path of layer) {
             // compute relative coordinates
-            var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(path);
+            var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(DrawCuttingTools.scale(path, scale));
             
-            doc.lines(shiftPL, path[0][0] + shiftx, path[0][1] + shifty);
+            doc.lines(shiftPL, path[0][0] * scale + shiftx, path[0][1] * scale + shifty);
         }
     }
     
@@ -453,15 +456,15 @@ Device.prototype.boxPDF = function(params) {
     if (box == null || box.width > A4width || box.height > A4height)
         return null;
 
-    shiftx = (A4width - box.width()) / 2;
-    shifty = (A4height - box.height()) / 2;
+    shiftx = (A4width - box.width() * scale) / 2;
+    shifty = (A4height - box.height() * scale) / 2;
 
     for(var layer of cut) {
         for(var path of layer) {
             // compute relative coordinates
-            var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(path);
+            var shiftPL = DrawCuttingTools.pathAbsoluteToRelative(DrawCuttingTools.scale(path, scale));
             
-            doc.lines(shiftPL, path[0][0] + shiftx, path[0][1] + shifty);
+            doc.lines(shiftPL, path[0][0] * scale + shiftx, path[0][1] * scale + shifty);
         }
     }
 

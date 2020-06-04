@@ -6,6 +6,9 @@ class DrawCuttingTools {
 
 }
 
+DrawCuttingTools.scale = function(pl, scale) {
+    return pl.map(p => [p[0] * scale, p[1] * scale]);
+}
 
 DrawCuttingTools.invertXY = function(pl) {
     return pl.map(p => [p[1], p[0]]);
