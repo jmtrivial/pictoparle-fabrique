@@ -2,15 +2,17 @@
 
 class Device {
     
-    constructor(name, id, screen, margins, thickness, camera) {
+    constructor(name, id, screen, margins, thickness, camera, windows) {
         this.name = name;
         this.id = id;
         this.screen = screen;
         this.margins = margins;
         this.thickness = thickness;
         this.camera = camera;
+        this.windows = windows;
 
         this.debug = false;
+
     }
 
     getWidth() {
@@ -32,9 +34,9 @@ class Device {
 Device.fromXML = function(xml) {
     var xmldevice = xml.getElementsByTagName("device")[0];
     var xmlscreen = xml.getElementsByTagName("screen")[0];
-    var xmlmargins = xml.getElementsByTagName("margins")[0];
+    var xmlboard = xml.getElementsByTagName("board")[0];
     var xmlcamera = xml.getElementsByTagName("camera")[0];
-    var xmlthickness = xml.getElementsByTagName("thickness")[0];
+    var xmlwindows = xml.getElementsByTagName("windows")[0];
 
     var name = xmldevice.getAttribute("name");
     var id = xmldevice.getAttribute("id");
@@ -46,7 +48,7 @@ Device.fromXML = function(xml) {
 
     var margins = {};
     for (var e of ["left", "right", "top", "bottom", "cornerRadius"]) {
-        margins[e] = parseFloat(xmlmargins.getAttribute(e));
+        margins[e] = parseFloat(xmlboard.getAttribute(e));
     }
 
     var camera = {};
@@ -55,9 +57,22 @@ Device.fromXML = function(xml) {
         camera[e] = parseFloat(xmlcamera.getAttribute(e));
     }
 
-    var thickness = parseFloat(xmlthickness.getAttribute("value"));
+    var thickness = parseFloat(xmlboard.getAttribute("thickness"));
 
-    return new Device(name, id, screen, margins, thickness, camera);
+    var windows = [];
+    for(var w of xmlwindows.getElementsByTagName("window")) {
+        var window = {};
+        window["side"] = w.getAttribute("side");
+        
+        for (var e of ["begin", "end", "bottom", "top"]) {
+            if (w.hasAttribute(e)) {
+                window[e] = parseFloat(w.getAttribute(e));
+            }
+        }
+        windows.push(window);
+    }
+
+    return new Device(name, id, screen, margins, thickness, camera, windows);
 
 }
 
