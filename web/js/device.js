@@ -165,7 +165,7 @@ Device.prototype.getBackCutting = function(params) {
     var cBack = [[0, 0]];
     // first fastener
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, f.height + kerf2, 0, f.height, slotDepth, true, kerf));
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width, 0, f.width, slotDepth, true, kerf));
+    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, kerf));
 
     // upper part
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, innerSize[1] - f.height, -2 * kerf, innerSize[1] - f.height, slotDepth, true, kerf));
@@ -173,11 +173,11 @@ Device.prototype.getBackCutting = function(params) {
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -(innerSize[1] - f.height), 0, innerSize[1] - f.height, slotDepth, true, kerf));
 
     // second fastener
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width, -kerf, f.width - 2 * kerf, slotDepth, true, kerf));
+    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, -kerf, f.width - slotDepth - 2 * kerf, slotDepth, true, kerf));
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -(f.height + kerf2), 0, f.height, slotDepth, true, kerf));
 
     // close shape
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * f.width + innerSize[0] + kerf2), 0, 2 * f.width + innerSize[0], slotDepth, true, kerf));
+    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * (f.width - slotDepth) + innerSize[0] + kerf2), - slotDepth, 2 * f.width + innerSize[0], slotDepth, true, kerf));
 
 
     back.push(cBack);
@@ -190,7 +190,7 @@ Device.prototype.getBackCutting = function(params) {
 
         cBack = [[kerf, kerf]];
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, f.height, 0, f.height, slotDepth, true, 0));
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width, 0, f.width, slotDepth, true, 0));
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, 0));
 
         // upper part
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, innerSize[1] - f.height, 0, innerSize[1] - f.height, slotDepth, true, 0));
@@ -198,11 +198,11 @@ Device.prototype.getBackCutting = function(params) {
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -(innerSize[1] - f.height), 0, innerSize[1] - f.height, slotDepth, true, 0));
 
         // second fastener
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width, 0, f.width, slotDepth, true, 0));
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, 0));
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -f.height, 0, f.height, slotDepth, true, 0));
 
         // close shape
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * f.width + innerSize[0]), 0, 2 * f.width + innerSize[0], slotDepth, true, 0));
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * (f.width - slotDepth) + innerSize[0]), - slotDepth, 2 * f.width + innerSize[0], slotDepth, true, 0));
         
         back.push(cBack);
     }
@@ -293,9 +293,9 @@ Device.prototype.getSidesCutting = function(params, space) {
     var sides = [];
 
     // bottom side
-    sides.push(this.rectangleWithSlots(deviceThickness + 2 * boardThickness, innerSize[0] + 2 * (f.width + boxThickness), kerf,
+    sides.push(this.rectangleWithSlots(deviceThickness + 2 * boardThickness, innerSize[0] + 2 * f.width, kerf,
                                 this.autoSlots(deviceThickness, 2 * boxThickness, slotDepth, false, kerf),
-                                this.autoSlots(innerSize[0] + 2 * f.width, boardThickness, slotDepth, false, kerf),
+                                this.autoSlots(innerSize[0] + 2 * f.width, 0, slotDepth, false, kerf),
                                 this.autoSlots(deviceThickness, 0, slotDepth, false, kerf),
                                 []));
 
@@ -303,9 +303,9 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     if (this.debug) {
         sides.push(DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(deviceThickness + 2 * boardThickness, innerSize[0] + 2 * (f.width + boxThickness), 0,
+            this.rectangleWithSlots(deviceThickness + 2 * boardThickness, innerSize[0] + 2 * f.width, 0,
             this.autoSlots(deviceThickness, 2 * boxThickness, slotDepth, false, 0),
-            this.autoSlots(innerSize[0] + 2 * f.width, boardThickness, slotDepth, false, 0),
+            this.autoSlots(innerSize[0] + 2 * f.width, 0, slotDepth, false, 0),
             this.autoSlots(deviceThickness, 0, slotDepth, false, 0),
             []), kerf, kerf
             ));       
@@ -335,20 +335,20 @@ Device.prototype.getSidesCutting = function(params, space) {
         }
 
         sides.push(DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(deviceThickness, f.width, kerf,
+            this.rectangleWithSlots(deviceThickness, f.width - boxThickness, kerf,
                     this.autoSlots(deviceThickness, 0, slotDepth, true, kerf),
-                    this.autoSlots(f.width, 0, slotDepth, false, kerf),
+                    this.autoSlots(f.width - boxThickness, 0, slotDepth, false, kerf),
                     this.autoSlots(deviceThickness, 0, slotDepth, false, kerf),
-                    this.autoSlots(f.width, 0, slotDepth, true, kerf)),
+                    this.autoSlots(f.width - boxThickness, 0, slotDepth, true, kerf)),
                     shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space)));        
 
         if (this.debug) {
             sides.push(DrawCuttingTools.pathShift(
-                this.rectangleWithSlots(deviceThickness, f.width, 0,
+                this.rectangleWithSlots(deviceThickness, f.width - boxThickness, 0,
                         this.autoSlots(deviceThickness, 0, slotDepth, true, 0),
-                        this.autoSlots(f.width, 0, slotDepth, false, 0),
+                        this.autoSlots(f.width - boxThickness, 0, slotDepth, false, 0),
                         this.autoSlots(deviceThickness, 0, slotDepth, false, 0),
-                        this.autoSlots(f.width, 0, slotDepth, true, 0)),
+                        this.autoSlots(f.width - boxThickness, 0, slotDepth, true, 0)),
                         shift + 2 * boxThickness + kerf, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space) + kerf));        
             }
 
@@ -411,8 +411,8 @@ Device.prototype.getSidesCutting = function(params, space) {
     // add the upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
         sides.push(DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(f.width + boxThickness, f.height + boxThickness, kerf,
-                    this.autoSlots(f.width, 0, slotDepth, false, kerf),
+            this.rectangleWithSlots(f.width, f.height + boxThickness, kerf,
+                    this.autoSlots(f.width - slotDepth, 0, slotDepth, false, kerf),
                     this.autoSlots(f.height, boxThickness, slotDepth, false, kerf),
                     [],
                     []),
@@ -420,8 +420,8 @@ Device.prototype.getSidesCutting = function(params, space) {
         
         if (this.debug) {
             sides.push(DrawCuttingTools.pathShift(
-                this.rectangleWithSlots(f.width + boxThickness, f.height + boxThickness, 0,
-                this.autoSlots(f.width, 0, slotDepth, false, 0),
+                this.rectangleWithSlots(f.width, f.height + boxThickness, 0,
+                this.autoSlots(f.width - slotDepth, 0, slotDepth, false, 0),
                 this.autoSlots(f.height, boxThickness, slotDepth, false, 0),
                 [],
                 []),
@@ -430,23 +430,25 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     }
 
-    // the last part of the fastener
+    shift += f.width + space;
+
+    // the last part of the fasteners
     for(var i = 0; i != 2; ++i) {
         var gap = 0.5;
-        var side7 = DrawCuttingTools.pathShift(f.shape(gap, kerf), boxThickness, 0);
+        var side7 = f.shape(gap, kerf);
         side7.push([0, f.height - gap + 2 * kerf]);
         side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * kerf, -gap, f.height, slotDepth, false, kerf));
         side7.push(side7[0]);
             
-        sides.push(DrawCuttingTools.pathShift(side7, shift, (f.height + boxThickness + space) * (2 + i)));   
+        sides.push(DrawCuttingTools.pathShift(side7, shift, (f.height + boxThickness + space) * i));   
 
         if (this.debug) {
-            side7 = DrawCuttingTools.pathShift(f.shape(gap, 0), boxThickness, 0);
+            side7 = f.shape(gap, 0);
             side7.push([0, f.height - gap]);
             side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap, -gap, f.height, slotDepth, false, 0));
             side7.push(side7[0]);
                 
-            sides.push(DrawCuttingTools.pathShift(side7, shift + kerf, (f.height + boxThickness + space) * (2 + i) + kerf));   
+            sides.push(DrawCuttingTools.pathShift(side7, shift + kerf, (f.height + boxThickness + space) * i + kerf));   
         }
     }
 

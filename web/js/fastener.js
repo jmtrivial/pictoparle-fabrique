@@ -2,15 +2,16 @@
 class Fastener {
     constructor() {
         this.width = 15;
-        this.height = 50;
+        this.height = 90;
+        this.angled = 40;
         this.slot = 10;
         this.blocHeight = 15;
     }
 
     shape(gap, kerf = 0) {
-        var path = [[this.width + 2 * kerf, 0]];
-        if (gap != 0)
-            path.push([this.width - this.slot - gap + 2 * kerf, this.height - this.blocHeight - gap + 2 * kerf]);
+        var path = [[this.width + 2 * kerf - gap, 0]];
+        path.push([this.width - this.slot - gap + 2 * kerf, this.angled - gap + 2 * kerf]);
+
         path.push([this.width - this.slot - gap + 2 * kerf, this.height - this.blocHeight + gap]);
         path.push([this.width - gap + 2 * kerf, this.height - this.blocHeight + gap]);
         path.push([this.width - gap + 2 * kerf, this.height - gap + 2 * kerf]);
