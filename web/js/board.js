@@ -383,6 +383,29 @@ class Board {
         }
     }
 
+    getImageResizingFromSize(pictoID, size) {
+        var sizing = this.getSizing(pictoID);
+
+        var targetSize = [ sizing["width"] - 2 * sizing["padding"], sizing["height"] - 2 * sizing["padding"] ];
+
+        var ratio1 = targetSize[0] / size[0];
+        var ratio2 = targetSize[1] / size[1];
+        var finalWidth, finalHeight;
+        if (ratio1 < ratio2) {
+            finalWidth = targetSize[0];
+            finalHeight = size[1] * ratio1;
+        }
+        else {
+            finalWidth = size[0] * ratio2;
+            finalHeight = targetSize[1];
+
+        }
+        return {"width": finalWidth, "height": finalHeight, 
+                "top": (sizing["height"] - finalHeight) / 2,
+                "left": (sizing["width"] - finalWidth) / 2};
+
+    }
+
     boardCutting(device, buffer) {
 
         var result = [];
@@ -488,7 +511,7 @@ class Board {
 
 
 
-    toPDF(device, scale) {
+    toPDF(device, scale, imageSizes) {
         var A4width = 210;
         var A4height = 297;
         var margins = 10;
@@ -509,14 +532,19 @@ class Board {
         doc.setTextColor("#CC88FF");
 
         // draw pictograms
+        var i = 0;
         for(var p of this.getElementsInScreen(device)) {
-            if (p instanceof PictogramInScreen && p.image != "") {
-                var img = window.images[p.image];
-                doc.addImage(img, offsetX + (p.top + p.height) * scale, 
-                                  offsetY + (device.getScreenWidth() - (p.left + p.height)) * scale,
-                                  p.width * scale, p.height * scale, p.text, 'NONE', 90);
-                doc.rect(offsetX + p.top * scale, offsetY + (device.getScreenWidth() - p.left - p.width) * scale, p.height * scale, p.width * scale);
-                doc.text(p.text, offsetX + (p.top + p.height + 2) * scale, offsetY + (device.getScreenWidth() - p.left) * scale, { "angle": 90});
+            if (p instanceof PictogramInScreen) {
+                if (p.image != "") {
+                    var img = window.images[p.image];
+                    var sizing = this.getImageResizingFromSize(i, imageSizes[p.image]);
+                    doc.addImage(img, offsetX + (p.top + sizing["height"] + sizing["top"]) * scale, 
+                                    offsetY + (device.getScreenWidth() - (p.left + sizing["height"]) - sizing["left"]) * scale,
+                                    sizing["width"] * scale, sizing["height"] * scale, p.text, 'NONE', 90);
+                    doc.rect(offsetX + p.top * scale, offsetY + (device.getScreenWidth() - p.left - p.width) * scale, p.height * scale, p.width * scale);
+                    doc.text(p.text, offsetX + (p.top + p.height + 2) * scale, offsetY + (device.getScreenWidth() - p.left) * scale, { "angle": 90});
+                }
+                i += 1;
             }
         }
         

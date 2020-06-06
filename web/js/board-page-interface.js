@@ -55,7 +55,9 @@ $(document).ready(function () {
         if (!checkValid())
             return;
 
-        var doc = window.board.toPDF(window.device, parseFloat($("#scale").val()));
+        var doc = window.board.toPDF(window.device, 
+                                     parseFloat($("#scale").val()),
+                                     window.imageSize);
         if (doc != null)
             doc.save(window.board.name + " " + window.board.id + ".pdf");
         else
@@ -86,6 +88,7 @@ $(document).ready(function () {
 
 
 });
+
 
 // set pictogram padding in board from input
 function setPaddingUpdateInterface() {
@@ -370,25 +373,7 @@ function getResizingFromPadding(image, pictoID) {
     }
     else {
         var size = window.imageSize[image];
-        var sizing = window.board.getSizing(pictoID);
-
-        var targetSize = [ sizing["width"] - 2 * sizing["padding"], sizing["height"] - 2 * sizing["padding"] ];
-
-        var ratio1 = targetSize[0] / size[0];
-        var ratio2 = targetSize[1] / size[1];
-        var finalWidth, finalHeight;
-        if (ratio1 > ratio2) {
-            finalWidth = targetSize[0];
-            finalHeight = size[1] * ratio1;
-        }
-        else {
-            finalWidth = size[0] * ratio1;
-            finalHeight = targetSize[1];
-
-        }
-        return {"width": finalWidth, "height": finalHeight, 
-                "top": (sizing["height"] - finalHeight) / 2,
-                "left": (sizing["width"] - finalWidth) / 2};
+        return window.board.getImageResizingFromSize(pictoID, size);
     }
 
 
