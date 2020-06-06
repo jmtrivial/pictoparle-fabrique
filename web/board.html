@@ -75,7 +75,10 @@
             <p>La page sur laquelle vous vous trouvez permet de fabriquer ses propres planches, afin d'étendre le fonctionnement de Pictoparle aux 
                 besoins spécifiques d'un contexte ou d'une personne.
             </p>
-            <div class="container">
+            <h2><span class="badge badge-pill badge-primary">1</span> Initialisation</h2>
+            <p>Commencez par choisir le <strong>type de tablette</strong> que vous utilisez, ainsi que la <strong>mise en page</strong> de votre choix.</p>
+            <p>Il est possible d'<strong>importer une planche déjà réalisée</strong> en utilisant le fichier tablette d'un précédent projet. </p>
+            <div class="container my-2">
                 <div class="row">
                   <div class="col-sm">
                     <div class="dropdown">
@@ -101,20 +104,56 @@
                         </div>
                       </div>
                   </div>
-                    <div class="col-sm">
-                        <form>
-                            <div class="btn btn-primary btn-block my-1" style="position: relative">
-                                    <label style="padding: 0; margin: 0" tkey="chooseFile">charger un fichier tablette</label>
-                                    <input type="file" id="inputFile" name="files[]" accept="application/zip,application/xml,text/xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0">
-                                </div>
-                        </form>
-                    </div>
+                  <div class="col-sm">
+                    <form>
+                        <div class="btn btn-primary btn-block my-1" style="position: relative">
+                                <label style="padding: 0; margin: 0" tkey="chooseFile">charger un fichier tablette</label>
+                                <input type="file" id="inputFile" name="files[]" accept="application/zip,application/xml,text/xml" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0">
+                            </div>
+                    </form>
+                </div>
+                </div>
+              </div>
+                <h2><span class="badge badge-pill badge-primary">2</span> Remplissage de la grille</h2>
+                <p>On peut alors renseigner le <strong>texte</strong> et l'<strong>image</strong>
+                  de chaque pictogramme, en utilisant les boutons, ou en procédant par <a href="https://www.youtube.com/watch?v=4mJWmcKHyJM">glisser-déposer des images</a>.
+              </p>
+    
+                <p>Il est possible d'ajouter un <strong>vide de confort</strong> entre le bord du cadre et chaque pictogramme.</p>
+              <div class="container">
+                  <div class="row">
+                    <div class="col-sm form-group">
+                      <label class="form-check-label mb-2" for="comfortSpace">
+                          Vide de confort
+                      </label>
+                      <input type="number" min="0" step="0.1" max="999999" class="form-control" id="comfortSpace" aria-describedby="comfortSpaceHelper" value="2.0">
+                      <small id="comfortSpaceHelper" class="form-text text-muted">
+                          Espace (en millimètre) minimum imposé autour de chaque pictogramme. Le ratio de l'image sera préservée, ce qui 
+                          peut entraîner des vides de confort plus grands. Valeur par défaut&nbsp;: 2 millimètres.
+                      </small>
+                  </div>
+                  <div class="col-sm">
+                    <div  class="mx-auto" style="width: 50%;">
+                      <figure class="figure">
+                      <img src="images/comfortSpace.svg" class="figure-img img-fluid rounded" alt="Vide de confort autour de chaque pictogramme" />
+                      <figcaption class="figure-caption">Vide de confort autour de chaque pictogramme, à l'intérieur de son emplacement.</figcaption>
+                      </figure>
+                  </div>
+                  </div>
+                      
                 </div>
 
             </div>
 
-            <div id="rendering">
+            <div id="rendering" class="my-3">
             </div>
+
+            <h2><span class="badge badge-pill badge-primary">3</span> Réglages de fabrication</h2>
+            <p>Chaque planche est définie par un <strong>nom</strong>, qui sera énoncé pour l'utilisateur lorsqu'elle sera utilisée, et d'un <strong>identifiant unique</strong>, qui servira
+              à la détection par la tablette grâce au QR-code.
+            </p>
+
+
             <div class="container my-3">
               <form>
                 <div class="row form-group">
@@ -125,20 +164,13 @@
                       <input type="text" class="form-control" id="boardName" aria-describedby="boardNameHelper">
                       <small id="boardNameHelper" class="form-text text-muted">Ce nom sera utilisé par la synthèse vocale pour nommer la planche.</small>
 
-                      <label class="form-check-label mb-2" for="deviceBuffer">
-                        Marge d'encadrement de la tablette
-                    </label>
-                    <input type="number" min="0" step="0.1" max="999999" class="form-control" id="deviceBuffer" aria-describedby="deviceBufferHelper" value="1.0">
-                    <small id="deviceBufferHelper" class="form-text text-muted">
-                        Espace (en millimètre) de sécurité prévu autour de la tablette lors de la conception de la boîte. Valeur par défaut&nbsp;: 1 millimètre.
-                    </small>
                   </div>
                   <div class="col-lg-4 col-8">
                     <label class="form-check-label" for="boardID">
                         Identifiant unique de la planche
                     </label>
                     <input type="number" min="0" pattern="\d+" max="999999" class="form-control" id="boardID" aria-describedby="boardIDHelper">
-                    <small id="boardIDHelper" class="form-text text-muted">Cet entier compris entre 0 et 999999 est utilisé pour fabriquer le QRcode qui servira d'identifiant unique à la planche pour la tablette.
+                    <small id="boardIDHelper" class="form-text text-muted">Cet entier compris entre 0 et 999999 servira d'identifiant unique à la planche pour la tablette.
                       Il est important de choisir un entier qui n'est pas déjà utilisé pour une autre planche.
                     </small>
                   </div>           
@@ -153,13 +185,40 @@
                 </form>
 
               </div>
+            </div>
+            <p>Un espace de sécurité est réglable <strong>autour de la tablette</strong>, afin de faciliter son insertion et retrait. Cet espace sera 
+              ajouté entre la tablette et les bords intérieurs de la boîte. Dans nos expérimentations, il a été réglé à 1 millimètre.</p>
+          <div class="container mb-3">
+              <div class="row">
+                  <div class="col-sm form-group devBuf">
+                      <label class="form-check-label mb-2" for="deviceBuffer">
+                          Marge d'encadrement de la tablette
+                      </label>
+                      <input type="number" min="0" step="0.1" max="999999" class="form-control" id="deviceBuffer" aria-describedby="deviceBufferHelper" value="1.0">
+                      <small id="deviceBufferHelper" class="form-text text-muted">
+                          Espace (en millimètre) de sécurité autour de la tablette. Valeur par défaut&nbsp;: 1 millimètre.
+                      </small>
+                      <p class="alert alert-warning">Vous avez choisi un encadrement différent de la valeur par défaut. Prenez soin de prendre cette valeur en note, car elle vous sera nécessaire
+                          lors de la fabrication des planches.</p>
+                  </div>
+                  <div class="col-sm form-group">
+                      <div  class="mx-auto" style="width: 70%;">
+                          <figure class="figure">
+                          <img src="images/buffer.svg" class="figure-img img-fluid rounded" alt="Espace de sécurité autour de la tablette" />
+                          <figcaption class="figure-caption">L'espace de sécurité permet à la boîte de laisser un peu de liberté autour de la tablette.</figcaption>
+                          </figure>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-                  <p>En imprimant le ou les fichiers <code>pdf</code>, vous serez confronté·e au redimensionnement probable du document
+
+              <p>En imprimant le ou les fichiers <code>pdf</code>, vous serez confronté·e au redimensionnement probable du document
                     par votre imprimante. Afin d'obtenir la précision la plus fine, nous vous
                     invitons à imprimer <a href="#calibration" id="calibration">ce pdf de calibration</a>, puis à reporter ci-dessous le ratio mesuré avant d'imprimer votre
                     patron de fabrication.</p>
                 
-                <div>
+                <div class="container my-3">
                     <div class="row">
                         <div class="col-sm form-group">
                             <label class="form-check-label mb-2" for="scale">
@@ -173,40 +232,9 @@
                         </div>
                     </div>
                 </div>
-            </form>
 
-            </div>
 
-            <div class="container">
-                <div class="row">
-                  <div class="col-sm">
-                    <button type="button" id="downloadZIP" class="btn btn-primary btn-block my-1">fichier pour l'application</button>
-                  </div>
-                  <div class="col-sm">
-                    <button type="button" id="downloadPictosPDF" class="btn btn-primary btn-block my-1">fichier à imprimer</button>
-                  </div>
-                  <div class="col-sm">
-                    <div class="dropdown">
-                      <div class="btn-group btn-block">
-                          <button type="button" class="btn btn-primary btn-block dropdown-toggle my-1"  id="decoupage"  data-toggle="dropdown" 
-                          aria-haspopup="true" role="menu"  aria-expanded="false">
-                            fichier à découper
-                          </button>
-                          <div class="dropdown-menu" aria-labelledby="decoupage" id="templates">
-                            <a class="dropdown-item" href="#" id="cuttingPDF">découpage manuel (pdf)</a>
-                            <a class="dropdown-item" href="#" id="cuttingDXF">découpage laser (dxf)</a>
-                          </div>
-                        </div>
-                      </div>
-                  </div>
-                </div>
-              </div>
-             <div>
-                <h2>Utilisation</h2>
-                <p>Commencez par choisir le type de tablette que vous utilisez, ainsi que la mise en page de votre choix. Vous pouvez également importer
-                    une planche déjà réalisée en utilisant le fichier tablette d'un précédent projet. Ajoutez ensuite pour chaque emplacement le texte et l'image
-                    que vous souhaitez lui associer. On peut procéder par <a href="https://www.youtube.com/watch?v=4mJWmcKHyJM">glisser-déposer des images</a>.
-                </p>
+              <h2><span class="badge badge-pill badge-primary">4</span> Téléchargement</h2>
                 <p>Une fois que la planche est saisie, vous devez télécharger les trois fichiers&nbsp;:</p>
                 <ul>
                     <li>Le <strong>fichier tablette</strong> est un fichier au format <em>zip</em>, que vous pourrez charger dans l'interface de la tablette, 
@@ -219,8 +247,33 @@
                        au format dxf pour un découpage laser, ou au format pdf pour un découpage manuel.
                     </li>
                 </ul>
-                <p>PLusieurs vidéos de démonstration de cet outil sont <a href="https://www.youtube.com/playlist?list=PLrhqb8aQtdhUjE7bi_mjGwLjukMTZT--l">disponibles sur youtube</a>, et un tutoriel d'utilisation sera proposé dès que le site internet sera complètement fonctionnel, pour en faciliter la prise en main.</p>
 
+                <div class="container mb-3">
+                  <div class="row">
+                    <div class="col-sm">
+                      <button type="button" id="downloadZIP" class="btn btn-primary btn-block my-1">fichier pour l'application</button>
+                    </div>
+                    <div class="col-sm">
+                      <button type="button" id="downloadPictosPDF" class="btn btn-primary btn-block my-1">fichier à imprimer</button>
+                    </div>
+                    <div class="col-sm">
+                      <div class="dropdown">
+                        <div class="btn-group btn-block">
+                            <button type="button" class="btn btn-primary btn-block dropdown-toggle my-1"  id="decoupage"  data-toggle="dropdown" 
+                            aria-haspopup="true" role="menu"  aria-expanded="false">
+                              fichier à découper
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="decoupage" id="templates">
+                              <a class="dropdown-item" href="#" id="cuttingPDF">découpage manuel (pdf)</a>
+                              <a class="dropdown-item" href="#" id="cuttingDXF">découpage laser (dxf)</a>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+               <div>
+                <p>Plusieurs vidéos de démonstration de cet outil sont <a href="https://www.youtube.com/playlist?list=PLrhqb8aQtdhUjE7bi_mjGwLjukMTZT--l">disponibles sur youtube</a>, et un tutoriel d'utilisation sera proposé dès que le site internet sera complètement fonctionnel, pour en faciliter la prise en main.</p>
              </div>
         </div>
         <div class="modal" tabindex="-1" role="dialog" id="setNewTemplateDialog">

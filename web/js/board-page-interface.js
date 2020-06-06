@@ -3,6 +3,8 @@
 $(document).ready(function () {
     $("#inputFile").on("change", handleFileSelect);
 
+    $("#comfortSpace").on("change", setPadding);
+
     $("#cuttingPDF").click(function(e) {
         var doc = window.board.cuttingPDF(window.device, parseFloat($("#deviceBuffer").val()),
                                                         parseFloat($("#scale").val()));
@@ -78,11 +80,23 @@ $(document).ready(function () {
     $("#validateNewTemplate").click(function(e) {
         $("#setNewTemplateDialog").modal("hide");
         window.board = window.templates[window.selectedTemplate].clone();
+        setPadding();
         updateInterface();
     });
 
 
 });
+
+// set pictogram padding in board from input
+function setPadding() {
+    var padding = parseFloat($("#comfortSpace").val());
+    window.board.setPadding(padding);
+}
+
+// set padding input from board
+function setPaddingInput() {
+    $("#comfortSpace").val(window.board.getPaddings()[0]);
+}
 
 function setQRCode() {
 
@@ -154,6 +168,7 @@ function setTemplateMenu() {
                     window.board = window.templates[this.id].clone();
                     window.board.name = "";            
                     $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
+                    setPadding();
                     updateInterface();
                 }
 
@@ -163,8 +178,8 @@ function setTemplateMenu() {
             if (window.board == null) {
                 window.board = window.templates[board.id].clone();
                 window.board.name = "";            
-                console.log(JSON.stringify(window.board));
                 $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
+                setPadding();
                 updateInterface();
             }
             
@@ -206,6 +221,7 @@ function handleFileSelect(evt) {
                     console.log("Loading board");
                     window.board = board;
                     window.board.checkImages(window.images);
+                    setPaddingInput();
                     updateInterface();
                 }
             };
@@ -264,6 +280,7 @@ function handleFileSelect(evt) {
                 if (window.error == false) {
                     window.board.checkImages(window.images);
                     console.log("Loading completed. Update interface.");
+                    setPaddingInput();
                     updateInterface();
                 }
             });

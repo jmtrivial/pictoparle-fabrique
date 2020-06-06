@@ -39,7 +39,7 @@ class QuitButton {
 }
 
 class BoardPanel {
-    constructor(nbColumns, nbRows, cellWidth, cellHeight) {
+    constructor(nbColumns, nbRows, cellWidth, cellHeight, padding = 0) {
         this.nbColumns = nbColumns;
         this.nbRows = nbRows;
         this.cellWidth = cellWidth;
@@ -48,6 +48,7 @@ class BoardPanel {
         this.quitButtonRow = null;
         this.quitButtonWidth = null;
         this.quitButtonHeight = null;
+        this.padding = padding;
         for(var i = 0; i < nbRows; ++i) {
             this.pictograms.push([]);
             for(var j = 0; j < nbColumns; ++j) {
@@ -64,6 +65,13 @@ class BoardPanel {
             if (this.pictograms[i][j] != null)
             result.pictograms[i][j] = this.pictograms[i][j].clone();
         return result;
+    }
+
+    setPadding(padding) {
+        this.padding = padding;
+    }
+    getPadding() {
+        return this.padding;
     }
 
     toXMLQuitButton() {
@@ -84,6 +92,7 @@ class BoardPanel {
             result += " cellWidth=\"" + this.cellWidth + "\"";
         if (this.cellHeight != 0)
             result += " cellHeight=\"" + this.cellHeight + "\"";
+        result += " padding=\"" + this.padding + "\"";
         result += ">\n";
         if (this.nbRows != 0) {
             for(var i = 0; i < this.nbRows; ++i) {
@@ -222,10 +231,14 @@ class BoardPanel {
 BoardPanel.fromXML = function(xml) {
     var cellWidth = xml.getAttribute("cellWidth");
     var cellHeight = xml.getAttribute("cellHeight");
-    if (cellWidth == null) cellWidth = 0;
-    if (cellHeight == null) cellHeight = 0;
+    var padding = xml.getAttribute("padding");
+    if (cellWidth == null) cellWidth = "0";
+    if (cellHeight == null) cellHeight = "0";
+    if (padding == null) padding = "0";
     cellWidth = parseFloat(cellWidth);
     cellHeight = parseFloat(cellHeight);
+    padding = parseFloat(padding);
+
 
     var nbRows = xml.getElementsByTagName("row").length;
     var nbColumns = 0;
@@ -234,7 +247,7 @@ BoardPanel.fromXML = function(xml) {
         if (nbColumnsLocal > nbColumns)
             nbColumns = nbColumnsLocal;
     }
-    var result = new BoardPanel(nbColumns, nbRows, cellWidth, cellHeight);
+    var result = new BoardPanel(nbColumns, nbRows, cellWidth, cellHeight, padding);
     var idRow = 0;
     for (var i = 0; i < xml.children.length; ++i) {
         if (xml.children[i].nodeName == "row") {
@@ -279,6 +292,14 @@ class Board {
 
     setName(n) {
         this.name = name;
+    }
+
+    setPadding(padding) {
+        for(var p of this.panels)
+            p.setPadding(padding);
+    }
+    getPaddings() {
+        return this.panels.map(x => x.getPadding());
     }
 
     setOrientation(o) {
