@@ -372,6 +372,16 @@ class Board {
         }
     }
 
+    getSizing(pictoID) {
+        var i = 0;
+        for(var p of this.panels) {
+            var pictos = p.getPictograms();
+            if (i + pictos.length > pictoID) {
+                return { "padding": p.getPadding(), "width": p.cellWidth, "height": p.cellHeight };
+            }
+            i += pictos.length;
+        }
+    }
 
     boardCutting(device, buffer) {
 

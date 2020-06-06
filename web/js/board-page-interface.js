@@ -3,7 +3,7 @@
 $(document).ready(function () {
     $("#inputFile").on("change", handleFileSelect);
 
-    $("#comfortSpace").on("change", setPadding);
+    $("#comfortSpace").on("change", setPaddingUpdateInterface);
 
     $("#cuttingPDF").click(function(e) {
         var doc = window.board.cuttingPDF(window.device, parseFloat($("#deviceBuffer").val()),
@@ -67,6 +67,7 @@ $(document).ready(function () {
 
     window.canvas = document.createElement('canvas');
     window.images = {};
+    window.imageSize = {};
 
     setDeviceMenu();
     setTemplateMenu();
@@ -80,17 +81,17 @@ $(document).ready(function () {
     $("#validateNewTemplate").click(function(e) {
         $("#setNewTemplateDialog").modal("hide");
         window.board = window.templates[window.selectedTemplate].clone();
-        setPadding();
-        updateInterface();
+        setPaddingUpdateInterface();
     });
 
 
 });
 
 // set pictogram padding in board from input
-function setPadding() {
+function setPaddingUpdateInterface() {
     var padding = parseFloat($("#comfortSpace").val());
     window.board.setPadding(padding);
+    updateInterface();
 }
 
 // set padding input from board
@@ -179,8 +180,7 @@ function setTemplateMenu() {
                 window.board = window.templates[board.id].clone();
                 window.board.name = "";            
                 $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
-                setPadding();
-                updateInterface();
+                setPaddingUpdateInterface();
             }
             
           });
@@ -270,8 +270,10 @@ function handleFileSelect(evt) {
                             console.log("Unknown extension:", ext[1]);
                         }
             
-                        window.images[relativePath.replace(/^pictograms\//g, "")] = "data: " + mimeType + ";base64, " + content;
-                        console.log("Loading ", relativePath.replace(/^pictograms\//g, ""));
+                        var imageName = relativePath.replace(/^pictograms\//g, "");
+                        window.images[imageName] = "data: " + mimeType + ";base64, " + content;
+                        console.log("Loading ", imageName);
+                        getImageSize(imageName);
                     }));
                 }
             });
@@ -346,6 +348,51 @@ function drawDevice() {
     return {"screen": screen, "ratio": ratio};
 }
 
+function getImageSize(image, update = false) {
+    var img = new Image();
+    img.src = window.images[image];
+    
+    img.onload = function() {
+        window.imageSize[image] = [img.width, img.height];
+        if (update)
+            updateInterface();
+    }
+}
+function getImageSizeUpdateInterface(image) {
+    getImageSize(image, true);
+}
+
+function getResizingFromPadding(image, pictoID) {
+
+    if (! (image in window.imageSize)) {
+        // might not append
+        getImageSizeUpdateInterface(image);
+    }
+    else {
+        var size = window.imageSize[image];
+        var sizing = window.board.getSizing(pictoID);
+
+        var targetSize = [ sizing["width"] - 2 * sizing["padding"], sizing["height"] - 2 * sizing["padding"] ];
+
+        var ratio1 = targetSize[0] / size[0];
+        var ratio2 = targetSize[1] / size[1];
+        var finalWidth, finalHeight;
+        if (ratio1 > ratio2) {
+            finalWidth = targetSize[0];
+            finalHeight = size[1] * ratio1;
+        }
+        else {
+            finalWidth = size[0] * ratio1;
+            finalHeight = targetSize[1];
+
+        }
+        return {"width": finalWidth, "height": finalHeight, 
+                "top": (sizing["height"] - finalHeight) / 2,
+                "left": (sizing["width"] - finalWidth) / 2};
+    }
+
+
+}
 
 function drawPictogram(pictoHTML, txt, image) {
     // delete previous content
@@ -382,7 +429,19 @@ function drawPictogram(pictoHTML, txt, image) {
 
     if (image != "") {
         if (image in window.images) {
+            var container = $("#rendering");
+            // compute sizes
+            var widthPX = container.width();
+            var ratio = widthPX / window.device.getWidth();
+
             pictoHTML.append("<img class=\"pictoimage\" src=\"" + window.images[image] + "\" alt=\"" + txt + "\" />");
+            var pictoID = pictoHTML.attr("id").replace("picto", "");
+            var resizing = getResizingFromPadding(image, pictoID);
+
+            pictoHTML.find("img").css("width", resizing["width"] * ratio);
+            pictoHTML.find("img").css("height", resizing["height"] * ratio);
+            pictoHTML.find("img").css("margin-top", resizing["top"] * ratio);
+            pictoHTML.find("img").css("margin-left", resizing["left"] * ratio);
         }
         else {
             console.log("Unable to find image " + image);
@@ -530,7 +589,7 @@ function loadImage(pictogram, file) {
             window.board.setImage(pictoID, finalName, name);
 
             console.log("Set a new image (" + finalName + ") for pictogram #" + pictoID);
-            updateInterface();
+            getImageSizeUpdateInterface(finalName);
         };
     })(file);
 
