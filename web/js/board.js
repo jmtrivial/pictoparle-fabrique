@@ -516,6 +516,8 @@ class Board {
         var A4height = 297;
         var margins = 10;
 
+        var marginForCutting = 5;
+
         if (A4width - 2 * margins < device.getScreenHeight() ||
             A4height - 2 * margins < device.getScreenWidth())
             return null;
@@ -524,8 +526,11 @@ class Board {
         // default export is a4 paper, portrait, using millimeters for units
         var doc = new jsPDF();
 
-        var offsetX = (A4width - device.getScreenHeight() * scale) / 2;
-        var offsetY = (A4height - device.getScreenWidth() * scale) / 2;
+        var radiusBlackRectangle = 2 * device.camera["radius"];
+
+
+        var offsetX = (A4width - (device.getScreenHeight() + device.camera["y"] + radiusBlackRectangle + 2 * marginForCutting) * scale) / 2 + (device.camera["y"] + radiusBlackRectangle + marginForCutting) * scale;
+        var offsetY = (A4height - (device.getScreenWidth() + 2 * marginForCutting) * scale) / 2 - marginForCutting * scale;
 
         doc.setDrawColor("#CC88FF");
         doc.setFontSize(7 * scale);
@@ -550,51 +555,83 @@ class Board {
         
         // draw screen border
         doc.rect(offsetX, offsetY, device.getScreenHeight() * scale, device.getScreenWidth() * scale);
-
-        doc.setFontSize(12 * scale);
-        doc.text('côté pictogrammes, pour thermogonflage', 10, 10);
-
-        // create a new page for the verso side
-        doc.addPage();
-        var radiusBlackRectangle = 2 * device.camera["radius"];
-
-        // first compute the size of the final drawing
+        
+        // draw the camera+QRcode bloc 
         var qrp = new QRCodePosition();
-        var topShift = qrp.getTopShiftFromScreen(device);
-        var leftShift = qrp.getLeftShiftFromScreen(device);
+        var topShiftBloc = device.camera["y"] + 2 * device.camera["radius"];
+        var leftShiftBloc = device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2;
 
-        offsetX = (A4width - (device.getScreenHeight() + topShift) * scale) / 2 + topShift * scale;
-        offsetY = (A4height - device.getScreenWidth() * scale) / 2;
+        doc.lines(
+            DrawCuttingTools.scale([[2 * device.camera["radius"] + qrp.dataMatrixCell * 2, 0],
+                [0, qrp.dataMatrixHeightWithMargins],
+                [-(2 * device.camera["radius"] + qrp.dataMatrixCell * 2), 0]
+            ], scale),
+            offsetX - topShiftBloc * scale, offsetY + leftShiftBloc * scale);
 
-        // if the screen is too big, we only care about the upper part,
-        // thus we translate everything
-        if (offsetX - topShift < margins) {
-            offsetX = margins + topShift;
-        }
+        doc.setLineDashPattern([2, 2], 0);
+        doc.lines(
+            DrawCuttingTools.scale([[2 * marginForCutting + device.getScreenHeight(), 0],
+                                    [0, 2 * marginForCutting + device.getScreenWidth()],
+                                    [-(2 * marginForCutting + device.getScreenHeight()), 0],
+                                    [0, -(leftShiftBloc)],
+                                    [-(2 * device.camera["radius"] + qrp.dataMatrixCell+ marginForCutting), 0],
+                                    [0, -(qrp.dataMatrixHeightWithMargins + 2 * marginForCutting)],
+                                    [2 * device.camera["radius"] + qrp.dataMatrixCell + marginForCutting, 0],
+                                    [0, -(leftShiftBloc)]
 
-        // draw screen border
-        doc.rect(offsetX, offsetY, device.getScreenHeight()* scale, device.getScreenWidth()* scale);
+            ], scale), 
+            offsetX - marginForCutting * scale, offsetY - marginForCutting * scale);
+        doc.setLineDashPattern();
 
-        // draw black rectangle for the screen
+        // camera bloc
+
         doc.setFillColor("#000000");
         doc.rect(offsetX - (device.camera["y"] + radiusBlackRectangle) * scale, 
                  offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - radiusBlackRectangle) * scale,
                  2 * radiusBlackRectangle * scale, 2 * radiusBlackRectangle * scale, 'F');
 
-        // draw line arround camera and datamatrix
-        doc.rect(offsetX - topShift * scale, 
-                 offsetY + leftShift * scale,
-                 (qrp.dataMatrixHeightWithMargins + 2 * radiusBlackRectangle + qrp.dataMatrixCell) * scale, 
-                 qrp.dataMatrixHeightWithMargins * scale);
+        doc.setFontSize(12 * scale);
+        doc.text('Côté pictogrammes, pour thermogonflage', 10, 10);
+        doc.setFontSize(8 * scale);
+        doc.text('Après impression et thermogonflage, découper suivant les pointillés', 10, 14);
 
-        doc.addImage($("#qrcode").attr("src"), offsetX - (topShift - qrp.dataMatrixCell) * scale, 
-                    offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 + qrp.dataMatrixCell) * scale,
+        // create a new page for the verso side
+        doc.addPage();
+
+
+        offsetX = (A4width - qrp.getBlocHeight() * scale) / 2;
+        offsetY = (A4height - qrp.getBlocWidth(device) * scale) / 2;
+
+        // draw black rectangle for the camera
+        doc.setFillColor("#000000");
+        doc.rect(offsetX + (qrp.getBlocWidth(device) - radiusBlackRectangle - 2 * qrp.dataMatrixCell) * scale, 
+                 offsetY + (qrp.getBlocHeight() / 2 - radiusBlackRectangle) * scale,
+                 2 * radiusBlackRectangle * scale, 2 * radiusBlackRectangle * scale, 'F');
+
+        // draw line arround camera and datamatrix
+        doc.rect(offsetX, 
+                 offsetY,
+                 qrp.getBlocWidth(device) * scale, 
+                 qrp.getBlocHeight() * scale);
+        
+        doc.setLineDashPattern([2, 2], 0);
+        doc.rect(offsetX - marginForCutting * scale, 
+            offsetY - marginForCutting * scale,
+            (qrp.getBlocWidth(device) + 2 * marginForCutting) * scale, 
+            (qrp.getBlocHeight() + 2 * marginForCutting) * scale);
+       doc.setLineDashPattern();
+
+        doc.addImage($("#qrcode").attr("src"), offsetX + (qrp.dataMatrixCell) * scale, 
+                    offsetY + (qrp.dataMatrixCell) * scale,
                     qrp.dataMatrixWidth * scale, qrp.dataMatrixWidth * scale, 'NONE', 0);
 
-        doc.text("ID: " + this.id, offsetX - topShift * scale, 
-                offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 - 4) * scale);
+        /*doc.text("ID: " + this.id, offsetX - topShift * scale, 
+                offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 - 4) * scale);*/
         
+        doc.setFontSize(12 * scale);
         doc.text('côté QRcode, pour impression simple', 10, 10);
+        doc.setFontSize(8 * scale);
+        doc.text('Après impression, découper suivant les pointillés', 10, 14);
 
         return doc;
     }
