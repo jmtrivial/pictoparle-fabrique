@@ -69,11 +69,19 @@ Device.fromXML = function(xml) {
                 window[e] = parseFloat(w.getAttribute(e));
             }
         }
+        if (["top", "bottom"].includes(window["side"]) && (! ("top" in window))) {
+            window["top"] = thickness;
+        }
+
         windows.push(window);
     }
 
     return new Device(name, id, screen, margins, thickness, camera, windows);
 
+}
+
+Device.prototype.getWindowsBySide = function(side) {
+    return this.windows.filter(w => w["side"] == side);
 }
 
 
@@ -290,6 +298,7 @@ Device.prototype.getSidesCutting = function(params, space) {
     var boardThickness = parseFloat(params["boardThickness"]);
     var slotDepth = boxThickness;
 
+    var innerCuts = [];
     var sides = [];
 
     // bottom side
@@ -404,6 +413,14 @@ Device.prototype.getSidesCutting = function(params, space) {
                     shift + kerf,  kerf));
     }
 
+    var windows = this.getWindowsBySide("top");
+    for(var w of windows) {
+        if ("bottom" in w && "top" in w) {
+            var r = new Box(w["bottom"], w["top"], w["begin"], w["end"]);
+            innerCuts.push(DrawCuttingTools.pathShift(r.toPolyline(), shift, 0));
+        }
+    }
+    
 
 
     shift += deviceThickness + boxThickness + boardThickness + space;
@@ -452,7 +469,7 @@ Device.prototype.getSidesCutting = function(params, space) {
         }
     }
 
-
+    cuttings.push(innerCuts);
     cuttings.push(sides);
 
 
@@ -547,11 +564,16 @@ Device.prototype.boxDXF = function(params) {
     // draw side cuttings
     id = 0;
     for(var layer of cut) {
-        if (id != 0) {
-            // 8 different colors are defined by js-dxf
-            // see Drawing.ACI (Autocad Color Index)
-            d.setActiveLayer("l_" + id);
+
+        // 8 different colors are defined by js-dxf
+        // see Drawing.ACI (Autocad Color Index)
+        if (id == 0) {
+            d.setActiveLayer("0");
         }
+        else {
+            d.setActiveLayer("l_" + (id % 8));
+        }
+
         id += 1;
         for(var path of layer) {
             path = DrawCuttingTools.pathShift(path, box.right + space, 0);
