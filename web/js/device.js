@@ -376,6 +376,17 @@ Device.prototype.getSidesCutting = function(params, space) {
                     []),
                     shift, i * ((innerSize[1] - f.height) + space + boxThickness)));  
 
+        var windows = this.getWindowsBySide(["left", "right"][i]);
+        for(var w of windows) {
+            if ("bottom" in w && "top" in w) {
+                var r = new Box(deviceThickness - w["bottom"] + kerf, deviceThickness - w["top"] + kerf, 
+                                innerSize[1] - f.height - boxThickness - w["begin"] + kerf, 
+                                innerSize[1] - f.height - boxThickness - w["end"] + kerf);
+                innerCuts.push(DrawCuttingTools.pathShift(r.toPolyline(), shift, i * ((innerSize[1] - f.height) + space + boxThickness)));
+            }
+        }
+                
+
         if (this.debug) {
             sides.push(DrawCuttingTools.pathShift(
                 this.rectangleWithSlots(deviceThickness + boxThickness, innerSize[1] - f.height, 0,
@@ -384,7 +395,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                         this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, false, 0),
                         []),
                         shift + kerf, i * ((innerSize[1] - f.height) + space + boxThickness) + kerf));  
-            }
+        }
     }
 
     shift += deviceThickness + boxThickness + space;
