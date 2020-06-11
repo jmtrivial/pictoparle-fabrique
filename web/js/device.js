@@ -413,10 +413,13 @@ Device.prototype.getSidesCutting = function(params, space) {
                     shift + kerf,  kerf));
     }
 
+    // draw windows in the upper part
     var windows = this.getWindowsBySide("top");
     for(var w of windows) {
         if ("bottom" in w && "top" in w) {
-            var r = new Box(w["bottom"], w["top"], w["begin"], w["end"]);
+            var r = new Box(deviceThickness + boardThickness - w["bottom"], 
+                            deviceThickness + boardThickness - w["top"], 
+                            w["begin"], w["end"]);
             innerCuts.push(DrawCuttingTools.pathShift(r.toPolyline(), shift, 0));
         }
     }
