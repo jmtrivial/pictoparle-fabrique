@@ -26,6 +26,12 @@ DrawCuttingTools.pathInvertY = function(pl) {
     return pl.map(p => [p[0], -p[1]]);
 }
 
+DrawCuttingTools.pathSymmetryX = function(pl, axis) {
+    var result = pl.map(p => [axis + (axis - p[0]), p[1]]);
+    result.reverse();
+    return result;
+}
+
 DrawCuttingTools.pathAbsoluteToRelative = function(pl) {
     var x = pl[0][0];
     var y = pl[0][1];

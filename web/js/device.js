@@ -1,4 +1,27 @@
+function distance(p1, p2) {
+    return Math.sqrt((p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]));
+}
 
+// return a number in the given list that is only once
+function singleValue(data) {
+    var res = data.filter(function(v) {
+        // get the count of the current element in array
+        // and filter based on the count
+        return data.filter(function(v1) {
+          // compare with current element
+          return v1 == v;
+          // check length
+        }).length == 1;
+    });
+    // if all values are the same, return this one
+    if (res.length == 0)
+        return data[0];
+    return res[0];
+}
+
+function fourthPoint(p, p1, p2) {
+    return [ singleValue([p[0], p1[0], p2[0]]), singleValue([p[1], p1[1], p2[1]])];
+}
 
 class Device {
     
@@ -121,6 +144,7 @@ Device.prototype.slotLine = function(start, xDirection, length, slots) {
         var sSlot = slot["start"];
         var eSlot = slot["end"];
 
+
         // compute slot orientation
         var signSlot = sign;
         if (slot["side"])
@@ -175,10 +199,37 @@ Device.prototype.getBackCutting = function(params) {
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, f.height + kerf2, 0, f.height, slotDepth, true, kerf));
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, kerf));
 
+    var sideLine = [[cBack[cBack.length - 1][0] + slotDepth, cBack[cBack.length - 1][1]]];
+
+    var windows = this.getWindowsBySide("left");
+    var elements = this.getSubElements(windows, innerSize[1] - f.height - slotDepth);
+    var lastEnd = kerf2;
+    for(var e of elements) {
+        var lshift = e["begin"] - lastEnd;
+        var line = this.autoSlotLine(sideLine[sideLine.length - 1], true, e["length"] + lshift, -2 * kerf + lshift, e["length"], slotDepth, true, kerf);
+        sideLine = sideLine.concat(line);
+        lastEnd = e["begin"] + e["length"];
+    }
+    sideLine = DrawCuttingTools.pathSymmetryX(sideLine, (sideLine[0][0] + sideLine[sideLine.length - 1][0]) / 2);
+
+    cBack = cBack.concat(sideLine);
+
+    
+
     // upper part
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, innerSize[1] - f.height, -2 * kerf, innerSize[1] - f.height, slotDepth, true, kerf));
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, innerSize[0] + 2 * kerf, 0, innerSize[0], slotDepth, true, kerf));
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -(innerSize[1] - f.height), 0, innerSize[1] - f.height, slotDepth, true, kerf));
+
+    var windows = this.getWindowsBySide("right");
+    var elements = this.getSubElements(windows, innerSize[1] - f.height - slotDepth);
+    var lastEnd = kerf2;
+    for(var e of elements) {
+        var lshift = e["begin"] - lastEnd;
+        var line = this.autoSlotLine(cBack[cBack.length - 1], true, -(e["length"] + lshift), -2 * kerf + lshift, e["length"], slotDepth, true, kerf);
+        cBack = cBack.concat(line);
+        lastEnd = e["begin"] + e["length"];
+    }
+    cBack.push([cBack[cBack.length - 1][0] - slotDepth, cBack[cBack.length - 1][1]]);
+    
 
     // second fastener
     cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, -kerf, f.width - slotDepth - 2 * kerf, slotDepth, true, kerf));
@@ -234,6 +285,42 @@ Device.prototype.getBackCutting = function(params) {
     return cuttings;
 }
 
+Device.prototype.cleanTinyEnds = function(polyline, epsilon) {
+    if (polyline.length < 2)
+        return polyline;
+
+    var result = [];
+
+    // remove the supplementary point used to close the shape
+    polyline.pop();
+
+    for(var i = 0; i < polyline.length; ) {
+        var p1 = polyline[i];
+        var p2 = polyline[(i + 1) % polyline.length];
+        if (distance(p1, p2) <= epsilon) {
+            var p0 = polyline[(i - 1) % polyline.length];
+            var p3 = polyline[(i + 2) % polyline.length];
+            // add a new point
+            if (distance(p0, p1) < distance(p3, p1)) {
+                result.push(fourthPoint(p0, p1, p2));
+            }
+            else {
+                result.push(fourthPoint(p3, p1, p2));
+            }
+            i += 2;            
+        }
+        else {
+            result.push(p1);
+            ++i;
+        }
+    }
+
+    // add the supplementary point to close the shape
+    result.push(result[0]);
+    
+    return result;
+}
+
 Device.prototype.rectangleWithSlots = function(width, height, kerf, slots1, slots2, slots3, slots4) {
     var result = [[0, 0]];
     var kerf2 = kerf * 2;
@@ -242,6 +329,7 @@ Device.prototype.rectangleWithSlots = function(width, height, kerf, slots1, slot
     result = result.concat(this.slotLine(result[result.length - 1], false, height + kerf2, slots2));
     result = result.concat(this.slotLine(result[result.length - 1], true, -(width + kerf2), slots3));
     result = result.concat(this.slotLine(result[result.length - 1], false, -(height + kerf2), slots4));
+    result = this.cleanTinyEnds(result, kerf);
 
     return result;
 }
@@ -260,7 +348,7 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf) {
 
     var lshift = shift + kerf;
 
-    if (length < smallSlot * 1.5) {
+    if (length < smallSlot * 1.2) {
         return [];
     }
     else if (length < smallSlot * 2) {
@@ -282,6 +370,23 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf) {
                  { "start": lshift + 3 * length / 4 - largeSlot / 2, "end": lshift + 3 * length / 4 + largeSlot / 2,  "depth": depth, "side": side}
         ];
     }
+}
+
+
+Device.prototype.getSubElements = function(windows, length) {
+    var result = [];
+    var pos = windows.map(x => x["begin"]).concat(windows.map(x => x["end"])).concat([0, length]);
+    pos = pos.filter(p => p <= length);
+    pos.sort((a, b) => a - b);
+
+    for(var i = 0; i < pos.length; i += 2) {
+        var open = pos[i] == 0;
+        var close = pos[i + 1] == length;
+        result.push({ "open": open, "close": close,
+                    "begin": pos[i], "length": pos[i + 1] - pos[i]});
+    }
+
+    return result;
 }
 
 Device.prototype.getSidesCutting = function(params, space) {
@@ -367,21 +472,40 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     // sides of the board
     for(var i = 0; i != 2; ++i) {
-
-        sides.push(DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(deviceThickness + boxThickness, innerSize[1] - f.height, kerf,
-                    this.autoSlots(deviceThickness, boxThickness, slotDepth, true, kerf),
-                    this.autoSlots(innerSize[1] - f.height, -boxThickness, slotDepth, false, kerf),
-                    this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, false, kerf),
-                    []),
-                    shift, i * ((innerSize[1] - f.height) + space + boxThickness)));  
-
         var windows = this.getWindowsBySide(["left", "right"][i]);
+
+        var elements = this.getSubElements(windows, innerSize[1] - f.height - boxThickness);
+        for(var e of elements) {
+            var s1 = [];
+            var startShiftInside = 0;
+            var startShift = 0;
+            if (e["open"]) {
+                s1 = this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, false, kerf);
+                startShiftInside = boxThickness;
+            }
+            else {
+                startShift = boxThickness;
+            }
+            var s2 = [];
+            if (e["close"]) {
+                s2 = this.autoSlots(deviceThickness, 0, slotDepth, true, kerf);
+            }
+
+            sides.push(DrawCuttingTools.pathShift(
+                this.rectangleWithSlots(deviceThickness + boxThickness, e["length"] + startShiftInside, kerf,
+                        s1,
+                        this.autoSlots(e["length"], startShiftInside, slotDepth, false, kerf),
+                        s2,
+                        []),
+                        shift, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift));  
+        }
+
+
         for(var w of windows) {
             if ("bottom" in w && "top" in w) {
                 var r = new Box(deviceThickness - w["bottom"] + kerf, deviceThickness - w["top"] + kerf, 
-                                innerSize[1] - f.height - boxThickness - w["begin"] + kerf, 
-                                innerSize[1] - f.height - boxThickness - w["end"] + kerf);
+                                boxThickness + w["begin"] + kerf, 
+                                boxThickness + w["end"] + kerf);
                 innerCuts.push(DrawCuttingTools.pathShift(r.toPolyline(), shift, i * ((innerSize[1] - f.height) + space + boxThickness)));
             }
         }
@@ -390,9 +514,9 @@ Device.prototype.getSidesCutting = function(params, space) {
         if (this.debug) {
             sides.push(DrawCuttingTools.pathShift(
                 this.rectangleWithSlots(deviceThickness + boxThickness, innerSize[1] - f.height, 0,
-                        this.autoSlots(deviceThickness, boxThickness, slotDepth, true, 0),
-                        this.autoSlots(innerSize[1] - f.height, -boxThickness, slotDepth, false, 0),
                         this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, false, 0),
+                        this.autoSlots(innerSize[1] - f.height, -boxThickness, slotDepth, false, 0),
+                        this.autoSlots(deviceThickness, boxThickness, slotDepth, true, 0),
                         []),
                         shift + kerf, i * ((innerSize[1] - f.height) + space + boxThickness) + kerf));  
         }
