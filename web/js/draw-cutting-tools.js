@@ -32,6 +32,11 @@ DrawCuttingTools.pathSymmetryX = function(pl, axis) {
     return result;
 }
 
+DrawCuttingTools.pathSymmetryXMiddle = function(pl) {
+    var box = Box.getBoundingBox(pl);
+    return DrawCuttingTools.pathSymmetryX(pl, box.center()[0]);
+}
+
 DrawCuttingTools.pathAbsoluteToRelative = function(pl) {
     var x = pl[0][0];
     var y = pl[0][1];

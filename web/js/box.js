@@ -19,6 +19,7 @@ class Box {
     height() {
         return this.bottom - this.top;
     }
+
 };
 
 Box.prototype.center = function() {
