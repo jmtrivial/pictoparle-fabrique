@@ -492,6 +492,7 @@ class Board {
 
 
         var cut = this.boardCutting(device, buffer);
+        var middle = Box.getBoundingBox(cut).center();
         var id = 0;
         for(var layer of cut) {
             if (id != 0) {
@@ -502,6 +503,7 @@ class Board {
             }
             id += 1;
             for(var path of layer) {
+                path = DrawCuttingTools.pathSymmetryX(path, middle[0]);
                 d.drawPolyline(path);
             }
         }
