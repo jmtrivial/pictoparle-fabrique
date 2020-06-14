@@ -32,6 +32,12 @@ DrawCuttingTools.pathSymmetryX = function(pl, axis) {
     return result;
 }
 
+DrawCuttingTools.pathSymmetryY = function(pl, axis) {
+    var result = pl.map(p => [p[0], axis + (axis - p[1])]);
+    result.reverse();
+    return result;
+}
+
 DrawCuttingTools.pathSymmetryXMiddle = function(pl) {
     var box = Box.getBoundingBox(pl);
     return DrawCuttingTools.pathSymmetryX(pl, box.center()[0]);

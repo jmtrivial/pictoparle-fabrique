@@ -461,8 +461,8 @@ Device.prototype.getSidesCutting = function(params, space) {
                                 this.autoSlots(deviceThickness, 0, slotDepth, true, kerf),
                                 this.autoSlots(f.height, 0, slotDepth, false, kerf),
                                 this.autoSlots(deviceThickness, 0, slotDepth, false, kerf),
-                                this.autoSlots(f.height, boardThickness, slotDepth * 2, true, kerf)),
-                                shift + 2 * boxThickness, i * (f.height + 2 * boxThickness + space));
+                                this.autoSlots(f.height, boardThickness, slotDepth * 3, true, kerf)),
+                                shift + 3 * boxThickness, i * (f.height + 2 * boxThickness + space));
         if (i == 1) side1 = DrawCuttingTools.pathSymmetryXMiddle(side1);
         sides.push(side1);
 
@@ -472,8 +472,8 @@ Device.prototype.getSidesCutting = function(params, space) {
                         this.autoSlots(deviceThickness, 0, slotDepth, true, 0),
                         this.autoSlots(f.height, 0, slotDepth, false, 0),
                         this.autoSlots(deviceThickness, 0, slotDepth, false, 0),
-                        this.autoSlots(f.height, boardThickness, slotDepth * 2, true, 0)),
-                        shift + 2 * boxThickness + kerf, i * (f.height + 2 * boxThickness + space) + kerf);
+                        this.autoSlots(f.height, boardThickness, slotDepth * 3, true, 0)),
+                        shift + 3 * boxThickness + kerf, i * (f.height + 2 * boxThickness + space) + kerf);
             if (i == 1) side1 = DrawCuttingTools.pathSymmetryXMiddle(side1);
             sides.push(side1);
         }
@@ -484,7 +484,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                     this.autoSlots(f.width - boxThickness, 0, slotDepth, false, kerf),
                     this.autoSlots(deviceThickness, 0, slotDepth, false, kerf),
                     this.autoSlots(f.width - boxThickness, 0, slotDepth, true, kerf)),
-                    shift + 2 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space));        
+                    shift + 3 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space));        
         if (i == 1) side2 = DrawCuttingTools.pathSymmetryXMiddle(side2);
         sides.push(side2);
             
@@ -495,7 +495,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                         this.autoSlots(f.width - boxThickness, 0, slotDepth, false, 0),
                         this.autoSlots(deviceThickness, 0, slotDepth, false, 0),
                         this.autoSlots(f.width - boxThickness, 0, slotDepth, true, 0)),
-                        shift + 2 * boxThickness + kerf, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space) + kerf);        
+                        shift + 3 * boxThickness + kerf, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space) + kerf);        
 
             if (i == 1) side2 = DrawCuttingTools.pathSymmetryXMiddle(side2);
             sides.push(side2);
@@ -503,7 +503,7 @@ Device.prototype.getSidesCutting = function(params, space) {
     
     }
 
-    shift += deviceThickness + 2 * boxThickness + space;
+    shift += deviceThickness + 3 * boxThickness + space;
 
     var middleMirror = shift + (deviceThickness + boxThickness) / 2;
     // sides of the board
@@ -649,7 +649,7 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     shift += f.width + space;
 
-    // the last part of the fasteners
+    // the second upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
         var gap = 0.5;
         var side7 = f.shape(gap, kerf);
@@ -663,6 +663,32 @@ Device.prototype.getSidesCutting = function(params, space) {
 
         if (this.debug) {
             side7 = f.shape(gap, 0);
+            side7.push([0, f.height - gap]);
+            side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap, -gap, f.height, slotDepth, false, 0));
+            side7.push(side7[0]);
+
+            if (i == 1) side7 = DrawCuttingTools.pathSymmetryXMiddle(side7);
+                    
+            sides.push(DrawCuttingTools.pathShift(side7, shift + kerf, (f.height + boxThickness + space) * i + kerf));   
+        }
+    }
+
+    shift += f.width + space;
+    
+    // the third upper part of the fasteners
+    for(var i = 0; i != 2; ++i) {
+        var gap = 0.7;
+        var side7 = f.shape(gap, kerf, true);
+        side7.push([0, f.height - gap + 2 * kerf]);
+        side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * kerf, -gap, f.height, slotDepth, false, kerf));
+        side7.push(side7[0]);
+        
+        if (i == 1) side7 = DrawCuttingTools.pathSymmetryXMiddle(side7);
+
+        sides.push(DrawCuttingTools.pathShift(side7, shift, (f.height + boxThickness + space) * i));   
+
+        if (this.debug) {
+            side7 = f.shape(gap, 0, true);
             side7.push([0, f.height - gap]);
             side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap, -gap, f.height, slotDepth, false, 0));
             side7.push(side7[0]);
@@ -747,6 +773,7 @@ Device.prototype.boxDXF = function(params) {
 
     var cut = this.getBackCutting(params);
     var box = Box.getBoundingBox(cut);
+    var middle = box.center();
 
     var id = 0;
     for(var layer of cut) {
@@ -758,6 +785,8 @@ Device.prototype.boxDXF = function(params) {
         }
         id += 1;
         for(var path of layer) {
+            // y axis is inverted wrt pdf
+            path = DrawCuttingTools.pathSymmetryY(path, middle[1]);
             d.drawPolyline(path);
         }
     }
@@ -780,6 +809,8 @@ Device.prototype.boxDXF = function(params) {
 
         id += 1;
         for(var path of layer) {
+            // y axis is inverted wrt pdf
+            path = DrawCuttingTools.pathSymmetryY(path, middle[1]);
             path = DrawCuttingTools.pathShift(path, box.right + space, 0);
             d.drawPolyline(path);
         }
