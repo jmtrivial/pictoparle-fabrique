@@ -191,11 +191,13 @@ Device.prototype.autoMultiSlotLines = function(start, windows, posDir, length, i
         sign = - 1.0;
 
     var st;
-    var sideLine = [];
+    ;
     if (shiftBegin)
         st = [start[0] + sign * (slotDepth - kerf2), start[1]];
     else
         st = [start[0], start[1]];
+    var ist = st;
+    var sideLine = [st];
 
     var elements = this.getSubElements(windows, length);
     var lastEnd = 0;
@@ -215,7 +217,7 @@ Device.prototype.autoMultiSlotLines = function(start, windows, posDir, length, i
         lastEnd = e["begin"] + e["length"];
     }
     if (invert)
-        sideLine = DrawCuttingTools.pathSymmetryX(sideLine, (sideLine[0][0] + sideLine[sideLine.length - 1][0]) / 2);
+        sideLine = DrawCuttingTools.pathSymmetryX(sideLine, (ist[0] + sideLine[sideLine.length - 1][0]) / 2);
 
     if (!shiftBegin) {
         sideLine.push([sideLine[sideLine.length - 1][0] + sign * slotDepth, sideLine[sideLine.length - 1][1]]);
@@ -651,7 +653,7 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     // the second upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
-        var gap = 0.5;
+        var gap = 0.3;
         var side7 = f.shape(gap, kerf);
         side7.push([0, f.height - gap + 2 * kerf]);
         side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * kerf, -gap, f.height, slotDepth, false, kerf));
@@ -677,7 +679,7 @@ Device.prototype.getSidesCutting = function(params, space) {
     
     // the third upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
-        var gap = 0.7;
+        var gap = 0.6;
         var side7 = f.shape(gap, kerf, true);
         side7.push([0, f.height - gap + 2 * kerf]);
         side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * kerf, -gap, f.height, slotDepth, false, kerf));
