@@ -771,7 +771,7 @@ Device.prototype.boxDXF = function(params) {
     var d = new Drawing();
     d.setUnits('Millimeters');
 
-    var space = parseFloat(params["boxThickness"]);
+    var space = parseFloat(params["boxThickness"]) * 1.5 + parseFloat(params["kerf"]);
 
     var cut = this.getBackCutting(params);
     var box = Box.getBoundingBox(cut);
