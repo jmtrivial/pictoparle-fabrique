@@ -67,12 +67,48 @@ form {
     cursor: pointer;
 }
 
+.btn-audio {
+    opacity: 0.0;
+    margin: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    cursor: pointer;
+}
+.btn-dpaudio {
+    padding: 0 !important;
+    height: 2.5em;
+    cursor: default !important;
+}
+.btn-dpaudio audio {
+    height: 100%;
+    width: 80%;
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+
+.btn-playaudio {
+    left: 0;
+    height: 100%;
+}
+
+.btn-delaudio {
+    right: 0;
+    height: 100%;
+}
 #rendering .pictogram:hover .pictotext,
 #rendering .pictogram .pictotext:focus,
 .pictogram:hover .btn-image,
 .pictogram .btn-image:focus-within,
+.pictogram:hover .btn-audio,
+.pictogram .btn-audio:focus-within,
 .pictogram .pictogram:hover .btn-deltext, 
-.pictogram .btn-deltext:focus {
+.pictogram .btn-deltext:focus,
+.pictogram.playing .btn-audio {
     opacity: 1.0;
 }
 

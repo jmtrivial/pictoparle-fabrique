@@ -1,26 +1,27 @@
 
 
 class Pictogram {
-    constructor(text, image) {
+    constructor(text, image, audio) {
         this.text = text;
         this.image = image;
+        this.audio = audio;
     }
 
     clone() {
-        return new Pictogram(this.text, this.image);
+        return new Pictogram(this.text, this.image, this.audio);
     }
 
     isEmpty() {
-        return this.text == "" && this.image == "";
+        return this.text == "" && this.image == "" && this.audio == "";
     }
     toXML() {
-        return "<pictogram txt=\"" + this.text + "\" image=\"" + this.image + "\" />\n";
+        return "<pictogram txt=\"" + this.text + "\" image=\"" + this.image + "\" audio=\"" + this.audio + "\" />\n";
     }
 }
 
 class PictogramInScreen extends Pictogram {
     constructor(pictogram, width, height, left, top) {
-        super(pictogram.text, pictogram.image);
+        super(pictogram.text, pictogram.image, pictogram.audio);
         this.width = width;
         this.height = height;
         this.left = left;
@@ -254,8 +255,15 @@ BoardPanel.fromXML = function(xml) {
             for(var j = 0; j != xml.children[i].children.length; ++j) {
                 if (xml.children[i].children[j].nodeName == "pictogram") {
                     var txt = xml.children[i].children[j].getAttribute("txt");
+                    if (txt === undefined || txt == null)
+                        txt = "";
                     var image = xml.children[i].children[j].getAttribute("image");
-                    result.setPictogram(idRow, j, new Pictogram(txt, image));
+                    if (image === undefined || image == null)
+                        image = "";
+                    var audio = xml.children[i].children[j].getAttribute("audio");
+                    if (audio === undefined || audio == null)
+                        audio = "";
+                    result.setPictogram(idRow, j, new Pictogram(txt, image, audio));
                 }
             }
             idRow += 1;
@@ -341,6 +349,29 @@ class Board {
         return false;
     }
 
+    hasAudio(audio) {
+        for(var p of this.panels) {
+            var pictos = p.getPictograms();
+            for(var pc of pictos) {
+                if (pc.audio == audio)
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    setAudio(pictoID, audio) {
+        var i = 0;
+        for(var p of this.panels) {
+            var pictos = p.getPictograms();
+            if (i + pictos.length > pictoID) {
+                pictos[pictoID - i].audio = audio;
+                return pictos[pictoID - i];
+            }
+            i += pictos.length;
+        }
+    }
+
     setImage(pictoID, image, name) {
         var i = 0;
         for(var p of this.panels) {
@@ -358,6 +389,10 @@ class Board {
 
     deleteImage(pictoID) {
         return this.setImage(pictoID, "");
+    }
+
+    deleteAudio(pictoID) {
+        return this.setAudio(pictoID, "");
     }
 
     setPictoText(pictoID, text) {

@@ -42,6 +42,12 @@ $(document).ready(function () {
             }
         }
 
+        for(var f in window.audio) {
+            if (board.hasAudio(f)) {
+                zip.file("audio/" + f, removeURLPrefix(window.audio[f]), {base64: true});
+            }
+        }
+
         zip.generateAsync({type:"blob"}).then(function (blob) {
                 saveAs(blob, window.board.name + " " + window.board.id + ".zip");                     
         }, function (err) {
@@ -70,6 +76,7 @@ $(document).ready(function () {
     window.canvas = document.createElement('canvas');
     window.images = {};
     window.imageSize = {};
+    window.audio = {};
 
     setDeviceMenu();
     setTemplateMenu();
@@ -274,9 +281,19 @@ function handleFileSelect(evt) {
                         }
             
                         var imageName = relativePath.replace(/^pictograms\//g, "");
-                        window.images[imageName] = "data: " + mimeType + ";base64, " + content;
+                        window.images[imageName] = "data:" + mimeType + ";base64," + content;
                         console.log("Loading ", imageName);
                         getImageSize(imageName);
+                    }));
+                }
+                else if (relativePath.match("^audio/.\*\\\.(mp3)$")) {
+                    promises.push(zip.file(relativePath).async("base64").then(function (content) {
+                        var re = /(?:\.([^.]+))?$/;
+                        var mimeType = "audio/mp3";
+            
+                        var audioName = relativePath.replace(/^audio\//g, "");
+                        window.audio[audioName] = "data:" + mimeType + ";base64," + content;
+                        console.log("Loading ", audioName);
                     }));
                 }
             });
@@ -379,7 +396,7 @@ function getResizingFromPadding(image, pictoID) {
 
 }
 
-function drawPictogram(pictoHTML, txt, image) {
+function drawPictogram(pictoHTML, txt, image, audio) {
     // delete previous content
     pictoHTML.html("<div class=\"dragover\"></div>");
 
@@ -408,9 +425,8 @@ function drawPictogram(pictoHTML, txt, image) {
     pictoHTML.find(".btn-deltext").click(function(e) {
         var pictoID = $(this).parent().attr("id").replace("picto", "");
         var picto = window.board.setPictoText(pictoID, "");
-        drawPictogram($(this).parent(), picto.text, picto.image);
+        drawPictogram($(this).parent(), picto.text, picto.image, picto.audio);
     });
-
 
     if (image != "") {
         if (image in window.images) {
@@ -435,7 +451,7 @@ function drawPictogram(pictoHTML, txt, image) {
         pictoHTML.find(".btn-delimage").click(function(e) {
             var pictoID = $(this).parent().attr("id").replace("picto", "");
             var picto = window.board.deleteImage(pictoID);
-            drawPictogram($(this).parent(), picto.text, picto.image);
+            drawPictogram($(this).parent(), picto.text, picto.image, picto.audio);
         });
     }
     else {
@@ -453,6 +469,38 @@ function drawPictogram(pictoHTML, txt, image) {
             loadImage($(this).parent().parent(), evt.target.files[0]);
         });
     }
+
+    if (audio != "") {
+        pictoHTML.append("<div class=\"btn-audio btn-dpaudio btn btn-secondary\"> \
+        <audio controls src=\"" + window.audio[audio] + "\"> pas d'écoute disponible sur ce navigateur</audio>\
+        <button type=\"button\" class=\"btn-delaudio btn btn-secondary\" alt=\"Supprimer le son\">✕</button>\
+        </div>");
+        pictoHTML.find(".btn-delaudio").on("click", function(evt) {
+            var pictoID = $(this).parent().parent().attr("id").replace("picto", "");
+            var picto = window.board.deleteAudio(pictoID);
+            drawPictogram($(this).parent().parent(), picto.text, picto.image, picto.audio);
+        });
+        pictoHTML.find("audio")[0].addEventListener('ended', function(){ $(this).parent().parent().removeClass("playing");  });
+        pictoHTML.find("audio")[0].addEventListener('pause', function(){ $(this).parent().parent().removeClass("playing"); });
+        pictoHTML.find("audio")[0].addEventListener('play', function(){ $(this).parent().parent().addClass("playing"); });
+    }
+    else {
+        pictoHTML.append("<form> \
+        <div class=\"btn-addaudio btn-audio btn btn-secondary\"> \
+                <label style=\"padding: 0; margin: 0\">Ajouter un son</label> \
+                <input type=\"file\" name=\"files[]\" accept=\"audio/mpeg;audio/mp3\" style=\"position: absolute; bottom: 0; left: 0; width: 100%; height: 100%; cursor: pointer; opacity: 0\"> \
+            </div></form>");
+        pictoHTML.find(".btn-addaudio").change(function(evt) {
+            if (evt.target.value.length == 0) {
+                return;
+            }
+
+
+            loadAudio($(this).parent().parent(), evt.target.files[0]);
+        });
+
+    }
+
 }
 
 function drawBoard(params) {
@@ -491,7 +539,7 @@ function drawBoard(params) {
             }   
         }
         else if (p instanceof PictogramInScreen) {
-            drawPictogram(pictoHTML, p.text, p.image);
+            drawPictogram(pictoHTML, p.text, p.image, p.audio);
             pictoID += 1;
         }
 
@@ -542,9 +590,49 @@ function dropPictogram(e) {
     e.preventDefault();
     e.stopPropagation();
     $(this).parent().removeClass("active");
-    loadImage($(this).parent(), e.originalEvent.dataTransfer.files[0]);
+    var name = e.originalEvent.dataTransfer.files[0].name;
+    if (name.match(".mp3$")) {
+        loadAudio($(this).parent(), e.originalEvent.dataTransfer.files[0]);
+    }
+    else 
+        loadImage($(this).parent(), e.originalEvent.dataTransfer.files[0]);
     return false;
 }
+
+
+function loadAudio(pictogram, file) {
+
+    var pictoID = pictogram.attr("id").replace("picto", "");
+
+    if (!(file.name.match(".mp3$"))) {
+        alert("Les images doivent être au format mp3");
+        return;
+    }
+
+    
+
+    var reader = new FileReader();
+
+    // Closure to capture the file information.
+    reader.onload = (function (uploadedFile) {
+        return function (e) {
+            var finalName = uploadedFile.name;
+            while (finalName in window.images) {
+                finalName = uniqID()  + "-" + uploadedFile.name;
+            }
+            window.audio[finalName] = e.target.result;
+            // set audio
+            window.board.setAudio(pictoID, finalName);
+
+            console.log("Set a new audio (" + finalName + ") for pictogram #" + pictoID);
+            updateInterface();
+        };
+    })(file);
+
+    reader.readAsDataURL(file);
+
+}
+
 
 function loadImage(pictogram, file) {
 
