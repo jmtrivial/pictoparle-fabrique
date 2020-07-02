@@ -199,6 +199,11 @@ function setTemplateMenu() {
 }
 
 function handleFileSelect(evt) {
+    if (evt == null || evt.target == null || evt.target.files == null || evt.target.files.length == 0) {
+        console.log("no input file");
+        return;
+    }
+
     var file = evt.target.files[0];
 
     if (file.type != "application/zip" && file.type != "application/xml" && file.type != "text/xml") {
