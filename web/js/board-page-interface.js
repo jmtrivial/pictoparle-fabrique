@@ -607,8 +607,13 @@ function dropPictogram(e) {
     if (name.match(".mp3$")) {
         loadAudio($(this).parent(), e.originalEvent.dataTransfer.files[0]);
     }
-    else 
-        loadImage($(this).parent(), e.originalEvent.dataTransfer.files[0]);
+    else {
+        if (!(name.match(".png$") || name.match(".jpg$") || name.match(".jpeg$"))) {
+            alert("Les images doivent être au format png ou jpg, et les sons au format mp3");
+        }
+        else
+            loadImage($(this).parent(), e.originalEvent.dataTransfer.files[0]);
+    }
     return false;
 }
 
