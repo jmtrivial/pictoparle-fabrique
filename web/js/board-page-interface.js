@@ -16,6 +16,14 @@ $(document).ready(function () {
             alert("La taille de l'écran de tablette n'est pas supportée par ce rendu pdf.");
     });
 
+    $("#random-id").click(function(e) {
+        id = uniqID();
+        // replace the ID with the new one
+        window.board.id = id;
+        $("#boardID").val(id);
+        setQRCode();
+    });
+
     $("#cuttingDXF").click(function(e) {
         var doc = window.board.cuttingDXF(window.device, parseFloat($("#deviceBuffer").val()));
         if (doc != null) {

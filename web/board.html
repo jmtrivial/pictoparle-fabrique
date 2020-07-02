@@ -166,9 +166,13 @@
                     <label class="form-check-label" for="boardID">
                         Identifiant unique de la planche
                     </label>
-                    <input type="number" min="0" pattern="\d+" max="999999" class="form-control" id="boardID" aria-describedby="boardIDHelper">
+                    <div class="btn-group btn-group-justified">
+                      <input type="number" min="0" pattern="\d+" max="999999" class="form-control" id="boardID" aria-describedby="boardIDHelper">
+                      <button class="btn btn-secondary" id="random-id">Aléatoire</button>
+                    </div>
                     <small id="boardIDHelper" class="form-text text-muted">Cet entier compris entre 0 et 999999 servira d'identifiant unique à la planche pour la tablette.
-                      Il est important de choisir un entier qui n'est pas déjà utilisé pour une autre planche.
+                      Il est important de choisir un entier qui n'est pas déjà utilisé pour une autre planche. Le bouton <em>aléatoire</em> permet de générer un nouveau nombre choisi au hasard.
+
                     </small>
                   </div>           
                   <div class="col-lg-2 col-4">
