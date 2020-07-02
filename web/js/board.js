@@ -622,13 +622,13 @@ class Board {
 
         // camera bloc
 
-        doc.setFillColor("#000000");
+        doc.setFillColor("#CC88FF");
         doc.rect(offsetX - (device.camera["y"] + radiusBlackRectangle) * scale, 
                  offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - radiusBlackRectangle) * scale,
                  2 * radiusBlackRectangle * scale, 2 * radiusBlackRectangle * scale, 'F');
 
         doc.setFontSize(12 * scale);
-        doc.text('Côté pictogrammes, pour thermogonflage', 10, 10);
+        doc.text('Planche «' + this.name + '» côté pictogrammes, pour thermogonflage', 10, 10);
         doc.setFontSize(8 * scale);
         doc.text('Après impression et thermogonflage, découper suivant les pointillés', 10, 14);
 
@@ -662,11 +662,10 @@ class Board {
                     offsetY + (qrp.dataMatrixCell) * scale,
                     qrp.dataMatrixWidth * scale, qrp.dataMatrixWidth * scale, 'NONE', 0);
 
-        /*doc.text("ID: " + this.id, offsetX - topShift * scale, 
-                offsetY + (device.getScreenWidth() / 2 + device.camera["x"] - qrp.dataMatrixHeightWithMargins / 2 - 4) * scale);*/
+        doc.text("ID: " + this.id, offsetX - marginForCutting * scale + 1, offsetY - 1);
         
         doc.setFontSize(12 * scale);
-        doc.text('côté QRcode, pour impression simple', 10, 10);
+        doc.text('Planche «' + this.name + '» côté QRcode, pour impression simple', 10, 10);
         doc.setFontSize(8 * scale);
         doc.text('Après impression, découper suivant les pointillés', 10, 14);
 
