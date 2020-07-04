@@ -34,7 +34,7 @@ class Device {
         this.camera = camera;
         this.windows = windows;
 
-        this.debug = false;
+        this.debug = true;
 
     }
 
@@ -584,7 +584,6 @@ Device.prototype.getSidesCutting = function(params, space) {
     shift += deviceThickness + boxThickness + space;
 
     var qp = new QRCodePosition();
-    var widthQRCode = qp.dataMatrixHeightWithMargins + 4 * qp.marginQRCode;
 
     // upper side
     sides.push(DrawCuttingTools.pathShift(
@@ -592,8 +591,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                 this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, kerf),
                 this.autoSlots(innerSize[0], 0, slotDepth, false, kerf),
                 this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, kerf),
-                [{ "start": innerSize[0] / 2 - (widthQRCode) / 2 + 2 * kerf, 
-                    "end": innerSize[0] / 2 + (widthQRCode) / 2, "side": false, "depth": slotDepth }]),
+                []),
                 shift, 0));
 
     if (this.debug) {
@@ -602,8 +600,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                     this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, 0),
                     this.autoSlots(innerSize[0], 0, slotDepth, false, 0),
                     this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, 0),
-                    [{ "start": innerSize[0] / 2 - (widthQRCode) / 2, 
-                        "end": innerSize[0] / 2 + (widthQRCode) / 2, "side": false, "depth": slotDepth }]),
+                    []),
                     shift + kerf,  kerf));
     }
 
