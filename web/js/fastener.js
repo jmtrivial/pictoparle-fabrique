@@ -8,8 +8,11 @@ class Fastener {
         this.blocHeight = 15;
     }
 
-    shape(gap, kerf = 0, simple = false) {
-        var path = [[this.width + 2 * kerf - gap, 0]];
+    shape(gap, kerf = 0, simple = false, initialGap = 0) {
+
+        var ratio = this.slot / this.angled;
+
+        var path = [[this.width + 2 * kerf - gap - ratio * initialGap, initialGap]];
         path.push([this.width - this.slot - gap + 2 * kerf, this.angled - gap + 2 * kerf]);
 
         if (!simple) {

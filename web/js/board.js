@@ -443,6 +443,8 @@ class Board {
 
     boardCutting(device, buffer) {
 
+        var gap = 0.2;
+
         var result = [];
 
         var f = new Fastener();
@@ -466,10 +468,10 @@ class Board {
 
         var board = [];
 
-        board = board.concat(DrawCuttingTools.invertXY(f.shape(0)));
-        board = board.concat([[height, 0], // first side of the tablet (+ fastener)
-                    [height, width]]);
-        var fastener = DrawCuttingTools.pathShift(DrawCuttingTools.pathInvertY(DrawCuttingTools.invertXY(f.shape(0))), 0, width);
+        board = board.concat(DrawCuttingTools.invertXY(f.shape(0, 0, false, gap)));
+        board = board.concat([[height - gap, 0], // first side of the tablet (+ fastener)
+                    [height - gap, width]]);
+        var fastener = DrawCuttingTools.pathShift(DrawCuttingTools.pathInvertY(DrawCuttingTools.invertXY(f.shape(0, 0, false, gap))), 0, width);
         fastener.reverse();
         board = board.concat(fastener);
         board.push(board[0]); // close shape
