@@ -34,7 +34,7 @@ class Device {
         this.camera = camera;
         this.windows = windows;
 
-        this.debug = true;
+        this.debug = false;
 
     }
 
@@ -92,9 +92,6 @@ Device.fromXML = function(xml) {
                 window[e] = parseFloat(w.getAttribute(e));
             }
         }
-        if (["top", "bottom"].includes(window["side"]) && (! ("top" in window))) {
-            window["top"] = thickness;
-        }
 
         windows.push(window);
     }
@@ -103,9 +100,13 @@ Device.fromXML = function(xml) {
 
 }
 
-Device.prototype.getWindowsBySide = function(side) {
-    return this.windows.filter(w => w["side"] == side);
+Device.prototype.getWindowsBySide = function(side, filterByOpen = false) {
+    var res = this.windows.filter(w => w["side"] == side);
+    if (filterByOpen)
+        res = res.filter(x => ! ("top" in x));
+    return res;
 }
+
 
 
 Device.prototype.getInnerSize = function(params) {
@@ -129,6 +130,17 @@ Device.prototype.getInnerSize = function(params) {
 Device.prototype.autoSlotLine = function (start, xDirection, length, shiftSlotSection, lengthSlotSection, depthSlots, sideSlots, kerf) {
     var slots = this.autoSlots(lengthSlotSection, shiftSlotSection, depthSlots, sideSlots, kerf);
     return this.slotLine(start, xDirection, length, slots);
+}
+
+Device.prototype.upSlotsFromWindows = function(windows, totalWidth, side, kerf) {
+    var result = [];
+
+    console.log("les windows", JSON.stringify(windows));
+    for(w of windows) {
+        result.push({ "start": w["begin"] + 2 * kerf, "end": w["end"],  "depth": totalWidth - w["bottom"], "side": side});
+    }
+    console.log("les slots", JSON.stringify(result));
+    return result;
 }
 
 Device.prototype.slotLine = function(start, xDirection, length, slots) {
@@ -591,7 +603,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                 this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, kerf),
                 this.autoSlots(innerSize[0], 0, slotDepth, false, kerf),
                 this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, kerf),
-                []),
+                this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, kerf)),
                 shift, 0));
 
     if (this.debug) {
@@ -600,7 +612,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                     this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, 0),
                     this.autoSlots(innerSize[0], 0, slotDepth, false, 0),
                     this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, 0),
-                    []),
+                    this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, 0)),
                     shift + kerf,  kerf));
     }
 
