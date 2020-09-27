@@ -7,7 +7,7 @@ function setDeviceMenu() {
     window.devices = {};
     window.device = null;
 
-    var deviceIDs = ['lenovo-tab-e10'];
+    var deviceIDs = ['lenovo-tab-e10', 'lenovo-tab-m10'];
 
     for(var d of deviceIDs) {
         $.get("devices/" + d + ".xml?uniq=" + uniqID(), function(data) {
