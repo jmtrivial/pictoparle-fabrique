@@ -7,6 +7,9 @@ class QRCodePosition {
         this.dataMatrixHeightWithMargins = (2 + this.dataMatrixNbCells) * this.dataMatrixCell;
         this.marginQRCode = 5;
 
+        this.fullShaderHeight = this.dataMatrixWidth * 1.5 * 2;
+        this.fullShaderWidth = this.fullShaderHeight * 16 / 10;
+
     }
 
     getBlocWidth() {
@@ -14,6 +17,16 @@ class QRCodePosition {
     }
     getBlocHeight() {
         return this.dataMatrixHeightWithMargins;
+    }
+
+    getShaderSize() {
+        return this.fullShaderWidth;
+    }
+
+    getShaderWidth(device) {
+        var shift = Board.marginForCutting;
+        var marginTop = device.margins["top"];
+        return this.fullShaderHeight - marginTop + shift;
     }
 
 }

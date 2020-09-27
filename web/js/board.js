@@ -282,6 +282,8 @@ BoardPanel.fromXML = function(xml) {
 }
 
 class Board {
+    static marginForCutting = 5;
+
     constructor(name, id, orientation) {
         this.orientation = orientation;
         this.name = name;
@@ -468,9 +470,19 @@ class Board {
 
         var board = [];
 
+        var qp = new QRCodePosition();
+        var shaderSize = qp.getShaderSize() + 4; // add 2 millimeters in each side to avoid problems with misalignments
+        var xCamera = device.camera["x"];
+        var shaderWidth = qp.getShaderWidth(device);
+
+        var leftShift = f.width + device.getWidth() / 2 + xCamera - shaderSize / 2;
+    
+
         board = board.concat(DrawCuttingTools.invertXY(f.shape(0, 0, false, gap)));
-        board = board.concat([[height - gap, 0], // first side of the tablet (+ fastener)
-                    [height - gap, width]]);
+        board = board.concat([[height, 0], // first side of the tablet (+ fastener)
+                    [height, leftShift], [height + shaderWidth, leftShift], // first side of the QRCode frame
+                    [height + shaderWidth, leftShift + shaderSize], [height, leftShift + shaderSize], // second side of the QRCode frame
+                    [height, width]]);
         var fastener = DrawCuttingTools.pathShift(DrawCuttingTools.pathInvertY(DrawCuttingTools.invertXY(f.shape(0, 0, false, gap))), 0, width);
         fastener.reverse();
         board = board.concat(fastener);
@@ -544,7 +556,6 @@ class Board {
         var A4height = 297;
         var margins = 10;
 
-        var marginForCutting = 5;
 
         if (A4width - 2 * margins < device.getScreenHeight() ||
             A4height - 2 * margins < device.getScreenWidth())

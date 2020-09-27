@@ -135,11 +135,9 @@ Device.prototype.autoSlotLine = function (start, xDirection, length, shiftSlotSe
 Device.prototype.upSlotsFromWindows = function(windows, totalWidth, side, kerf) {
     var result = [];
 
-    console.log("les windows", JSON.stringify(windows));
     for(w of windows) {
         result.push({ "start": w["begin"] + 2 * kerf, "end": w["end"],  "depth": totalWidth - w["bottom"], "side": side});
     }
-    console.log("les slots", JSON.stringify(result));
     return result;
 }
 
@@ -150,6 +148,9 @@ Device.prototype.slotLine = function(start, xDirection, length, slots) {
     var sign = 1;
     if (length < 0) sign = -1;
 
+
+    // first sort slots by start
+    slots.sort(function (a, b) { return a["start"] - b["start"]; });
 
     // add slots
     for(var slot of slots) {
@@ -595,7 +596,20 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     shift += deviceThickness + boxThickness + space;
 
+    // create a slot for the QRcode shader
     var qp = new QRCodePosition();
+    var shaderWidth = qp.getShaderSize() + 4; // add 2 millimeters in each side to avoid problems with misalignments
+    var middleX = innerSize[0] / 2;
+    var xCamera = this.camera["x"];
+    var shaderSlotKerf = [ { "start": middleX + xCamera - shaderWidth / 2 + 2 * kerf,
+                         "end": middleX + xCamera + shaderWidth / 2, 
+                         "depth": boardThickness, 
+                         "side": false} ];
+    var shaderSlot = [ { "start": middleX + xCamera - shaderWidth / 2,
+                    "end": middleX + xCamera + shaderWidth / 2,  
+                    "depth": boardThickness, 
+                    "side": false} ];
+
 
     // upper side
     sides.push(DrawCuttingTools.pathShift(
@@ -603,7 +617,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                 this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, kerf),
                 this.autoSlots(innerSize[0], 0, slotDepth, false, kerf),
                 this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, kerf),
-                this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, kerf)),
+                this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, kerf).concat(shaderSlotKerf)),
                 shift, 0));
 
     if (this.debug) {
@@ -612,7 +626,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                     this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, 0),
                     this.autoSlots(innerSize[0], 0, slotDepth, false, 0),
                     this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, 0),
-                    this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, 0)),
+                    this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, 0).concat(shaderSlot)),
                     shift + kerf,  kerf));
     }
 
