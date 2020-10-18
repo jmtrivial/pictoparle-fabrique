@@ -378,6 +378,10 @@ Device.prototype.rectangleWithSlots = function(width, height, kerf, slots1, slot
 Device.prototype.autoSlots = function(length, shift, depth, side, kerf) {
     var largeSlot = 10;
     var smallSlot = 4;
+
+    var largeSlotInit = largeSlot;
+    var smallSlotInit = smallSlot;
+
     if (side) {
         largeSlot += 2 * kerf;
         smallSlot += 2 * kerf;
@@ -389,21 +393,21 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf) {
 
     var lshift = shift + kerf;
 
-    if (length < smallSlot * 1.2) {
+    if (length < smallSlotInit * 1.2) {
         return [];
     }
-    else if (length < smallSlot * 2) {
+    else if (length < smallSlotInit * 2) {
         return [ { "start": lshift + length - smallSlot / 2, "end": lshift + length + kerf,  "depth": depth, "side": side} ];
     }
-    else if (length < smallSlot * 4) {
+    else if (length < smallSlotInit * 4) {
         return [ { "start": lshift + length / 2 - smallSlot / 2, "end": lshift + length / 2 + smallSlot / 2,  "depth": depth, "side": side} ];
     }
-    else if (length < largeSlot * 2) {
+    else if (length < largeSlotInit * 2) {
         return [ { "start": lshift + length / 4 - smallSlot / 2, "end": lshift + length / 4 + smallSlot / 2,  "depth": depth, "side": side},
                  { "start": lshift + 3 * length / 4 - smallSlot / 2, "end": lshift + 3 * length / 4 + smallSlot / 2,  "depth": depth, "side": side}
         ];
     }
-    else if (length < largeSlot * 4) {
+    else if (length < largeSlotInit * 4) {
         return [ { "start": lshift + length / 2 - largeSlot / 2, "end": lshift + length / 2 + largeSlot / 2,  "depth": depth, "side": side} ];
     }
     else {
