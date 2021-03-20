@@ -593,7 +593,7 @@ class Board {
                                     offsetY + (device.getScreenWidth() - (p.left + sizing["height"]) - sizing["left"]) * scale,
                                     sizing["width"] * scale, sizing["height"] * scale, p.text, 'NONE', 90);
                     doc.rect(offsetX + p.top * scale, offsetY + (device.getScreenWidth() - p.left - p.width) * scale, p.height * scale, p.width * scale);
-                    doc.text(p.text, offsetX + (p.top + p.height + 2) * scale, offsetY + (device.getScreenWidth() - p.left) * scale, { "angle": 90});
+                    doc.text(p.text, offsetX + (p.top + p.height - 0.8) * scale, offsetY + (device.getScreenWidth() - p.left - 0.5) * scale, { "angle": 90});
                 }
                 i += 1;
             }
@@ -616,6 +616,8 @@ class Board {
 
         // create a new page for the verso side
         doc.addPage();
+
+        doc.setTextColor("#000000");
 
         var qrp = new QRCodePosition();
         offsetX = (A4width - qrp.getBlocHeight() * scale) / 2;
