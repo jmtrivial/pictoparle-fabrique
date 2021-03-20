@@ -229,7 +229,14 @@ class BoardPanel {
     }
 }
 
-BoardPanel.fromXML = function(xml) {
+BoardPanel.fromXML = function(xmldoc) {
+    var xml;
+    if (typeof xmldoc ===  'string' || xmldoc instanceof String) {
+        xml = $.parseXML(xmldoc);
+    }
+    else {
+        xml = xmldoc;
+    }
     var cellWidth = xml.getAttribute("cellWidth");
     var cellHeight = xml.getAttribute("cellHeight");
     var padding = xml.getAttribute("padding");
@@ -714,7 +721,14 @@ class Board {
     }
 }
 
-Board.fromXML = function(xml) {
+Board.fromXML = function(xmldoc) {
+    var xml;
+    if (typeof xmldoc ===  'string' || xmldoc instanceof String) {
+        xml = $.parseXML(xmldoc);
+    }
+    else {
+        xml = xmldoc;
+    }
     var boardList = xml.getElementsByTagName("board");
     if (boardList.length == 0) {
         console.log("no board in the XML file");

@@ -54,7 +54,15 @@ class Device {
 
 }
 
-Device.fromXML = function(xml) {
+Device.fromXML = function(xmldoc) {
+    var xml;
+    if (typeof xmldoc ===  'string' || xmldoc instanceof String) {
+        xml = $.parseXML(xmldoc);
+    }
+    else {
+        xml = xmldoc;
+    }
+
     var xmldevice = xml.getElementsByTagName("device")[0];
     var xmlscreen = xml.getElementsByTagName("screen")[0];
     var xmlboard = xml.getElementsByTagName("board")[0];

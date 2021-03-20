@@ -187,8 +187,7 @@ function setTemplateMenu() {
                     window.board = window.templates[this.id].clone();
                     window.board.name = "";            
                     $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
-                    setPadding();
-                    updateInterface();
+                    setPaddingUpdateInterface();
                 }
 
             });
