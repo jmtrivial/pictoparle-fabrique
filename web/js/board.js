@@ -616,7 +616,6 @@ class Board {
         // create a new page for the verso side
         doc.addPage();
 
-        doc.setTextColor("#000000");
 
         var qrp = new QRCodePosition();
         offsetX = (A4width - qrp.getBlocHeight() * scale) / 2;
@@ -633,8 +632,13 @@ class Board {
                     offsetY + (qrp.dataMatrixCell) * scale,
                     qrp.dataMatrixWidth * scale, qrp.dataMatrixWidth * scale, 'NONE', 0);
 
+        doc.setDrawColor("#CC88FF");
         doc.text("ID: " + this.id, offsetX - Board.marginForCutting * scale + 1, offsetY - 1);
-        
+        doc.text(this.name, offsetX - Board.marginForCutting * scale + 0.5,
+             offsetY - 6 +  (qrp.getBlocHeight() + 2 * Board.marginForCutting) * scale);
+
+        doc.setTextColor("#000000");
+
         doc.setFontSize(12 * scale);
         doc.text('Planche «' + this.name + '» côté QRcode, pour impression simple', 10, 10);
         doc.setFontSize(8 * scale);
