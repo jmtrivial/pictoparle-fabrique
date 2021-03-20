@@ -575,8 +575,8 @@ class Board {
         var radiusBlackRectangle = 2 * device.camera["radius"];
 
 
-        var offsetX = (A4width - (device.getScreenHeight() + 2 * marginForCutting) * scale ) / 2 - marginForCutting * scale;
-        var offsetY = (A4height - (device.getScreenWidth() + 2 * marginForCutting) * scale) / 2 - marginForCutting * scale;
+        var offsetX = (A4width - (device.getScreenHeight() + 2 * Board.marginForCutting) * scale ) / 2 - Board.marginForCutting * scale;
+        var offsetY = (A4height - (device.getScreenWidth() + 2 * Board.marginForCutting) * scale) / 2 - Board.marginForCutting * scale;
 
         doc.setDrawColor("#CC88FF");
         doc.setFontSize(7 * scale);
@@ -600,12 +600,14 @@ class Board {
         }
         
         // draw screen border
+        console.log(offsetX, offsetY, device.getScreenHeight() * scale, device.getScreenWidth() * scale);
         doc.rect(offsetX, offsetY, device.getScreenHeight() * scale, device.getScreenWidth() * scale);
         
         // draw cutting rectangle
         doc.setLineDashPattern([2, 2], 0);
-        doc.rect(offsetX - marginForCutting, offsetY - marginForCutting, (device.getScreenHeight() + 2 * marginForCutting) * scale, 
-                 (device.getScreenWidth() +  2 * marginForCutting) * scale);
+        doc.rect(offsetX - Board.marginForCutting, offsetY - Board.marginForCutting, 
+                 (device.getScreenHeight() + 2 * Board.marginForCutting) * scale, 
+                 (device.getScreenWidth() +  2 * Board.marginForCutting) * scale);
 
         doc.setFontSize(12 * scale);
         doc.text('Planche «' + this.name + '» côté pictogrammes, pour thermogonflage', 10, 10);
@@ -621,16 +623,16 @@ class Board {
 
         // draw line around datamatrix        
         doc.setLineDashPattern([2, 2], 0);
-        doc.rect(offsetX - marginForCutting * scale, 
-            offsetY - marginForCutting * scale,
-            (qrp.getBlocWidth(device) + 2 * marginForCutting) * scale, 
-            (qrp.getBlocHeight() + 2 * marginForCutting) * scale);
+        doc.rect(offsetX - Board.marginForCutting * scale, 
+            offsetY - Board.marginForCutting * scale,
+            (qrp.getBlocWidth(device) + 2 * Board.marginForCutting) * scale, 
+            (qrp.getBlocHeight() + 2 * Board.marginForCutting) * scale);
 
         doc.addImage($("#qrcode").attr("src"), offsetX + (qrp.dataMatrixCell) * scale, 
                     offsetY + (qrp.dataMatrixCell) * scale,
                     qrp.dataMatrixWidth * scale, qrp.dataMatrixWidth * scale, 'NONE', 0);
 
-        doc.text("ID: " + this.id, offsetX - marginForCutting * scale + 1, offsetY - 1);
+        doc.text("ID: " + this.id, offsetX - Board.marginForCutting * scale + 1, offsetY - 1);
         
         doc.setFontSize(12 * scale);
         doc.text('Planche «' + this.name + '» côté QRcode, pour impression simple', 10, 10);
