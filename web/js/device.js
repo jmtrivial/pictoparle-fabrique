@@ -34,7 +34,7 @@ class Device {
         this.camera = camera;
         this.windows = windows;
 
-        this.debug = false;
+        this.debug = true;
 
     }
 
@@ -257,61 +257,45 @@ Device.prototype.getBackCutting = function(params) {
     var slotDepth = parseFloat(params["boxThickness"]);
 
     var kerf = parseFloat(params["kerf"]);
-    var kerf2 = kerf * 2;
 
 
     var back = [];
 
+
     // create the contour
 
-    var cBack = [[0, 0]];
-    // first fastener
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, f.height + kerf2, 0, f.height, slotDepth, true, kerf, 1));
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, kerf, 0));
+    var localKerfs = [ kerf ];
+    if (this.debug) // draw the inner shape (without kerf) to check if the drawing is correct
+        localKerfs.push(0.0);
 
-    var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("left"), true, innerSize[1] - f.height - slotDepth, true, true, slotDepth, kerf, -1);
-    cBack = cBack.concat(sideLine);
+    for (var key in localKerfs) {
+        lkerf = localKerfs[key];
+        console.log(lkerf, " vs ", kerf);
+        var lkerf2 = lkerf * 2;
 
-    // upper part
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, innerSize[0] + 2 * kerf, 0, innerSize[0], slotDepth, true, kerf, -1));
+        var cBack = [[kerf - lkerf, kerf - lkerf]];
 
-    var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("right"), false, innerSize[1] - f.height - slotDepth, false, false, slotDepth, kerf, 1);
-    cBack = cBack.concat(sideLine);
+        // first fastener
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, f.height + lkerf2, 0, f.height, slotDepth, true, lkerf, 1));
 
-    // second fastener
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, -kerf, f.width - slotDepth - 2 * kerf, slotDepth, true, kerf, 0));
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -(f.height + kerf2), 0, f.height, slotDepth, true, kerf, -1));
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, lkerf, 0));
 
-    // close shape
-    cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * (f.width - slotDepth) + innerSize[0] + kerf2), - slotDepth, 2 * f.width + innerSize[0], slotDepth, true, kerf, 1));
-
-    back.push(cBack);
-
-
-
-
-    if (this.debug) {
-        // draw the inner shape (without kerf) to check if the drawing is correct
-
-        cBack = [[kerf, kerf]];
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, f.height, 0, f.height, slotDepth, true, 0, 1));
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, 0));
+        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("left"), true, innerSize[1] - f.height - slotDepth, true, true, slotDepth, lkerf, -1);
+        cBack = cBack.concat(sideLine);
 
         // upper part
-        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("left"), true, innerSize[1] - f.height - slotDepth, true, true, slotDepth, 0, -1);
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, innerSize[0] + 2 * lkerf, 0, innerSize[0], slotDepth, true, lkerf, -1));
+
+        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("right"), false, innerSize[1] - f.height - slotDepth, false, false, slotDepth, lkerf, 1);
         cBack = cBack.concat(sideLine);
-    
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, innerSize[0], 0, innerSize[0], slotDepth, true, 0, -1));
-        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("right"), false, innerSize[1] - f.height - slotDepth, false, false, slotDepth, 0, 1);
-        cBack = cBack.concat(sideLine);
-    
+
         // second fastener
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, 0, 0));
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -f.height, 0, f.height, slotDepth, true, 0, -1));
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, -lkerf, f.width - slotDepth - 2 * lkerf, slotDepth, true, lkerf, 0));
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -(f.height + lkerf2), 0, f.height, slotDepth, true, lkerf, -1));
 
         // close shape
-        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * (f.width - slotDepth) + innerSize[0]), - slotDepth, 2 * f.width + innerSize[0], slotDepth, true, 0, 1));
-        
+        cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * (f.width - slotDepth) + innerSize[0] + lkerf2), - slotDepth, 2 * f.width + innerSize[0], slotDepth, true, lkerf, 1));
+
         back.push(cBack);
     }
 
@@ -425,6 +409,8 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
         smallshift = length / 8;
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 2 + smallshift;
+        console.log("location1", location1);
+        console.log("smallSlot", smallSlot);
         result = [ { "start": location1 - smallSlot / 2, "end": location1 + smallSlot / 2,  "depth": depth, "side": side} ];
     }
     else if (length < largeSlotInit * 2) {
@@ -493,23 +479,23 @@ Device.prototype.getSidesCutting = function(params, space) {
     var sides = [];
 
     console.log("bottom side");
-    // bottom side
-    sides.push(this.rectangleWithSlots(deviceThickness + 2 * boardThickness, innerSize[0] + 2 * f.width, kerf,
-                                this.autoSlots(deviceThickness, 2 * boxThickness, slotDepth, false, kerf, 0),
-                                this.autoSlots(innerSize[0] + 2 * f.width, 0, slotDepth, false, kerf, -1),
-                                this.autoSlots(deviceThickness, 0, slotDepth, false, kerf, 0),
-                                []));
 
+    var localKerfs = [ kerf ];
+    if (this.debug) // draw the inner shape (without kerf) to check if the drawing is correct
+        localKerfs.push(0.0);
 
-    if (this.debug) {
-        sides.push(DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(deviceThickness + 2 * boardThickness, innerSize[0] + 2 * f.width, 0,
-            this.autoSlots(deviceThickness, 2 * boxThickness, slotDepth, false, 0, 0),
-            this.autoSlots(innerSize[0] + 2 * f.width, 0, slotDepth, false, 0, -1),
-            this.autoSlots(deviceThickness, 0, slotDepth, false, 0, 0),
-            []), kerf, kerf
-            ));       
+    for (var key in localKerfs) {
+        lkerf = localKerfs[key];
+
+        // bottom side
+        sides.push(DrawCuttingTools.pathShift(this.rectangleWithSlots(deviceThickness + 2 * boardThickness, innerSize[0] + 2 * f.width, lkerf,
+                                    this.autoSlots(deviceThickness, 2 * boxThickness, slotDepth, false, lkerf, 0),
+                                    this.autoSlots(innerSize[0] + 2 * f.width, 0, slotDepth, false, lkerf, -1),
+                                    this.autoSlots(deviceThickness, 0, slotDepth, false, lkerf, 0),
+                                    []), kerf - lkerf, kerf - lkerf
+        ));
     }
+
      
     console.log("sides of the fasteners");
 
@@ -517,47 +503,29 @@ Device.prototype.getSidesCutting = function(params, space) {
     
     // sides of the fasteners
     for(var i = 0; i != 2; ++i) {
-        var side1 = DrawCuttingTools.pathShift(
-                        this.rectangleWithSlots(deviceThickness, f.height + boxThickness, kerf,
-                                this.autoSlots(deviceThickness, 0, slotDepth, true, kerf, 0),
-                                this.autoSlots(f.height, 0, slotDepth, false, kerf, 1),
-                                this.autoSlots(deviceThickness, 0, slotDepth, false, kerf, 0),
-                                this.autoSlots(f.height, boardThickness, slotDepth * 3, true, kerf, -1)),
-                                shift + 3 * boxThickness, i * (f.height + 2 * boxThickness + space));
-        if (i == 1) side1 = DrawCuttingTools.pathSymmetryXMiddle(side1);
-        sides.push(side1);
 
-        if (this.debug) {
-            side1 = DrawCuttingTools.pathShift(
-                this.rectangleWithSlots(deviceThickness, f.height + boxThickness, 0,
-                        this.autoSlots(deviceThickness, 0, slotDepth, true, 0, 0),
-                        this.autoSlots(f.height, 0, slotDepth, false, 0, 1),
-                        this.autoSlots(deviceThickness, 0, slotDepth, false, 0, 0),
-                        this.autoSlots(f.height, boardThickness, slotDepth * 3, true, 0, -1)),
-                        shift + 3 * boxThickness + kerf, i * (f.height + 2 * boxThickness + space) + kerf);
+        for (var key in localKerfs) {
+            lkerf = localKerfs[key];
+            var side1 = DrawCuttingTools.pathShift(
+                            this.rectangleWithSlots(deviceThickness, f.height + boxThickness, lkerf,
+                                    this.autoSlots(deviceThickness, 0, slotDepth, true, lkerf, 0),
+                                    this.autoSlots(f.height, 0, slotDepth, false, lkerf, 1),
+                                    this.autoSlots(deviceThickness, 0, slotDepth, false, lkerf, 0),
+                                    this.autoSlots(f.height, boardThickness, slotDepth * 3, true, lkerf, -1)),
+                                    shift + 3 * boxThickness + kerf - lkerf, i * (f.height + 2 * boxThickness + space) + kerf - lkerf);
             if (i == 1) side1 = DrawCuttingTools.pathSymmetryXMiddle(side1);
             sides.push(side1);
         }
 
-        var side2 = DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(deviceThickness, f.width - boxThickness, kerf,
-                    this.autoSlots(deviceThickness, 0, slotDepth, true, kerf, 0),
-                    this.autoSlots(f.width - boxThickness, 0, slotDepth, false, kerf, 0),
-                    this.autoSlots(deviceThickness, 0, slotDepth, false, kerf, 0),
-                    this.autoSlots(f.width - boxThickness, 0, slotDepth, true, kerf, 0)),
-                    shift + 3 * boxThickness, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space));        
-        if (i == 1) side2 = DrawCuttingTools.pathSymmetryXMiddle(side2);
-        sides.push(side2);
-            
-        if (this.debug) {
-            side2 = DrawCuttingTools.pathShift(
-                this.rectangleWithSlots(deviceThickness, f.width - boxThickness, 0,
-                        this.autoSlots(deviceThickness, 0, slotDepth, true, 0, 0),
-                        this.autoSlots(f.width - boxThickness, 0, slotDepth, false, 0, 0),
-                        this.autoSlots(deviceThickness, 0, slotDepth, false, 0, 0),
-                        this.autoSlots(f.width - boxThickness, 0, slotDepth, true, 0, 0)),
-                        shift + 3 * boxThickness + kerf, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space) + kerf);        
-
+        for (var key in localKerfs) {
+            lkerf = localKerfs[key];
+            var side2 = DrawCuttingTools.pathShift(
+                this.rectangleWithSlots(deviceThickness, f.width - boxThickness, lkerf,
+                        this.autoSlots(deviceThickness, 0, slotDepth, true, lkerf, 0),
+                        this.autoSlots(f.width - boxThickness, 0, slotDepth, false, lkerf, 0),
+                        this.autoSlots(deviceThickness, 0, slotDepth, false, lkerf, 0),
+                        this.autoSlots(f.width - boxThickness, 0, slotDepth, true, lkerf, 0)),
+                        shift + 3 * boxThickness + kerf - lkerf, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space) + kerf - lkerf);        
             if (i == 1) side2 = DrawCuttingTools.pathSymmetryXMiddle(side2);
             sides.push(side2);
         }
@@ -573,37 +541,16 @@ Device.prototype.getSidesCutting = function(params, space) {
 
         var elements = this.getSubElements(windows, innerSize[1] - f.height - boxThickness);
         for(var e of elements) {
-            var s1 = [];
-            var startShiftInside = 0;
-            var startShift = 0;
-            if (e["open"]) {
-                s1 = this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, false, kerf, 0);
-                startShiftInside = boxThickness;
-            }
-            else {
-                startShift = boxThickness;
-            }
-            var s2 = [];
-            if (e["close"]) {
-                s2 = this.autoSlots(deviceThickness, 0, slotDepth, true, kerf, 0);
-            }
 
-            var sideH = DrawCuttingTools.pathShift(
-                this.rectangleWithSlots(deviceThickness + boxThickness, e["length"] + startShiftInside, kerf,
-                        s1,
-                        this.autoSlots(e["length"], startShiftInside, slotDepth, false, kerf, 1),
-                        s2,
-                        []),
-                        shift, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift);  
-            if (i == 1) sideH = DrawCuttingTools.pathSymmetryX(sideH, middleMirror);
-            sides.push(sideH);
 
-            if (this.debug) {
+            for (var key in localKerfs) {
+                lkerf = localKerfs[key];
+
                 var s1 = [];
                 var startShiftInside = 0;
                 var startShift = 0;
                 if (e["open"]) {
-                    s1 = this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, false, 0);
+                    s1 = this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, false, lkerf, 0);
                     startShiftInside = boxThickness;
                 }
                 else {
@@ -611,20 +558,20 @@ Device.prototype.getSidesCutting = function(params, space) {
                 }
                 var s2 = [];
                 if (e["close"]) {
-                    s2 = this.autoSlots(deviceThickness, 0, slotDepth, true, 0);
+                    s2 = this.autoSlots(deviceThickness, 0, slotDepth, true, lkerf, 0);
                 }
 
-                sideH = DrawCuttingTools.pathShift(
-                this.rectangleWithSlots(deviceThickness + boxThickness, e["length"] + startShiftInside, 0,
-                        s1,
-                        this.autoSlots(e["length"], startShiftInside, slotDepth, false, 0, 1),
-                        s2,
-                        []),
-                        shift + kerf, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift + kerf);  
-
+                var sideH = DrawCuttingTools.pathShift(
+                    this.rectangleWithSlots(deviceThickness + boxThickness, e["length"] + startShiftInside, lkerf,
+                            s1,
+                            this.autoSlots(e["length"], startShiftInside, slotDepth, false, lkerf, 1),
+                            s2,
+                            []),
+                            shift + kerf - lkerf, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift + kerf - lkerf);  
                 if (i == 1) sideH = DrawCuttingTools.pathSymmetryX(sideH, middleMirror);
                 sides.push(sideH);
             }
+
         }
 
         for(var w of windows) {
@@ -658,23 +605,19 @@ Device.prototype.getSidesCutting = function(params, space) {
 
 
     // upper side
-    sides.push(DrawCuttingTools.pathShift(
-        this.rectangleWithSlots(deviceThickness + boxThickness + boardThickness, innerSize[0], kerf,
-                this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, kerf, 0),
-                this.autoSlots(innerSize[0], 0, slotDepth, false, kerf, 1),
-                this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, kerf, 0),
-                this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, kerf).concat(shaderSlotKerf)),
-                shift, 0));
 
-    if (this.debug) {
+    for (var key in localKerfs) {
+        lkerf = localKerfs[key];
+
         sides.push(DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(deviceThickness + boxThickness + boardThickness, innerSize[0], 0,
-                    this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, 0, 0),
-                    this.autoSlots(innerSize[0], 0, slotDepth, false, 0, 1),
-                    this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, 0, 0),
-                    this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, 0).concat(shaderSlot)),
-                    shift + kerf,  kerf));
+            this.rectangleWithSlots(deviceThickness + boxThickness + boardThickness, innerSize[0], lkerf,
+                    this.autoSlots(deviceThickness + boxThickness, boardThickness, slotDepth, true, lkerf, 0),
+                    this.autoSlots(innerSize[0], 0, slotDepth, false, lkerf, 1),
+                    this.autoSlots(deviceThickness + boxThickness, 0, slotDepth, true, lkerf, 0),
+                    this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, lkerf).concat(shaderSlotKerf)),
+                    shift + kerf - lkerf, kerf - lkerf));
     }
+
 
     // draw windows in the upper part
     var windows = this.getWindowsBySide("top");
@@ -693,28 +636,23 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     // add the upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
-        var sideF = DrawCuttingTools.pathShift(
-            this.rectangleWithSlots(f.width, f.height + boxThickness, kerf,
-                    this.autoSlots(f.width - slotDepth, 0, slotDepth, false, kerf, 0),
-                    this.autoSlots(f.height, boxThickness, slotDepth, false, kerf, -1),
-                    [],
-                    []),
-                        shift, i * (f.height + boxThickness + space));
-        
-        if (i == 1) sideF = DrawCuttingTools.pathSymmetryXMiddle(sideF);
-        sides.push(sideF);
-        
-        if (this.debug) {
-            sideF = DrawCuttingTools.pathShift(
-                this.rectangleWithSlots(f.width, f.height + boxThickness, 0,
-                this.autoSlots(f.width - slotDepth, 0, slotDepth, false, 0, 0),
-                this.autoSlots(f.height, boxThickness, slotDepth, false, 0, -1),
-                [],
-                []),
-                    shift + kerf, i * (f.height + boxThickness + space) + kerf);
+
+
+        for (var key in localKerfs) {
+            lkerf = localKerfs[key];
+
+            var sideF = DrawCuttingTools.pathShift(
+                this.rectangleWithSlots(f.width, f.height + boxThickness, lkerf,
+                        this.autoSlots(f.width - slotDepth, 0, slotDepth, false, lkerf, 0),
+                        this.autoSlots(f.height, boxThickness, slotDepth, false, lkerf, -1),
+                        [],
+                        []),
+                            shift + kerf - lkerf, i * (f.height + boxThickness + space) + kerf - lkerf);
+            
             if (i == 1) sideF = DrawCuttingTools.pathSymmetryXMiddle(sideF);
             sides.push(sideF);
         }
+
 
     }
 
@@ -723,24 +661,19 @@ Device.prototype.getSidesCutting = function(params, space) {
     // the second upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
         var gap = 0.3;
-        var side7 = f.shape(gap, kerf);
-        side7.push([0, f.height - gap + 2 * kerf]);
-        side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * kerf, -gap, f.height, slotDepth, false, kerf, -1));
-        side7.push(side7[0]);
-        
-        if (i == 1) side7 = DrawCuttingTools.pathSymmetryXMiddle(side7);
 
-        sides.push(DrawCuttingTools.pathShift(side7, shift, (f.height + boxThickness + space) * i));   
+        for (var key in localKerfs) {
+            lkerf = localKerfs[key];
 
-        if (this.debug) {
-            side7 = f.shape(gap, 0);
-            side7.push([0, f.height - gap]);
-            side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap, -gap, f.height, slotDepth, false, 0, -1));
+            
+            var side7 = f.shape(gap, lkerf);
+            side7.push([0, f.height - gap + 2 * lkerf]);
+            side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * lkerf, -gap, f.height, slotDepth, false, lkerf, -1));
             side7.push(side7[0]);
-
+            
             if (i == 1) side7 = DrawCuttingTools.pathSymmetryXMiddle(side7);
-                    
-            sides.push(DrawCuttingTools.pathShift(side7, shift + kerf, (f.height + boxThickness + space) * i + kerf));   
+
+            sides.push(DrawCuttingTools.pathShift(side7, shift + kerf - lkerf, (f.height + boxThickness + space) * i + kerf - lkerf));   
         }
     }
 
@@ -749,25 +682,21 @@ Device.prototype.getSidesCutting = function(params, space) {
     // the third upper part of the fasteners
     for(var i = 0; i != 2; ++i) {
         var gap = 0.6;
-        var side7 = f.shape(gap, kerf, true);
-        side7.push([0, f.height - gap + 2 * kerf]);
-        side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * kerf, -gap, f.height, slotDepth, false, kerf, -1));
-        side7.push(side7[0]);
-        
-        if (i == 1) side7 = DrawCuttingTools.pathSymmetryXMiddle(side7);
 
-        sides.push(DrawCuttingTools.pathShift(side7, shift, (f.height + boxThickness + space) * i));   
 
-        if (this.debug) {
-            side7 = f.shape(gap, 0, true);
-            side7.push([0, f.height - gap]);
-            side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap, -gap, f.height, slotDepth, false, 0, -1));
+        for (var key in localKerfs) {
+            lkerf = localKerfs[key];
+
+            var side7 = f.shape(gap, lkerf, true);
+            side7.push([0, f.height - gap + 2 * lkerf]);
+            side7 = side7.concat(this.autoSlotLine(side7[side7.length - 1], false, -f.height + gap - 2 * lkerf, -gap, f.height, slotDepth, false, lkerf, -1));
             side7.push(side7[0]);
-
+            
             if (i == 1) side7 = DrawCuttingTools.pathSymmetryXMiddle(side7);
-                    
-            sides.push(DrawCuttingTools.pathShift(side7, shift + kerf, (f.height + boxThickness + space) * i + kerf));   
+
+            sides.push(DrawCuttingTools.pathShift(side7, shift + kerf - lkerf, (f.height + boxThickness + space) * i + kerf - lkerf));   
         }
+
     }
 
     cuttings.push(innerCuts);
