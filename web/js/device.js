@@ -152,6 +152,7 @@ Device.prototype.upSlotsFromWindows = function(windows, totalWidth, side, kerf) 
 Device.prototype.slotLine = function(start, xDirection, length, slots) {
     var result = [];
 
+    
     // compute orientation
     var sign = 1;
     if (length < 0) sign = -1;
@@ -594,20 +595,16 @@ Device.prototype.getSidesCutting = function(params, space) {
     var shaderWidth = qp.getShaderSize() + 4; // add 2 millimeters in each side to avoid problems with misalignments
     var middleX = innerSize[0] / 2;
     var xCamera = this.camera["x"];
-    var shaderSlotKerf = [ { "start": middleX + xCamera - shaderWidth / 2 + 2 * kerf,
-                         "end": middleX + xCamera + shaderWidth / 2, 
-                         "depth": boardThickness, 
-                         "side": false} ];
-    var shaderSlot = [ { "start": middleX + xCamera - shaderWidth / 2,
-                    "end": middleX + xCamera + shaderWidth / 2,  
-                    "depth": boardThickness, 
-                    "side": false} ];
-
 
     // upper side
 
     for (var key in localKerfs) {
         lkerf = localKerfs[key];
+
+        var shaderSlotKerf = [ { "start": middleX + xCamera - shaderWidth / 2 + 2 * lkerf,
+            "end": middleX + xCamera + shaderWidth / 2, 
+            "depth": boardThickness, 
+            "side": false} ];
 
         sides.push(DrawCuttingTools.pathShift(
             this.rectangleWithSlots(deviceThickness + boxThickness + boardThickness, innerSize[0], lkerf,
