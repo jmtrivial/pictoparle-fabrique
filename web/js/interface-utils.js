@@ -21,21 +21,24 @@ function setDeviceMenu() {
                     window.devices[device.id].name + "</a>");
 
             // set the interaction
-            $("#" + d).click(function () {
-                window.device = window.devices[this.id];
-                $("#device").html("Tablette&nbsp;: " + window.device.name);
-                updateInterface();
+            $("#" + device.id).click(function () {
+                setDevice(this.id);
             });
 
             // set default device
             if (window.device == null) {
-                window.device = window.devices[device.id];
-                $("#device").html("Tablette&nbsp;: " + window.device.name);
-                updateInterface();
+                setDevice(device.id);
             }
           });
 
     }
+
+}
+
+function setDevice(deviceID) {
+    window.device = window.devices[deviceID];
+    $("#device").html("Tablette&nbsp;: " + window.device.name);
+    updateInterface();
 
 }
 

@@ -644,13 +644,13 @@ class Board {
         return doc;
     }
 
-    toXML() {
+    toXML(supplement = "") {
         var result ="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
         result += "<board orientation=\"";
         if (this.orientation == "horizontal") result += "horizontal";
         else result += "vertical";
         result += "\" name=\"" + this.name.replace(/\"/g, "&quot;") +"\" id=\"" + this.id + "\">\n";
-
+        result += supplement;
         for(var p of this.panels) {
             result += p.toXML();
         }
@@ -753,6 +753,18 @@ Board.fromXML = function(xmldoc) {
     var cellsList = xml.getElementsByTagName("cells");
     for(var cells of cellsList) {
         result.addPanel(BoardPanel.fromXML(cells));
+    }
+
+    // get parameters if exists
+    var parameters = xml.getElementsByTagName("parameters");
+    if (parameters.length != 0) {
+        result.parameters = {}; 
+        var attrs = parameters[0].attributes;
+        for (var i=0; i<attrs.length; i++)
+            result.parameters[attrs[i].name] = attrs[i].value;
+    }
+    else {
+        result.parameters = null;
     }
 
     return result;

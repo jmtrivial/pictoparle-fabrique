@@ -39,7 +39,8 @@ $(document).ready(function () {
         if (!checkValid())
             return;
 
-        var xmlfile = window.board.toXML();
+        var supplement = getParametersFromInterface();
+        var xmlfile = window.board.toXML(supplement);
 
         var zip = new JSZip();
         zip.file("board.xml", xmlfile);
@@ -185,8 +186,9 @@ function setTemplateMenu() {
                 }
                 else {
                     window.board = window.templates[this.id].clone();
-                    window.board.name = "";            
-                    $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
+                    window.board.name = "";
+                    window.layoutID = this.id;
+                    $("#layout").html("Mise en page&nbsp;: " + window.templates[this.id].name);
                     setPaddingUpdateInterface();
                 }
 
@@ -196,6 +198,7 @@ function setTemplateMenu() {
             if (window.board == null) {
                 window.board = window.templates[board.id].clone();
                 window.board.name = "";            
+                window.layoutID = board.id;
                 $("#layout").html("Mise en page&nbsp;: " + window.templates[board.id].name);
                 setPaddingUpdateInterface();
             }
@@ -243,8 +246,16 @@ function handleFileSelect(evt) {
                     console.log("Loading board");
                     window.board = board;
                     window.board.checkImages(window.images);
+
                     setPaddingInput();
-                    updateInterface();
+
+                    if (window.board.parameters != null) {
+                        setFromParameters(window.board.parameters);
+                    }
+                    else {
+                        updateInterface();
+                    }
+
                 }
             };
         })(file);
@@ -315,7 +326,13 @@ function handleFileSelect(evt) {
                     window.board.checkImages(window.images);
                     console.log("Loading completed. Update interface.");
                     setPaddingInput();
-                    updateInterface();
+
+                    if (window.board.parameters != null) {
+                        setFromParameters(window.board.parameters);
+                    }
+                    else {
+                        updateInterface();
+                    }
                 }
             });
         }); 
@@ -685,4 +702,51 @@ function loadImage(pictogram, file) {
 
     reader.readAsDataURL(file);
 
+}
+
+function getParametersFromInterface() {
+    var result = "<parameters";
+
+    // device
+    result += " device=\"" + window.device.id + "\"";
+
+    // layout
+    result += " layout=\"" + window.layoutID + "\"";
+
+    // scale
+    result += " scale=\"" + parseFloat($("#scale").val()) + "\"";
+    
+    // device buffer
+    result += " deviceBuffer=\"" + parseFloat($("#deviceBuffer").val()) + "\"";
+
+    result += " />";
+
+    return result;
+}
+function setFromParameters(parameters) {
+    console.log("set from parameters");
+
+    // set layout
+    if ("layout" in parameters) {
+        window.layoutID = parameters["layout"];
+        $("#layout").html("Mise en page&nbsp;: " + window.templates[window.layoutID].name);
+    }
+
+    // set scale
+    if ("scale" in parameters) {
+        $("#scale").val(parameters["scale"]);
+    }
+
+    // set device buffer
+    if ("deviceBuffer" in parameters) {
+        $("#deviceBuffer").val(parameters["deviceBuffer"]);
+    }
+
+    if ("device" in parameters) {
+        // set device and update interface
+        setDevice(parameters["device"]);
+    }
+    else {
+        updateInterface();
+    }
 }
