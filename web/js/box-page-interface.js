@@ -6,7 +6,7 @@ $(document).ready(function () {
         var params = getParameters();
         var doc = window.device.boxPDF(params);
         if (doc != null) {
-            doc.save("découpe boite.pdf");     
+            doc.save("découpe boite " + window.device.name + ".pdf");     
         } else
             alert("La taille de la tablette n'est pas supportée par ce rendu pdf.");
     });
@@ -16,7 +16,7 @@ $(document).ready(function () {
         var doc = window.device.boxDXF(params);
         if (doc != null) {
             var blob = new Blob([doc.toDxfString()], {type: 'application/dxf'});
-            saveAs(blob, "découpe boite.dxf");     
+            saveAs(blob, "découpe boite " + window.device.name + ".dxf");     
         } else
             alert("Une erreur s'est produite pendant le rendu dxf.");
     });
