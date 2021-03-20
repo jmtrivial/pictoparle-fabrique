@@ -600,7 +600,6 @@ class Board {
         }
         
         // draw screen border
-        console.log(offsetX, offsetY, device.getScreenHeight() * scale, device.getScreenWidth() * scale);
         doc.rect(offsetX, offsetY, device.getScreenHeight() * scale, device.getScreenWidth() * scale);
         
         // draw cutting rectangle
@@ -641,16 +640,38 @@ class Board {
         doc.setFontSize(8 * scale);
         doc.text('Après impression, découper suivant les pointillés et coller sous la planche, face à la caméra de la tablette.', 10, 14);
 
+        // draw parameters
+        if (this.parameters != null) {
+            i = Object.keys(this.parameters).length;
+            doc.setFontSize(12 * scale);
+            doc.text("Paramètres utilisés pour la génération:", 10, 278 - (i + 1) * 4);
+            doc.setFontSize(8 * scale);
+            for(var key in this.parameters) {
+                doc.text(key + ": " + this.parameters[key], 12, 280 - i * 4);
+                i -= 1;
+            }
+        }
+
+
         return doc;
     }
 
-    toXML(supplement = "") {
+    toXML() {
         var result ="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
         result += "<board orientation=\"";
         if (this.orientation == "horizontal") result += "horizontal";
         else result += "vertical";
         result += "\" name=\"" + this.name.replace(/\"/g, "&quot;") +"\" id=\"" + this.id + "\">\n";
-        result += supplement;
+
+        if (this.parameters != null) {
+            result += "<parameters";
+            for(var key in this.parameters) {
+                result += " " + key + "=\"" + this.parameters[key] + "\"";
+            }
+        
+            result += " />";
+        }
+
         for(var p of this.panels) {
             result += p.toXML();
         }

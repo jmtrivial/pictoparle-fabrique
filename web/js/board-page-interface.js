@@ -39,8 +39,8 @@ $(document).ready(function () {
         if (!checkValid())
             return;
 
-        var supplement = getParametersFromInterface();
-        var xmlfile = window.board.toXML(supplement);
+        setParametersFromInterface();
+        var xmlfile = window.board.toXML();
 
         var zip = new JSZip();
         zip.file("board.xml", xmlfile);
@@ -70,6 +70,7 @@ $(document).ready(function () {
         if (!checkValid())
             return;
 
+        setParametersFromInterface();
         var doc = window.board.toPDF(window.device, 
                                      parseFloat($("#scale").val()),
                                      window.imageSize);
@@ -704,25 +705,16 @@ function loadImage(pictogram, file) {
 
 }
 
-function getParametersFromInterface() {
-    var result = "<parameters";
 
-    // device
-    result += " device=\"" + window.device.id + "\"";
 
-    // layout
-    result += " layout=\"" + window.layoutID + "\"";
-
-    // scale
-    result += " scale=\"" + parseFloat($("#scale").val()) + "\"";
-    
-    // device buffer
-    result += " deviceBuffer=\"" + parseFloat($("#deviceBuffer").val()) + "\"";
-
-    result += " />";
-
-    return result;
+function setParametersFromInterface() {
+    window.board.parameters = {};
+    window.board.parameters["device"] = window.device.id;
+    window.board.parameters["layout"] = window.layoutID;
+    window.board.parameters["scale"] = parseFloat($("#scale").val());
+    window.board.parameters["deviceBuffer"] = parseFloat($("#deviceBuffer").val());
 }
+
 function setFromParameters(parameters) {
     console.log("set from parameters");
 
