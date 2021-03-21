@@ -339,7 +339,7 @@ Device.prototype.getBackCutting = function(params) {
 
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, lkerf, 0));
 
-        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("left"), true, innerSize[1] - f.height - slotDepth, true, true, slotDepth, lkerf, -1);
+        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("left"), true, innerSize[1] - f.height - slotDepth, true, true, slotDepth, lkerf, 1);
         cBack = cBack.concat(sideLine);
 
         // upper part
