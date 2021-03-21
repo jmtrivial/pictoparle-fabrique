@@ -435,7 +435,6 @@ Device.prototype.rectangleWithSlots = function(width, height, kerf, slots1, slot
  \param foolproof -1, 0 or 1 depending on the shift for foolproofing
 */
 Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproof) {
-    console.log("length", length, "shift", shift, "depth", depth, "side", side, "kerf", kerf, "foolproof", foolproof);
     var largeSlot = 10;
     var smallSlot = 4;
     var space = -0.2;
@@ -464,11 +463,9 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
     var lshift = shift + kerf;
 
     if (length < smallSlotInit * 1.2) {
-        console.log("case 0");
         result = [];
     }
     else if (length < smallSlotInit * 2) {
-        console.log("case 1");
         result = [ { "start": lshift + length - smallSlot / 2 - space, 
                      "end": lshift + length + kerf,  
                      "depth": depth, 
@@ -477,12 +474,9 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
                     } ];
     }
     else if (length < smallSlotInit * 4) {
-        console.log("case 2");
         smallshift = length / 8;
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 2 + smallshift;
-        console.log("location1", location1);
-        console.log("smallSlot", smallSlot);
         result = [ { "start": location1 - smallSlot / 2 - space, 
                      "end": location1 + smallSlot / 2 + space,  
                      "depth": depth, 
@@ -491,7 +485,6 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
                     } ];
     }
     else if (length < largeSlotInit * 2) {
-        console.log("case 3");
         smallshift = length / 16;
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 4 + smallshift;
@@ -511,7 +504,6 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
         ];
     }
     else if (length < largeSlotInit * 4) {
-        console.log("case 4");
         smallshift = length / 8;
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 2 + smallshift;
@@ -523,7 +515,6 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
                     } ];
     }
     else {
-        console.log("case 5");
         smallshift = length / 16;
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 4 + smallshift;
@@ -542,7 +533,6 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
                     }
         ];
     }
-    console.log(JSON.stringify(result));
     return result;
 }
 
@@ -580,8 +570,6 @@ Device.prototype.getSidesCutting = function(params, space) {
     var innerCuts = [];
     var sides = [];
 
-    console.log("bottom side");
-
     var localKerfs = [ kerf ];
     if (this.debug) // draw the inner shape (without kerf) to check if the drawing is correct
         localKerfs.push(0.0);
@@ -599,8 +587,6 @@ Device.prototype.getSidesCutting = function(params, space) {
     }
 
      
-    console.log("sides of the fasteners");
-
     var shift = deviceThickness + boxThickness + boardThickness + space;
     
     // sides of the fasteners
@@ -643,8 +629,7 @@ Device.prototype.getSidesCutting = function(params, space) {
 
         var elements = this.getSubElements(windows, innerSize[1] - f.height - boxThickness);
         for(var e of elements) {
-
-
+            
             for (var key in localKerfs) {
                 lkerf = localKerfs[key];
 

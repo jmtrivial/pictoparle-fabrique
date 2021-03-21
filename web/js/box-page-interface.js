@@ -31,7 +31,6 @@ $(document).ready(function () {
     });
 
     $("#calibration").click(function(e) {
-        console.log("ça clique")
         getCalibrationPDF();
     });
 });
