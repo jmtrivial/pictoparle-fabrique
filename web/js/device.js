@@ -34,7 +34,7 @@ class Device {
         this.camera = camera;
         this.windows = windows;
 
-        this.debug = true;
+        this.debug = false;
 
     }
 
@@ -166,6 +166,10 @@ Device.prototype.slotLine = function(start, xDirection, length, slots) {
         var sSlot = slot["start"];
         var eSlot = slot["end"];
 
+        var chamferStart = 0;
+        var chamferEnd = 0;
+        if ("chamferStart" in slot) chamferStart = slot["chamferStart"];
+        if ("chamferEnd" in slot) chamferEnd = slot["chamferEnd"];
 
         // compute slot orientation
         var signSlot = sign;
@@ -174,16 +178,70 @@ Device.prototype.slotLine = function(start, xDirection, length, slots) {
         var slotDepth = slot["depth"];
 
         if (xDirection) {
-            result.push([start[0] + sign * sSlot, start[1]]);
-            result.push([start[0] + sign * sSlot, start[1] + signSlot * slotDepth]);
-            result.push([start[0] + sign * eSlot, start[1] + signSlot * slotDepth]);
-            result.push([start[0] + sign * eSlot, start[1]]);
+            if (chamferStart < 0 && Math.abs(sSlot + chamferStart) >= 0) {
+                result.push([start[0] + sign * (sSlot + chamferStart), start[1]]);
+                result.push([start[0] + sign * sSlot, start[1] + signSlot * (-chamferStart)]);
+            }
+            else {
+                result.push([start[0] + sign * sSlot, start[1]]);
+            }
+
+            if (chamferStart > 0) {
+                result.push([start[0] + sign * sSlot, start[1] + signSlot * (slotDepth - chamferStart)]);
+                result.push([start[0] + sign * (sSlot + chamferStart), start[1] + signSlot * slotDepth]);
+            }
+            else {
+                result.push([start[0] + sign * sSlot, start[1] + signSlot * slotDepth]);
+            }
+            
+            if (chamferEnd > 0) {
+                result.push([start[0] + sign * (eSlot - chamferEnd), start[1] + signSlot * slotDepth]);
+                result.push([start[0] + sign * eSlot, start[1] + signSlot * (slotDepth - chamferEnd)]);
+            }
+            else {
+                result.push([start[0] + sign * eSlot, start[1] + signSlot * slotDepth]);
+            }
+
+            if (chamferEnd < 0 && Math.abs(eSlot - chamferEnd) <= Math.abs(length)) {
+                result.push([start[0] + sign * eSlot, start[1] + signSlot * (-chamferEnd)]);
+                result.push([start[0] + sign * (eSlot - chamferEnd), start[1]]);
+            }
+            else {
+                result.push([start[0] + sign * eSlot, start[1]]);
+            }
         }
         else {
-            result.push([start[0], start[1] + sign * sSlot]);
-            result.push([start[0] - signSlot * slotDepth, start[1] + sign * sSlot]);
-            result.push([start[0] - signSlot * slotDepth, start[1] + sign * eSlot]);
-            result.push([start[0], start[1] + sign * eSlot]);
+            if (chamferStart < 0 && Math.abs(sSlot + chamferStart) >= 0) {
+                result.push([start[0], start[1] + sign * (sSlot + chamferStart)]);
+                result.push([start[0] - signSlot * (-chamferStart), start[1] + sign * sSlot]);
+            }
+            else {
+                result.push([start[0], start[1] + sign * sSlot]);
+            }
+
+            if (chamferStart > 0) {
+                result.push([start[0] - signSlot * (slotDepth - chamferStart), start[1] + sign * sSlot]);
+                result.push([start[0] - signSlot * slotDepth, start[1] + sign * (sSlot + chamferStart)]);
+            }
+            else {
+                result.push([start[0] - signSlot * slotDepth, start[1] + sign * sSlot]);
+            }
+
+            if (chamferEnd > 0) {
+                result.push([start[0] - signSlot * slotDepth, start[1] + sign * (eSlot - chamferEnd)]);
+                result.push([start[0] - signSlot * (slotDepth - chamferEnd), start[1] + sign * eSlot]);
+            }
+            else {
+                result.push([start[0] - signSlot * slotDepth, start[1] + sign * eSlot]);
+            }
+            
+            if (chamferEnd < 0 && Math.abs(eSlot - chamferEnd) <= Math.abs(length)) {
+                result.push([start[0] - signSlot * (-chamferEnd), start[1] + sign * eSlot]);
+                result.push([start[0], start[1] + sign * (eSlot - chamferEnd)]);
+            }
+            else {
+                result.push([start[0], start[1] + sign * eSlot]);
+            }
         }
 
     }
@@ -380,6 +438,14 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
     console.log("length", length, "shift", shift, "depth", depth, "side", side, "kerf", kerf, "foolproof", foolproof);
     var largeSlot = 10;
     var smallSlot = 4;
+    var space = -0.2;
+    var chamfer = 0.2;
+
+    if (!side) space = -space;
+
+    chamfer = chamfer + kerf;
+    if (!side) chamfer = -chamfer;
+
     if (foolproof == null)
         foolproof = 0;
 
@@ -403,7 +469,12 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
     }
     else if (length < smallSlotInit * 2) {
         console.log("case 1");
-        result = [ { "start": lshift + length - smallSlot / 2, "end": lshift + length + kerf,  "depth": depth, "side": side} ];
+        result = [ { "start": lshift + length - smallSlot / 2 - space, 
+                     "end": lshift + length + kerf,  
+                     "depth": depth, 
+                     "side": side,
+                     "chamferStart": chamfer, "chamferEnd": chamfer
+                    } ];
     }
     else if (length < smallSlotInit * 4) {
         console.log("case 2");
@@ -412,7 +483,12 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
         location1 = lshift + length / 2 + smallshift;
         console.log("location1", location1);
         console.log("smallSlot", smallSlot);
-        result = [ { "start": location1 - smallSlot / 2, "end": location1 + smallSlot / 2,  "depth": depth, "side": side} ];
+        result = [ { "start": location1 - smallSlot / 2 - space, 
+                     "end": location1 + smallSlot / 2 + space,  
+                     "depth": depth, 
+                     "side": side,
+                     "chamferStart": chamfer, "chamferEnd": chamfer
+                    } ];
     }
     else if (length < largeSlotInit * 2) {
         console.log("case 3");
@@ -420,8 +496,18 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 4 + smallshift;
         location2 = lshift + 3 * length / 4 + smallshift;
-        result = [ { "start": location1 - smallSlot / 2, "end": location1 + smallSlot / 2,  "depth": depth, "side": side},
-                 { "start": location2 - smallSlot / 2, "end": location2 + smallSlot / 2,  "depth": depth, "side": side}
+        result = [ { "start": location1 - smallSlot / 2 - space, 
+                     "end": location1 + smallSlot / 2 + space,  
+                     "depth": depth, 
+                     "side": side,
+                     "chamferStart": chamfer, "chamferEnd": chamfer
+                   },
+                   { "start": location2 - smallSlot / 2 - space,
+                     "end": location2 + smallSlot / 2 + space,  
+                     "depth": depth, 
+                     "side": side,
+                     "chamferStart": chamfer, "chamferEnd": chamfer
+                    }
         ];
     }
     else if (length < largeSlotInit * 4) {
@@ -429,7 +515,12 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
         smallshift = length / 8;
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 2 + smallshift;
-        result = [ { "start": location1 - largeSlot / 2, "end": location1 + largeSlot / 2,  "depth": depth, "side": side} ];
+        result = [ { "start": location1 - largeSlot / 2 - space, 
+                     "end": location1 + largeSlot / 2 + space,  
+                     "depth": depth, 
+                     "side": side,
+                     "chamferStart": chamfer, "chamferEnd": chamfer
+                    } ];
     }
     else {
         console.log("case 5");
@@ -437,8 +528,18 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
         if (foolproof == 0) smallshift = 0; else smallshift *= foolproof;
         location1 = lshift + length / 4 + smallshift;
         location2 = lshift + 3 * length / 4 + smallshift;
-        result = [ { "start": location1 - largeSlot / 2, "end": location1 + largeSlot / 2,  "depth": depth, "side": side},
-                 { "start": location2 - largeSlot / 2, "end": location2 + largeSlot / 2,  "depth": depth, "side": side}
+        result = [ { "start": location1 - largeSlot / 2 - space, 
+                     "end": location1 + largeSlot / 2 + space,  
+                     "depth": depth, 
+                     "side": side,
+                     "chamferStart": chamfer, "chamferEnd": chamfer
+                    },
+                   { "start": location2 - largeSlot / 2 - space, 
+                     "end": location2 + largeSlot / 2 + space,  
+                     "depth": depth, 
+                     "side": side,
+                     "chamferStart": chamfer, "chamferEnd": chamfer
+                    }
         ];
     }
     console.log(JSON.stringify(result));
