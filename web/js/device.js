@@ -271,7 +271,7 @@ Device.prototype.autoMultiSlotLines = function(start, windows, posDir, length, i
         sign = - 1.0;
 
     var st;
-    ;
+
     if (shiftBegin)
         st = [start[0] + sign * (slotDepth - kerf2), start[1]];
     else
@@ -329,7 +329,7 @@ Device.prototype.getBackCutting = function(params) {
 
     for (var key in localKerfs) {
         lkerf = localKerfs[key];
-        console.log(lkerf, " vs ", kerf);
+
         var lkerf2 = lkerf * 2;
 
         var cBack = [[kerf - lkerf, kerf - lkerf]];
