@@ -306,6 +306,118 @@ Device.prototype.autoMultiSlotLines = function(start, windows, posDir, length, i
     return sideLine;
 }
 
+
+Device.prototype.drawNumberSquare = function (nb, corner, direction) {
+    var result = [];
+
+    var inSquare = nb;
+    if (nb == 5) inSquare = 4;
+    
+    var square = [corner];
+
+    if (direction == this.nVertical) {
+        square.push([corner[0], corner[1] + this.squareSize]);
+        if (nb >= 2)
+            square.push([corner[0] + this.squareSize, corner[1] + this.squareSize]);
+        if (nb >= 3)
+            square.push([corner[0] + this.squareSize, corner[1]]);
+        if (nb >= 4)
+            square.push(corner);
+        if (nb == 5)    
+            square.push([corner[0] + this.squareSize, corner[1] + this.squareSize]);
+    }
+    else {
+        square.push([corner[0] + this.squareSize, corner[1]]);
+        if (nb >= 2)
+            square.push([corner[0] + this.squareSize, corner[1] + this.squareSize]);
+        if (nb >= 3)
+            square.push([corner[0], corner[1] + this.squareSize]);
+        if (nb >= 4)
+            square.push(corner);
+        if (nb == 5)    
+            square.push([corner[0] + this.squareSize, corner[1] + this.squareSize]);
+
+    }
+
+    result.push(square);
+
+    return result;
+}
+
+Device.prototype.drawPartialNumberSquare = function (nb, center, direction, squareID, nbSquares) {
+
+    var totalWidth = nbSquares * this.squareSize + (nbSquares - 1) * this.squareSpace;
+    var relativeShift = squareID * this.squareSize + squareID * this.squareSpace;
+
+    var corner = [center[0], center[1]];
+    
+    if (direction == this.nVertical) {
+        corner[0] -= totalWidth / 2;
+        corner[0] += relativeShift;
+        corner[1] -= this.squareSize / 2;
+    }
+    else if (direction == this.nHorizontal) {
+        corner[0] -= this.squareSize / 2;
+        corner[1] -= totalWidth / 2;
+        corner[1] += relativeShift;
+    }
+
+    var result = this.drawNumberSquare(nb, corner, direction);
+    return result;
+}
+
+Device.prototype.nVertical = true;
+Device.prototype.nHorizontal = false;
+Device.prototype.nShift = 2;
+Device.prototype.squareSize = 2;
+Device.prototype.squareSpace = 0.5;
+Device.prototype.drawNumber = function(number, centerx, centery, direction, dist) {
+    var center = [ centerx, centery ];
+    if (direction == this.nHorizontal)
+        center[0] += dist;
+    else
+        center[1] += dist;
+    result = [];
+    
+    var nbSquares = Math.ceil(number / 5);
+    for(var squareID = 0; squareID < nbSquares; ++squareID) {
+        var nb;
+        if (squareID != nbSquares - 1)
+            nb = 5;
+        else {
+            nb = number % 5;
+            if (nb == 0)
+                nb = 5;
+        }
+        
+        result = result.concat(this.drawPartialNumberSquare(nb, center, direction, squareID, nbSquares));
+    }
+
+    return result;
+    
+}
+
+Device.prototype.numberSize = function(number) {
+    var nbSquares = Math.ceil(number / 5);
+    return nbSquares * this.squareSize + (nbSquares - 1) * this.squareSpace;
+}
+
+Device.prototype.getPiecesBetweenWindows = function(windows, length) {
+    var begin = 0;
+    var result = [];
+    if (windows.length == 0) {
+        result.push({"begin": begin, "end": length});
+        return result;
+    }
+    
+    for(var key in windows) {
+        result.push({"begin": begin, "end": windows[key]["begin"]});
+        begin = windows[key]["end"];
+    }
+    result.push({"begin": begin, "end": length});
+    return result;
+}
+
 Device.prototype.getBackCutting = function(params) {
     var cuttings = [];
     var f = new Fastener();
@@ -320,6 +432,7 @@ Device.prototype.getBackCutting = function(params) {
 
     var back = [];
 
+    var numbers = [];
 
     // create the contour
 
@@ -327,6 +440,7 @@ Device.prototype.getBackCutting = function(params) {
     if (this.debug) // draw the inner shape (without kerf) to check if the drawing is correct
         localKerfs.push(0.0);
 
+    var idSide = 7;
     for (var key in localKerfs) {
         lkerf = localKerfs[key];
 
@@ -335,24 +449,61 @@ Device.prototype.getBackCutting = function(params) {
         var cBack = [[kerf - lkerf, kerf - lkerf]];
 
         // first fastener
+        if (key == 0)
+            numbers = numbers.concat(this.drawNumber(1, cBack[cBack.length - 1][0] + (f.height + lkerf2) / 2, cBack[cBack.length - 1][1], this.nVertical, this.nShift));
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, f.height + lkerf2, 0, f.height, slotDepth, true, lkerf, 1));
 
+        if (key == 0)
+            numbers = numbers.concat(this.drawNumber(2, cBack[cBack.length - 1][0], cBack[cBack.length - 1][1] + (f.width - slotDepth) / 2, this.nHorizontal, -this.nShift));
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, 0, f.width - slotDepth, slotDepth, true, lkerf, 0));
 
-        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("left"), true, innerSize[1] - f.height - slotDepth, true, true, slotDepth, lkerf, 1);
+        // first side
+        var lwindows = this.getWindowsBySide("left");
+        if (key == 0) {
+            var lpieces = this.getPiecesBetweenWindows(lwindows, innerSize[1] - f.height - slotDepth);
+            for(var lkey in lpieces) {
+                var piece = lpieces[lkey];
+                numbers = numbers.concat(this.drawNumber(idSide, innerSize[1] - (piece["begin"] + (piece["end"] - piece["begin"]) / 2), cBack[cBack.length - 1][1], this.nVertical, this.nShift));
+                idSide += 1;
+            }
+        }
+        var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], lwindows, true, innerSize[1] - f.height - slotDepth, true, true, slotDepth, lkerf, 1);
         cBack = cBack.concat(sideLine);
 
         // upper part
+        if (key == 0)
+            numbers = numbers.concat(this.drawNumber(3, cBack[cBack.length - 1][0], cBack[cBack.length - 1][1] + (innerSize[0] + 2 * lkerf) / 2, this.nHorizontal, -this.nShift));
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, innerSize[0] + 2 * lkerf, 0, innerSize[0], slotDepth, true, lkerf, -1));
 
+        // second side
+        var rwindows = this.getWindowsBySide("right");
+        if (key == 0) {
+            var rpieces = this.getPiecesBetweenWindows(rwindows, innerSize[1] - f.height - slotDepth);
+            for(var lkey in rpieces) {
+                var piece = rpieces[lkey];
+                var size2 = this.numberSize(idSide) / 2;
+                if (piece["begin"] + (piece["end"] - piece["begin"]) / 2 - size2 < 0) {
+                    piece["end"] = piece["begin"] + size2 * 2 + this.squareSpace;
+                }
+                numbers = numbers.concat(this.drawNumber(idSide, innerSize[1] - (piece["begin"] + (piece["end"] - piece["begin"]) / 2), cBack[cBack.length - 1][1], this.nVertical, -this.nShift));
+                idSide += 1;
+            }
+        }
         var sideLine = this.autoMultiSlotLines(cBack[cBack.length - 1], this.getWindowsBySide("right"), false, innerSize[1] - f.height - slotDepth, false, false, slotDepth, lkerf, 1);
         cBack = cBack.concat(sideLine);
 
         // second fastener
+        if (key == 0)
+            numbers = numbers.concat(this.drawNumber(4, cBack[cBack.length - 1][0], cBack[cBack.length - 1][1] + (f.width - slotDepth) / 2, this.nHorizontal, -this.nShift));
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, f.width - slotDepth, -lkerf, f.width - slotDepth - 2 * lkerf, slotDepth, true, lkerf, 0));
+
+        if (key == 0)
+            numbers = numbers.concat(this.drawNumber(5, cBack[cBack.length - 1][0] - (f.height + lkerf2) / 2, cBack[cBack.length - 1][1], this.nVertical, -this.nShift));        
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], true, -(f.height + lkerf2), 0, f.height, slotDepth, true, lkerf, -1));
 
         // close shape
+        if (key == 0)
+            numbers = numbers.concat(this.drawNumber(6, cBack[cBack.length - 1][0], cBack[cBack.length - 1][1] + (-(2 * (f.width - slotDepth) + innerSize[0] + lkerf2)) / 2, this.nHorizontal, this.nShift));
         cBack = cBack.concat(this.autoSlotLine(cBack[cBack.length - 1], false, -(2 * (f.width - slotDepth) + innerSize[0] + lkerf2), - slotDepth, 2 * f.width + innerSize[0], slotDepth, true, lkerf, 1));
 
         back.push(cBack);
@@ -368,7 +519,9 @@ Device.prototype.getBackCutting = function(params) {
                  [middle[0] + hr[0], middle[1] + hr[1]], [middle[0] - hr[0], middle[1] + hr[1]],
                  [middle[0] - hr[0], middle[1] - hr[1]] ];
 
-    // first cut the whole                 
+    // first draw the numbers
+    cuttings.push(numbers);
+    // then cut the whole                 
     cuttings.push([hole]);
     // then cut the contour
     cuttings.push(back);
@@ -437,7 +590,7 @@ Device.prototype.rectangleWithSlots = function(width, height, kerf, slots1, slot
 Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproof) {
     var largeSlot = 10;
     var smallSlot = 4;
-    var space = -0.2;
+    var space = -0.1;
     var chamfer = 0.2;
 
     if (!side) space = -space;
@@ -467,7 +620,7 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
     }
     else if (length < smallSlotInit * 2) {
         result = [ { "start": lshift + length - smallSlot / 2 - space, 
-                     "end": lshift + length + kerf,  
+                     "end": lshift + length + kerf + space,  
                      "depth": depth, 
                      "side": side,
                      "chamferStart": chamfer, "chamferEnd": chamfer
@@ -569,6 +722,7 @@ Device.prototype.getSidesCutting = function(params, space) {
 
     var innerCuts = [];
     var sides = [];
+    var numbers = [];
 
     var localKerfs = [ kerf ];
     if (this.debug) // draw the inner shape (without kerf) to check if the drawing is correct
@@ -585,6 +739,7 @@ Device.prototype.getSidesCutting = function(params, space) {
                                     []), kerf - lkerf, kerf - lkerf
         ));
     }
+    numbers = numbers.concat(this.drawNumber(6, (deviceThickness + 2 * boardThickness) / 2, (innerSize[0] + 2 * f.width) / 2, this.nHorizontal, 0));
 
      
     var shift = deviceThickness + boxThickness + boardThickness + space;
@@ -592,6 +747,7 @@ Device.prototype.getSidesCutting = function(params, space) {
     // sides of the fasteners
     for(var i = 0; i != 2; ++i) {
 
+        var middle;
         for (var key in localKerfs) {
             lkerf = localKerfs[key];
             var side1 = DrawCuttingTools.pathShift(
@@ -601,9 +757,14 @@ Device.prototype.getSidesCutting = function(params, space) {
                                     this.autoSlots(deviceThickness, 0, slotDepth, false, lkerf, 0),
                                     this.autoSlots(f.height, boardThickness, slotDepth * 3, true, lkerf, -1)),
                                     shift + 3 * boxThickness + kerf - lkerf, i * (f.height + 2 * boxThickness + space) + kerf - lkerf);
+            middle = Box.getBoundingBox(side1).center();
             if (i == 1) side1 = DrawCuttingTools.pathSymmetryXMiddle(side1);
             sides.push(side1);
         }
+        var numberside1 = this.drawNumber(5 - i * 4, deviceThickness / 2, (f.height + boxThickness) / 2, this.nHorizontal, 0);
+        numberside1 = DrawCuttingTools.multipathShift(numberside1, shift + 3 * boxThickness, i * (f.height + 2 * boxThickness + space));
+        if (i == 1) numberside1 = DrawCuttingTools.multipathSymmetryX(numberside1, middle[0]);
+        numbers = numbers.concat(numberside1);
 
         for (var key in localKerfs) {
             lkerf = localKerfs[key];
@@ -614,14 +775,22 @@ Device.prototype.getSidesCutting = function(params, space) {
                         this.autoSlots(deviceThickness, 0, slotDepth, false, lkerf, 0),
                         this.autoSlots(f.width - boxThickness, 0, slotDepth, true, lkerf, 0)),
                         shift + 3 * boxThickness + kerf - lkerf, (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * kerf + 2 * space) + kerf - lkerf);        
+            middle = Box.getBoundingBox(side1).center();
             if (i == 1) side2 = DrawCuttingTools.pathSymmetryXMiddle(side2);
             sides.push(side2);
         }
+        var numberside2 = this.drawNumber(4 - i * 2, deviceThickness / 2, (f.width - boxThickness) / 2, this.nHorizontal, 0);
+        numberside2 = DrawCuttingTools.multipathShift(numberside2,  
+            shift + 3 * boxThickness, 
+            (f.height + 2 * boxThickness + space) * 2 + slotDepth + i * (f.width + 2 * space));
+        numbers = numbers.concat(numberside2);
+
     
     }
 
     shift += deviceThickness + 3 * boxThickness + space;
 
+    var idSide = 7;
     var middleMirror = shift + (deviceThickness + boxThickness) / 2;
     // sides of the board
     for(var i = 0; i != 2; ++i) {
@@ -657,7 +826,18 @@ Device.prototype.getSidesCutting = function(params, space) {
                             shift + kerf - lkerf, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift + kerf - lkerf);  
                 if (i == 1) sideH = DrawCuttingTools.pathSymmetryX(sideH, middleMirror);
                 sides.push(sideH);
+
+                if (key == 0) {
+                    // draw numbers
+                    var numberside = this.drawNumber(idSide, deviceThickness / 2, (e["length"] + startShiftInside) / 2, this.nHorizontal, 0);
+                    numberside = DrawCuttingTools.multipathShift(numberside, shift, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift);
+                    if (i == 1) numberside = DrawCuttingTools.multipathSymmetryX(numberside, middleMirror);
+                    numbers = numbers.concat(numberside);
+                    idSide += 1;
+                }
+
             }
+
 
         }
 
@@ -700,6 +880,9 @@ Device.prototype.getSidesCutting = function(params, space) {
                     this.upSlotsFromWindows(this.getWindowsBySide("top", true), deviceThickness + boardThickness, false, lkerf).concat(shaderSlotKerf)),
                     shift + kerf - lkerf, kerf - lkerf));
     }
+    numbers = numbers.concat(DrawCuttingTools.multipathShift(
+        this.drawNumber(3, (deviceThickness + boxThickness + boardThickness) / 2, innerSize[0] / 2, this.nHorizontal, 0),
+        shift, 0));
 
 
     // draw windows in the upper part
@@ -736,6 +919,11 @@ Device.prototype.getSidesCutting = function(params, space) {
             sides.push(sideF);
         }
 
+        var numberside = this.drawNumber(1 + i * 4, f.width / 2, f.height / 2, this.nHorizontal, 0);
+        numberside = DrawCuttingTools.multipathShift(numberside, shift, i * (f.height + boxThickness + space));
+        if (i == 1) numberside = DrawCuttingTools.multipathSymmetryXMiddle(numberside);
+        numbers = numbers.concat(numberside);
+
 
     }
 
@@ -758,6 +946,11 @@ Device.prototype.getSidesCutting = function(params, space) {
 
             sides.push(DrawCuttingTools.pathShift(side7, shift + kerf - lkerf, (f.height + boxThickness + space) * i + kerf - lkerf));   
         }
+
+        var numberside = this.drawNumber(1 + i * 4, f.width / 2, f.width / 2, this.nHorizontal, 0);
+        numberside = DrawCuttingTools.multipathShift(numberside, shift, i * (f.height + boxThickness + space));
+        if (i == 1) numberside = DrawCuttingTools.multipathSymmetryXMiddle(numberside);
+        numbers = numbers.concat(numberside);
     }
 
     shift += f.width + space;
@@ -780,9 +973,18 @@ Device.prototype.getSidesCutting = function(params, space) {
             sides.push(DrawCuttingTools.pathShift(side7, shift + kerf - lkerf, (f.height + boxThickness + space) * i + kerf - lkerf));   
         }
 
+        var numberside = this.drawNumber(1 + i * 4, f.width / 2, f.width / 2, this.nHorizontal, 0);
+        numberside = DrawCuttingTools.multipathShift(numberside, shift, i * (f.height + boxThickness + space));
+        if (i == 1) numberside = DrawCuttingTools.multipathSymmetryXMiddle(numberside);
+        numbers = numbers.concat(numberside);
+
     }
 
+    // first draw the numbers
+    cuttings.push(numbers);
+    // then inner cuts
     cuttings.push(innerCuts);
+    // finally, sides
     cuttings.push(sides);
 
 
