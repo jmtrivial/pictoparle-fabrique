@@ -411,8 +411,10 @@ Device.prototype.getPiecesBetweenWindows = function(windows, length) {
     }
     
     for(var key in windows) {
-        result.push({"begin": begin, "end": windows[key]["begin"]});
-        begin = windows[key]["end"];
+        if (! ("bottom" in windows[key])) {
+            result.push({"begin": begin, "end": windows[key]["begin"]});
+            begin = windows[key]["end"];
+        }
     }
     result.push({"begin": begin, "end": length});
     return result;
@@ -692,10 +694,12 @@ Device.prototype.autoSlots = function(length, shift, depth, side, kerf, foolproo
 
 Device.prototype.getSubElements = function(windows, length) {
     var result = [];
-    var pos = windows.map(x => x["begin"]).concat(windows.map(x => x["end"])).concat([0, length]);
+    ws = windows.filter(w => ! ("bottom" in w));
+    
+    var pos = ws.map(x => x["begin"]).concat(ws.map(x => x["end"])).concat([0, length]);
     pos = pos.filter(p => p <= length);
     pos.sort((a, b) => a - b);
-
+    console.log(JSON.stringify(pos));
     for(var i = 0; i < pos.length; i += 2) {
         var open = pos[i] == 0;
         var close = pos[i + 1] == length;
@@ -703,6 +707,7 @@ Device.prototype.getSubElements = function(windows, length) {
                     "begin": pos[i], "length": pos[i + 1] - pos[i]});
     }
 
+    console.log(JSON.stringify(result));
     return result;
 }
 
@@ -817,19 +822,26 @@ Device.prototype.getSidesCutting = function(params, space) {
                     s2 = this.autoSlots(deviceThickness, 0, slotDepth, true, lkerf, 0);
                 }
 
+                // FIXME: if the side contains both windows with and without bottom, it will not work
                 var sideH = DrawCuttingTools.pathShift(
                     this.rectangleWithSlots(deviceThickness + boxThickness, e["length"] + startShiftInside, lkerf,
                             s1,
                             this.autoSlots(e["length"], startShiftInside, slotDepth, false, lkerf, 1),
                             s2,
-                            []),
+                            this.upSlotsFromWindows(windows.filter(w => "bottom" in w), deviceThickness, false, lkerf)),
                             shift + kerf - lkerf, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift + kerf - lkerf);  
                 if (i == 1) sideH = DrawCuttingTools.pathSymmetryX(sideH, middleMirror);
                 sides.push(sideH);
 
+                // FIXME: adjust this in a more generic way
+                center = (e["length"] + startShiftInside) / 2;
+                if (windows.filter(w => "bottom" in w).length != 0)
+                    center = (e["length"] + startShiftInside) / 4;
+                
+
                 if (key == 0) {
                     // draw numbers
-                    var numberside = this.drawNumber(idSide, deviceThickness / 2, (e["length"] + startShiftInside) / 2, this.nHorizontal, 0);
+                    var numberside = this.drawNumber(idSide, deviceThickness / 2, center, this.nHorizontal, 0);
                     numberside = DrawCuttingTools.multipathShift(numberside, shift, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift);
                     if (i == 1) numberside = DrawCuttingTools.multipathSymmetryX(numberside, middleMirror);
                     numbers = numbers.concat(numberside);
