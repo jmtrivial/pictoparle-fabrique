@@ -76,23 +76,68 @@
                 besoins spécifiques d'un contexte ou d'une personne.
             </p>
             <h2><span class="badge badge-pill badge-primary">1</span> Initialisation</h2>
-            <p>Commencez par choisir le <strong>type de tablette</strong> que vous utilisez, ainsi que la <strong>mise en page</strong> de votre choix.</p>
-            <p>Il est possible d'<strong>importer une planche déjà réalisée</strong> en utilisant le fichier tablette d'un précédent projet. </p>
+            <p>Commencez par choisir le <strong>type de tablette</strong> que vous utilisez, indiquez la géométrie de la coque si vous en utilisez une.
             <div class="container my-2">
-                <div class="row">
-                  <div class="col-sm">
+                <div class="form-row align-items-center">
+                  <div class="col-sm-4">
                     <div class="dropdown">
                       <div class="btn-group btn-block my-1">
-                        <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="device"   data-toggle="dropdown" 
+                        <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="device" data-toggle="dropdown" 
                         aria-haspopup="true" role="menu" aria-expanded="false">
                           choix de la tablette
                         </button>
                         <div class="dropdown-menu" aria-labelledby="device" id="devices">
                         </div>
                       </div>
+                    </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-check my-1">
+                          <input class="form-check-input" type="checkbox" value="" id="deviceCase">
+                          <label class="form-check-label" for="deviceCase">
+                            avec coque
+                          </label>
+                        </div>
                       </div>
                   </div>
-                  <div class="col-sm">
+                  
+                    <div id="caseGeometry" class="form-row align-items-center" disabled>
+                        <div class="col-sm-4 form-group">
+                          <label class="form-check-label mb-2" for="caseWidth">
+                              Largeur de la coque
+                          </label>
+                          <input type="number" min="0" step="0.1" max="999999" class="form-control" id="caseWidth" aria-describedby="caseWidthHelper" value="0.0" disabled>
+                          <small id="caseWidthHelper" class="form-text text-muted">
+                            Largeur de la coque (en millimètres), quand la tablette est dedans. Doit être supérieur à la largeur de la tablette<span id="deviceWidthDesc"></span>.
+                        </small>
+                      </div>
+
+                      <div class="col-sm-4 form-group">
+                        <label class="form-check-label mb-2" for="caseHeight">
+                            Hauteur de la coque
+                        </label>
+                        <input type="number" min="0" step="0.1" max="999999" class="form-control" id="caseHeight" aria-describedby="caseHeightHelper" value="0.0" disabled>
+                        <small id="caseHeightHelper" class="form-text text-muted">
+                            Hauteur de la coque (en millimètres), quand la tablette est dedans. Doit être supérieur à la hauteur de la tablette<span id="deviceHeightDesc"></span>.
+                        </small>
+                      </div>
+
+                        <div class="col-sm-4 form-group">
+                          <label class="form-check-label mb-2" for="caseThickness">
+                              Épaisseur de la coque
+                          </label>
+                          <input type="number" min="0" step="0.1" max="999999" class="form-control" id="caseThickness" aria-describedby="caseThicknessHelper" value="0.0" disabled>
+                          <small id="caseThicknessHelper" class="form-text text-muted">
+                              Épaisseur de la coque (en millimètres), quand la tablette est dedans. Doit être supérieur à l'épaisseur de la tablette<span id="deviceThicknessDesc"></span>.
+                          </small>
+                          </div>
+                        </div>
+              </div>
+              <p>Choisissez une <strong>mise en page</strong> de votre choix. Il est également possible d'<strong>importer une planche déjà réalisée</strong> 
+                en utilisant le fichier tablette d'un précédent projet. Le type de tablette et la coque choisie seront également importées depuis le fichier.</p>
+              <div class="container my-2">
+                  <div class="form-row">
+                    <div class="col-sm">
                     <div class="dropdown">
                       <div class="btn-group btn-block my-1">
                           <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="layout"   data-toggle="dropdown" 

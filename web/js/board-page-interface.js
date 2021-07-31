@@ -352,7 +352,6 @@ function updateInterface() {
 }
 
 function drawDevice() {
-    
     var container = $("#rendering");
     container.html("");
 
@@ -710,6 +709,10 @@ function loadImage(pictogram, file) {
 function setParametersFromInterface() {
     window.board.parameters = {};
     window.board.parameters["device"] = window.device.id;
+    window.board.parameters["case"] = $("#deviceCase").is(':checked');
+    window.board.parameters["caseWidth"] = $("#caseWidth").val();
+    window.board.parameters["caseHeight"] =  $("#caseHeight").val();
+    window.board.parameters["caseThickness"] = $("#caseThickness").val();
     window.board.parameters["layout"] = window.layoutID;
     window.board.parameters["scale"] = parseFloat($("#scale").val());
     window.board.parameters["deviceBuffer"] = parseFloat($("#deviceBuffer").val());
@@ -732,6 +735,27 @@ function setFromParameters(parameters) {
     // set device buffer
     if ("deviceBuffer" in parameters) {
         $("#deviceBuffer").val(parameters["deviceBuffer"]);
+    }
+
+    if ("case" in parameters && "caseWidth" in parameters && "caseHeight" in parameters && "caseThickness" in parameters) {
+        if (parameters["case"] == "true") {
+            $("#deviceCase").prop("checked", true);
+            $("#caseWidth").prop("disabled", false);
+            $("#caseHeight").prop("disabled", false);
+            $("#caseThickness").prop("disabled", false);
+            $("#caseWidth").val(parameters["caseWidth"]);
+            $("#caseWidth").attr("min", parameters["caseWidth"]);
+            $("#caseHeight").val(parameters["caseHeight"]);
+            $("#caseHeight").attr("min", parameters["caseHeight"]);
+            $("#caseThickness").val(parameters["caseThickness"]);
+            $("#caseThickness").attr("min", parameters["caseThickness"]);
+        }
+        else {
+            resetCase();
+        }
+    }
+    else {
+        resetCase();
     }
 
     if ("device" in parameters) {

@@ -38,6 +38,14 @@ class Device {
 
     }
 
+    clone() {
+        return new Device(this.name, this.id, JSON.parse(JSON.stringify(this.screen)),
+                JSON.parse(JSON.stringify(this.margins)),
+                this.thickness,
+                JSON.parse(JSON.stringify(this.camera)),
+                JSON.parse(JSON.stringify(this.windows)));
+    }
+
     getWidth() {
         return this.screen["width"] + this.margins["left"] + this.margins["right"];
     }
@@ -52,6 +60,17 @@ class Device {
         return this.screen["height"];
     }
 
+    newWithCase(cWidth, cHeight, cThickness) {
+        var newDevice = this.clone();
+
+        newDevice.margins["left"] = (cWidth - this.screen["width"]) / 2;
+        newDevice.margins["right"] = (cWidth - this.screen["width"]) / 2;
+        newDevice.margins["top"] = (cHeight - this.screen["height"]) / 2;
+        newDevice.margins["bottom"] = (cHeight - this.screen["height"]) / 2;
+        newDevice.thickness = cThickness;
+        
+        return newDevice;
+    }
 }
 
 Device.fromXML = function(xmldoc) {

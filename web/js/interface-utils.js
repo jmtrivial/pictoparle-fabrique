@@ -22,21 +22,71 @@ function setDeviceMenu() {
 
             // set the interaction
             $("#" + device.id).click(function () {
+                resetCase();
                 setDevice(this.id);
             });
 
             // set default device
             if (window.device == null) {
+                resetCase();
                 setDevice(device.id);
             }
           });
 
     }
 
+
+    $("#deviceCase").click(function() {
+
+        if ($(this).is(':checked')) {
+            $("#caseWidth").prop("disabled", false);
+            $("#caseHeight").prop("disabled", false);
+            $("#caseThickness").prop("disabled", false);
+            $("#caseWidth").val(device.getWidth());
+            $("#caseWidth").attr("min", device.getWidth());
+            $("#caseHeight").val(device.getHeight());
+            $("#caseHeight").attr("min", device.getHeight());
+            $("#caseThickness").val(device.thickness);
+            $("#caseThickness").attr("min", device.thickness);
+        }
+        else {
+            resetCase();
+        }
+        // then reset device
+        setDevice(device.id);
+    });
+
+    $("#caseWidth").change(function() {        
+        setDevice(device.id);
+    });
+    $("#caseHeight").change(function() {
+        setDevice(device.id);
+    });
+    $("#caseThickness").change(function() {
+        setDevice(device.id);
+    });
+}
+
+function resetCase() {
+    $("#deviceCase").prop("checked", false);
+    $("#caseWidth").prop("disabled", true);
+    $("#caseHeight").prop("disabled", true);
+    $("#caseThickness").prop("disabled", true);
+    $("#caseWidth").val(0.0);
+    $("#caseHeight").val(0.0);
+    $("#caseThickness").val(0.0);
 }
 
 function setDevice(deviceID) {
-    window.device = window.devices[deviceID];
+    if ($("#deviceCase").is(':checked')) {
+        window.device = window.devices[deviceID].newWithCase($("#caseWidth").val(), $("#caseHeight").val(), $("#caseThickness").val());
+    }
+    else {
+        window.device = window.devices[deviceID];
+    }
+    $("#deviceWidthDesc").html(" (<strong>" + window.devices[deviceID].getWidth() + " mm</strong>)");
+    $("#deviceHeightDesc").html(" (<strong>" + window.devices[deviceID].getHeight() + " mm</strong>)");
+    $("#deviceThicknessDesc").html(" (<strong>" + window.devices[deviceID].thickness + " mm</strong>)");
     $("#device").html("Tablette&nbsp;: " + window.device.name);
     updateInterface();
 
