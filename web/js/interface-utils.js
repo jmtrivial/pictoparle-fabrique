@@ -17,7 +17,7 @@ function setDeviceMenu() {
             window.devices[device.id] = device;              
 
             // create the entry 
-            $("#devices").append("<a class=\"dropdown-item\" href=\"#\" id=\"" + device.id + "\">" + 
+            $("#devices").append("<a class=\"dropdown-item\" href=\"#devices\" id=\"" + device.id + "\">" + 
                     window.devices[device.id].name + "</a>");
 
             // set the interaction
