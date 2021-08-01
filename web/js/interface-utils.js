@@ -42,12 +42,12 @@ function setDeviceMenu() {
             $("#caseWidth").prop("disabled", false);
             $("#caseHeight").prop("disabled", false);
             $("#caseThickness").prop("disabled", false);
-            $("#caseWidth").val(device.getWidth().toFixed(1));
-            $("#caseWidth").attr("min", device.getWidth().toFixed(1));
-            $("#caseHeight").val(device.getHeight().toFixed(1));
-            $("#caseHeight").attr("min", device.getHeight().toFixed(1));
-            $("#caseThickness").val(device.thickness).toFixed(1);
-            $("#caseThickness").attr("min", device.thickness.toFixed(1));
+            $("#caseWidth").val(Number(device.getWidth().toFixed(1)));
+            $("#caseWidth").attr("min", Number(device.getWidth().toFixed(1)));
+            $("#caseHeight").val(Number(device.getHeight().toFixed(1)));
+            $("#caseHeight").attr("min", Number(device.getHeight().toFixed(1)));
+            $("#caseThickness").val(Number(device.thickness.toFixed(1)));
+            $("#caseThickness").attr("min", Number(device.thickness.toFixed(1)));
         }
         else {
             resetCase();
@@ -79,7 +79,7 @@ function resetCase() {
 
 function setDevice(deviceID) {
     if ($("#deviceCase").is(':checked')) {
-        window.device = window.devices[deviceID].newWithCase($("#caseWidth").val(), $("#caseHeight").val(), $("#caseThickness").val());
+        window.device = window.devices[deviceID].newWithCase(Number($("#caseWidth").val()), Number($("#caseHeight").val()), Number($("#caseThickness").val()));
     }
     else {
         window.device = window.devices[deviceID];
