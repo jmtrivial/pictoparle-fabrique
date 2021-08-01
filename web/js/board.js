@@ -452,7 +452,7 @@ class Board {
 
     boardCutting(device, buffer) {
 
-        var gap = 0.2;
+        var gap = 0.0;
 
         var result = [];
 
