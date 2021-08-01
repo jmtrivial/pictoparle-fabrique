@@ -63,11 +63,26 @@ class Device {
     newWithCase(cWidth, cHeight, cThickness) {
         var newDevice = this.clone();
 
+        // update margins
         newDevice.margins["left"] = (cWidth - this.screen["width"]) / 2;
         newDevice.margins["right"] = (cWidth - this.screen["width"]) / 2;
         newDevice.margins["top"] = (cHeight - this.screen["height"]) / 2;
         newDevice.margins["bottom"] = (cHeight - this.screen["height"]) / 2;
         newDevice.thickness = cThickness;
+
+        // update windows
+        var tshift = cThickness - this.thickness;
+        if (tshift > 0) {
+            for (var w of newDevice.windows) {
+                if ("bottom" in w) {
+                    w["bottom"] += tshift;
+                }
+                else
+                    w["bottom"] = tshift;
+                if ("top" in w)
+                    w["top"] += tshift;
+            }
+        }
         
         return newDevice;
     }
@@ -841,20 +856,29 @@ Device.prototype.getSidesCutting = function(params, space) {
                     s2 = this.autoSlots(deviceThickness, 0, slotDepth, true, lkerf, 0);
                 }
 
+                var localWindows = JSON.parse(JSON.stringify(windows.filter(w => "bottom" in w)));
+                // invert windows, starting from the end since it will be inversed
+                for(var w of localWindows) {
+                    var bw = w["begin"];
+                    var ew = w["end"];
+                    w["begin"] = e["length"] + startShiftInside - ew;
+                    w["end"] = e["length"] + startShiftInside - bw;
+                }
+
                 // FIXME: if the side contains both windows with and without bottom, it will not work
                 var sideH = DrawCuttingTools.pathShift(
                     this.rectangleWithSlots(deviceThickness + boxThickness, e["length"] + startShiftInside, lkerf,
                             s1,
                             this.autoSlots(e["length"], startShiftInside, slotDepth, false, lkerf, 1),
                             s2,
-                            this.upSlotsFromWindows(windows.filter(w => "bottom" in w), deviceThickness, false, lkerf)),
+                            this.upSlotsFromWindows(localWindows, deviceThickness, false, lkerf)),
                             shift + kerf - lkerf, i * ((innerSize[1] - f.height) + space + boxThickness) + e["begin"] + startShift + kerf - lkerf);  
                 if (i == 1) sideH = DrawCuttingTools.pathSymmetryX(sideH, middleMirror);
                 sides.push(sideH);
 
                 // FIXME: adjust this in a more generic way
                 center = (e["length"] + startShiftInside) / 2;
-                if (windows.filter(w => "bottom" in w).length != 0)
+                if (localWindows.length != 0)
                     center = (e["length"] + startShiftInside) / 4;
                 
 
