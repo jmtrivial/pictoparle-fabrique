@@ -42,12 +42,12 @@ function setDeviceMenu() {
             $("#caseWidth").prop("disabled", false);
             $("#caseHeight").prop("disabled", false);
             $("#caseThickness").prop("disabled", false);
-            $("#caseWidth").val(device.getWidth());
-            $("#caseWidth").attr("min", device.getWidth());
-            $("#caseHeight").val(device.getHeight());
-            $("#caseHeight").attr("min", device.getHeight());
-            $("#caseThickness").val(device.thickness);
-            $("#caseThickness").attr("min", device.thickness);
+            $("#caseWidth").val(device.getWidth().toFixed(1));
+            $("#caseWidth").attr("min", device.getWidth().toFixed(1));
+            $("#caseHeight").val(device.getHeight().toFixed(1));
+            $("#caseHeight").attr("min", device.getHeight().toFixed(1));
+            $("#caseThickness").val(device.thickness).toFixed(1);
+            $("#caseThickness").attr("min", device.thickness.toFixed(1));
         }
         else {
             resetCase();
@@ -84,9 +84,9 @@ function setDevice(deviceID) {
     else {
         window.device = window.devices[deviceID];
     }
-    $("#deviceWidthDesc").html(" (<strong>" + window.devices[deviceID].getWidth() + " mm</strong>)");
-    $("#deviceHeightDesc").html(" (<strong>" + window.devices[deviceID].getHeight() + " mm</strong>)");
-    $("#deviceThicknessDesc").html(" (<strong>" + window.devices[deviceID].thickness + " mm</strong>)");
+    $("#deviceWidthDesc").html(" (<strong>" + window.devices[deviceID].getWidth().toFixed(1) + " mm</strong>)");
+    $("#deviceHeightDesc").html(" (<strong>" + window.devices[deviceID].getHeight().toFixed(1) + " mm</strong>)");
+    $("#deviceThicknessDesc").html(" (<strong>" + window.devices[deviceID].thickness.toFixed(1) + " mm</strong>)");
     $("#device").html("Tablette&nbsp;: " + window.device.name);
     updateInterface();
 
