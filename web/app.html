@@ -1,0 +1,187 @@
+<html lang="fr">
+    <head>
+        <title>La fabrique de Pictoparle — configurer l'application</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="shortcut icon" href="images/pictoparle-icon-white.svg">
+
+
+
+
+        <script src="js/external/jquery-3.4.1.min.js"></script>
+
+        <script src="js/external/FileSaver.js"></script>
+
+        <script src="js/external/jspdf.min.js"></script>
+        <script src="js/external/dxf_bundle.js"></script>
+
+        <script src="js/board.js"></script>
+        <script src="js/device.js"></script>
+        <script src="js/qrcode-position.js"></script>
+        <script src="js/fastener.js"></script>
+        <script src="js/box.js"></script>
+        <script src="js/draw-cutting-tools.js"></script>
+        <script src="js/interface-utils.js"></script>
+        <script src="js/box-page-interface.js"></script>
+
+        <link rel="stylesheet" href="css/style.css">
+
+        <!-- use bootstap for display -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    </head>
+    <body>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#"><img src="images/pictoparle-icon-white.svg" width="30" height="30" alt="La fabrique de Pictoparle"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Accueil</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="box.html">La boîte</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="board.html">Les planches</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="app.html">L'application <span class="sr-only">(courant)</span></a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+        <div class="container-xl" id="main-container">
+            <h1 class="display-4">Configurer l'application</h1>
+           <p class="lead"><a href="http://pictoparle.jmfavreau.info/">Pictoparle</a> est un outil de communication alternative 
+                et augmentée destiné aux personnes en situation de déficience visuelle rencontrant des difficultés dans la 
+                communication orale. Il permet de disposer sur un dispositif interactif (une tablette tactile du commerce)
+                des <em>planches</em> structurés en <em>panneaux</em> de <em>pictogrammes</em>. Ces planches sont interchangeables,
+                et détectées automatiquement par la tablette. Pour plus d'information, vous pouvez consulter le site internet
+                du projet, à l'adresse <a href="http://pictoparle.jmfavreau.info/">pictoparle.jmfavreau.info</a>.
+            </p>
+            <p>La page sur laquelle vous vous trouvez permet d'installer et de configurer l'application sur la tablette.
+            </p>
+
+            <h2><span class="badge badge-pill badge-primary">1</span> Installer l'application</h2>
+            <p>Pour installer l'application, il existe deux solutions&nbsp;: l'installer depuis le <a href="https://play.google.com/store/apps/details?id=com.jmfavreau.pictoparle">Google Store</a>,
+            ou télécharger le fichier <code>apk</code> disponible sur le <a href="https://github.com/jmtrivial/pictoparle/releases">projet github de Pictoparle</a>, puis en installant l'application
+            sur votre tablette.</p>
+            
+             <div class="container mb-3">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                        <img src="images/captures/pictoparle-store.png" class="figure-img img-fluid rounded" alt="L'application Pictoparle dans le Google Store" />
+                        <figcaption class="figure-caption">L'application Pictoparle dans le Google Store.</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                            <img src="images/captures/pictoparle-github.png" class="figure-img img-fluid rounded" alt="La page github du projet Pictoparle permettant de télécharger les fichiers apk" />
+                            <figcaption class="figure-caption">La page github du projet Pictoparle permettant de télécharger les fichiers apk.</figcaption>
+                            </figure>
+                    </div>
+                </div>
+            </div>
+            
+            <h2><span class="badge badge-pill badge-primary">1</span> Configurer l'application</h2>
+            <p>Lors du premier lancement de l'application, celle-ci demande l'autorisation d'accéder à la caméra de l'appareil. Cette autorisation doit être donnée pour que Pictoparle puisse détecter
+            les planches grâce au QRcodes.</p>
+            <p>Une fois cette autorisation donnée, l'application demande à l'utilisateur de choisir le modèle de tablette sur laquelle elle est installée. Ce réglage permet d'ajuster précisément la taille
+            des pictogrammes affichés par le dispositif. Si votre application n'est pas disponible dans la liste, n'hésitez pas à contacter l'auteur pour que votre matériel soit pris en charge.</p>
+            
+            <div class="container mb-3">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                        <img src="images/captures/autorisation-camera.png" class="figure-img img-fluid rounded" alt="Autorisation pour l'application à accéder à la caméra." />
+                        <figcaption class="figure-caption">Autorisation pour l'application à accéder à la caméra.</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                            <img src="images/captures/choix-tablette.png" class="figure-img img-fluid rounded" alt="Choix du modèle de tablette dans l'application" />
+                            <figcaption class="figure-caption">Choix du modèle de tablette dans l'application.</figcaption>
+                            </figure>
+                    </div>
+                </div>
+            </div>
+            <p>Une fois ces premiers réglages réalisés, vous pouvez laisser les autres paramètres à leur valeur par défaut, ou les ajuster suivant vos besoins.</p>
+            
+            <h2><span class="badge badge-pill badge-primary">2</span> Configurer Android</h2>
+            <p>Pour que Pictoparle fonctionne au mieux, nous vous suggérons de réaliser quelques ajustements sur votre système Android&nbsp;:</p>
+            <ul>
+                <li>Dans les paramètres, page « Affichage », dans les options avancées, activer la fonctionnalité « appuyer pour activer », qui permettra de sortir la tablette de veille par un double tap, sans avoir à utiliser le bouton physique.</li>
+                <li>Dans les paramètres, page « Affichage », dans les options avancées, régler le délai de mise en veille sur 10 minutes, afin de laisser du temps à l'exploration des pictogrammes avant de les activer.</li>
+                <li>Assurez-vous qu'une synthèse vocale soit activée (l'application a été testée avec succès en utilisant la synthèse fournie par Google, et celle fournie par Samsung). Il est possible que cette synthèse nécessite un accès à internet pour permettre à Pictoparle de prononcer ses messages verbaux.</li>
+            </ul>
+            
+            <div class="container mb-3">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                        <img src="images/captures/configuration-android.png" class="figure-img img-fluid rounded" alt="Panneau de réglage des paramètres d'affichage d'Android." />
+                        <figcaption class="figure-caption">Panneau de réglage des paramètres d'affichage d'Android.</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                            <img src="images/captures/synthese-google.png" class="figure-img img-fluid rounded" alt="Choix de la synthèse vocale" />
+                            <figcaption class="figure-caption">Choix de la synthèse vocale.</figcaption>
+                            </figure>
+                    </div>
+                </div>
+            </div>
+             
+            <h2><span class="badge badge-pill badge-primary">3</span> Ajouter une planche</h2>
+            <p>Pour ajouter une nouvelle planche <a href="board.html">créée depuis la fabrique de Pictoparle</a>, placez le fichier <code>zip</code> sur la tablette, soit en le téléchargeant, soit en branchant la tablette
+            en usb sur un ordinateur pour réaliser le transfert. Une fois réalisé ce transfert, rendez-vous sur l'application Pictoparle, et suivre les étapes suivantes&nbsp;:</p>
+            <ol>
+                <li>Sur la page d'accueil, un simple tap sur l'image centrale représentant des planches de Pictoparle vous mène à la liste des planches actives&nbsp;;</li>
+                <li>En haut à droite de cette page, suivre le bouton « édition » illustré par un pictogramme crayon encadré (en haut à droite)&nbspp;;</li>
+                <li>Le mode édition permet d'activer ou de désactiver chaque planche connue par l'application, mais aussi d'en ajouter de nouvelles, en utilisant le pictogramme « + » (en haut à droite)&nbsp;;</li>
+                <li>Si c'est la première fois que vous tentez cette opération, Android vous demandera d'autoriser l'application à accéder aux fichiers, ce qui est nécessaire&nbsp;;</li>
+                <li>Parcourez ensuite les dossiers et fichiers jusqu'à sélectionner le fichier <code>zip</code> correspondant à la nouvelle planche.</li>
+            </ol>
+            
+            <div class="container mb-3">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                        <img src="images/captures/page-accueil.png" class="figure-img img-fluid rounded" alt="Page d'accueil de Pictoparle." />
+                        <figcaption class="figure-caption">Page d'accueil de Pictoparle..</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                            <img src="images/captures/choix-manuel-planche.png" class="figure-img img-fluid rounded" alt="Liste des planches actives" />
+                            <figcaption class="figure-caption">Liste des planches actives.</figcaption>
+                            </figure>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                        <img src="images/captures/configuration-planches.png" class="figure-img img-fluid rounded" alt="Édition de la liste des planches." />
+                        <figcaption class="figure-caption">Édition de la liste des planches.</figcaption>
+                        </figure>
+                    </div>
+                    <div class="col-sm-6">
+                        <figure class="figure mt-3">
+                            <img src="images/captures/autorisation-fichiers.png" class="figure-img img-fluid rounded" alt="Demande d'autorisation pour l'accès aux fichiers" />
+                            <figcaption class="figure-caption">Demande d'autorisation pour l'accès aux fichiers.</figcaption>
+                            </figure>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    </body>
+</html>
