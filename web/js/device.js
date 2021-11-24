@@ -733,7 +733,7 @@ Device.prototype.getSubElements = function(windows, length) {
     var pos = ws.map(x => x["begin"]).concat(ws.map(x => x["end"])).concat([0, length]);
     pos = pos.filter(p => p <= length);
     pos.sort((a, b) => a - b);
-    console.log(JSON.stringify(pos));
+    
     for(var i = 0; i < pos.length; i += 2) {
         var open = pos[i] == 0;
         var close = pos[i + 1] == length;
@@ -741,7 +741,6 @@ Device.prototype.getSubElements = function(windows, length) {
                     "begin": pos[i], "length": pos[i + 1] - pos[i]});
     }
 
-    console.log(JSON.stringify(result));
     return result;
 }
 
@@ -1104,6 +1103,18 @@ Device.prototype.boxPDF = function(params) {
     return doc;
 }
 
+Device.prototype.mergeCuts = function(cuts, nbLayers) {
+    if (nbLayers == 1) {
+        return [[].concat.apply([], cuts)];
+    }
+    else if (nbLayers == 2) {
+        return [cuts[0], [].concat.apply([], cuts.slice(1))];
+    }
+    else if (nbLayers == 3) { // or any other configuration
+        return [cuts[0], cuts[1], [].concat.apply([], cuts.slice(2))];
+    }
+}
+
 Device.prototype.boxDXF = function(params) {
     var Drawing = require('Drawing');
     var d = new Drawing();
@@ -1114,6 +1125,8 @@ Device.prototype.boxDXF = function(params) {
     var cut = this.getBackCutting(params);
     var box = Box.getBoundingBox(cut);
     var middle = box.center();
+
+    cut = this.mergeCuts(cut, params["layer_config"]);
 
     var id = 0;
     for(var layer of cut) {
@@ -1133,6 +1146,7 @@ Device.prototype.boxDXF = function(params) {
 
     // get side cuttings
     cut = this.getSidesCutting(params, space);
+    cut = this.mergeCuts(cut, params["layer_config"]);
 
     // draw side cuttings
     id = 0;

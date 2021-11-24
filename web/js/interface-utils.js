@@ -3,6 +3,16 @@ function uniqID() {
     return Math.floor(Math.random() * 1000000);
 }
 
+function setLayersMenu() {
+
+    $("#layers-alternatives a").click(function(){
+        window.layer_config = $(this).attr("id");
+        $("#layers").html($(this).text());
+    });
+    window.layer_config = "one-layer";
+    $("#layers").html($("#one-layer").text());
+}
+
 function setDeviceMenu() {
     window.devices = {};
     window.device = null;

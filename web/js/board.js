@@ -530,13 +530,20 @@ class Board {
         return doc;
     }
 
-    cuttingDXF(device, buffer) {
+    mergeLayers(cuts) {
+        return [[].concat.apply([], cuts)];
+    }
+
+    cuttingDXF(device, buffer, nbLayers) {
         var Drawing = require('Drawing');
         var d = new Drawing();
         d.setUnits('Millimeters');
 
 
         var cut = this.boardCutting(device, buffer);
+
+        if (nbLayers == 1)
+            cut = this.mergeLayers(cut);
         var middle = Box.getBoundingBox(cut).center();
         var id = 0;
         for(var layer of cut) {

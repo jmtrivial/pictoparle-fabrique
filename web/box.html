@@ -310,6 +310,24 @@
                 </div>
             </div>
 
+            <h3>Découpe final</h3>
+            <p>Dans le cas d'une découpe numérique (format <code>dxf</code>), vous pourriez souhaiter avoir des tracés regroupés en couches (<em>layers</em> en anglais) pour faciliter le pilotage de la 
+              machine. Trois réglages sont possibles:
+            </p>
+            <div class="dropdown">
+              <div class="btn-group btn-block my-1">
+                <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="layers" data-toggle="dropdown" 
+                aria-haspopup="true" role="menu" aria-expanded="false">
+                  choix des couches
+                </button>
+                <div class="dropdown-menu" aria-labelledby="layers" id="layers-alternatives">
+                    <a id="one-layer" class="dropdown-item" href="#layers">une unique couche</a>
+                    <a id="two-layers" class="dropdown-item" href="#layers">une couche de gravure, une couche de découpe</a>
+                    <a id="three-layers" class="dropdown-item" href="#layers">une couche de gravure, une couche de découpe intérieure, une couche de découpe extérieure</a>
+                </div>
+              </div>
+
+
             <h2><span class="badge badge-pill badge-primary">3</span> Téléchargement</h2>
             <p>Une fois que vous avez réalisé les réglages proposés ci-dessus, vous pouvez maintenant télécharger le fichier correspondant à ces réglages, soit au format <code>pdf</code> pour un découpage manuel,
             soit au format <code>dxf</code> pour une découpe à la machine-outil (découpeuse laser par exemple).</p>

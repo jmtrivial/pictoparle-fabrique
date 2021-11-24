@@ -25,7 +25,11 @@ $(document).ready(function () {
     });
 
     $("#cuttingDXF").click(function(e) {
-        var doc = window.board.cuttingDXF(window.device, parseFloat($("#deviceBuffer").val()));
+        var nb_layers = 1;
+        if (window.layer_config == "two-layers")
+            nb_layers = 2;
+
+        var doc = window.board.cuttingDXF(window.device, parseFloat($("#deviceBuffer").val()), nb_layers);
         if (doc != null) {
             var blob = new Blob([doc.toDxfString()], {type: 'application/dxf'});
             var name = window.board.name;
@@ -90,6 +94,8 @@ $(document).ready(function () {
 
     setDeviceMenu();
     setTemplateMenu();
+    setLayersMenu();
+
 
     $(window).resize(
         function() {
